@@ -2,11 +2,16 @@ import React from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import ReactQuill from "react-quill";
+import { ImageDrop } from "quill-image-drop-module";
+import ImageResize from "quill-image-resize-module-react";
 
 import "react-quill/dist/quill.snow.css";
 import ReactHtmlParser from "react-html-parser";
 
 const Quill = ReactQuill.Quill;
+Quill.register("modules/imageDrop", ImageDrop);
+
+Quill.register("modules/imageResize", ImageResize);
 let quillRef = null;
 
 const ContainerStyled = styled.div`
@@ -56,6 +61,12 @@ const modules = {
   clipboard: {
     // toggle to add extra line breaks when pasting HTML:
     matchVisual: false,
+  },
+  imageDrop: true,
+  // imageResize: true,
+  imageResize: {
+    parchment: Quill.import("parchment"),
+    modules: ["Resize", "DisplaySize"],
   },
 };
 
