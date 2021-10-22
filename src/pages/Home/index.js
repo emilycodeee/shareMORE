@@ -2,80 +2,54 @@ import React from "react";
 import styled from "styled-components";
 import * as firebase from "../../utils/firebase";
 import { useState, useEffect } from "react";
+import welcome from "../../sources/video.mp4";
 
-const TempCtn = styled.div`
-  margin: 0 auto;
-  padding: 10px;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
+import Signin from "../../components/Signin";
+import { TopCover, ViderCover, Shield } from "./index.styled";
+
+// const
+
+const Li = styled.li`
+  display: inline;
+  text-align: center;
+  margin-right: 10px;
+  transition: 0.3s all;
+  &:hover {
+    border-bottom: 2px solid rgb(255 234 182);
+    border-radius: 2px;
+  }
 `;
 
-const HomePage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    firebase.subscribeToUser((currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        console.log("iiiiii");
-        console.log(currentUser);
-      } else {
-        // User is signed out
-        setUser(null);
-        console.log("nooooo");
-      }
-    });
-  }, []);
-
-  const handleOnLogin = (provider) => {
-    firebase.socialMediaAuth(provider);
-  };
-
+const HomePage = ({ user }) => {
   return (
-    <TempCtn>
-      <h1>home</h1>
-      <h1>現在登入狀態為：{user ? `${user.email}` : `login${user}`}</h1>
+    <div>
+      <TopCover>
+        <ViderCover autoPlay loop muted>
+          <source src={welcome} type="video/mp4" />
+        </ViderCover>
+        <Shield />
+      </TopCover>
       <hr />
-      <input
-        placeholder="請輸入信箱"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-        }}
-      ></input>
-      <input
-        placeholder="請輸入密碼"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      ></input>
-      <button onClick={() => firebase.register(email, password)}>註冊</button>
+      {!user && <Signin />}
+      <div class="container">
+        <ul>
+          <Li class="one">
+            <a href="#">Uno</a>
+          </Li>
+          <Li class="two">
+            <a href="#">Dos</a>
+          </Li>
+          <Li class="three">
+            <a href="#">Tres</a>
+          </Li>
+          <Li class="four">
+            <a href="#">Quatro</a>
+          </Li>
+        </ul>
+      </div>
       <hr />
-      <input
-        placeholder="請輸入信箱"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-        }}
-      ></input>
-      <input
-        placeholder="請輸入密碼"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      ></input>
-      <button onClick={() => firebase.logIn(email, password)}>登入</button>
-      <hr />
-      <button onClick={() => handleOnLogin(firebase.facebookProvider)}>
-        facebook
-      </button>
-      <button onClick={() => handleOnLogin(firebase.googleProvider)}>
-        google
-      </button>
-      <button onClick={() => firebase.logOut()}>logOut</button>
-    </TempCtn>
+      <button onClick={() => firebase.logOut()}>logOut</button>;
+    </div>
   );
 };
 
