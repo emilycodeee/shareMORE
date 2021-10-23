@@ -35,6 +35,10 @@ const InputCtn = styled.input`
   /* min-height: 50px; */
 `;
 
+const TextareaCtn = styled.textarea`
+  flex-grow: 1;
+`;
+
 const EditBtn = styled.div`
   color: red;
 `;
@@ -137,7 +141,7 @@ const BuildGroups = ({ user, categoriesName }) => {
       </Field>
       <Field>
         <LabelCtn>社團介紹</LabelCtn>
-        <InputCtn
+        <TextareaCtn
           style={{ minHeight: "100px" }}
           placeholder="關於這個社團我想說......"
           value={introduce}

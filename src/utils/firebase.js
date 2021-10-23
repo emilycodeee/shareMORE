@@ -22,6 +22,8 @@ import {
   setDoc,
   addDoc,
   where,
+  onSnapshot,
+  orderBy,
   updateDoc,
   arrayUnion,
   arrayRemove,
@@ -58,7 +60,9 @@ export const socialMediaAuth = async (provider) => {
         data = {
           creationTime: result.user.metadata.creationTime,
           displayName: result.user.displayName || "",
-          avatar: result.user.photoURL || "",
+          avatar:
+            result.user.photoURL ||
+            "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
           email: result.user.email,
           userID: result.user.email,
         };
@@ -78,7 +82,9 @@ export const register = async (email, password) => {
     const data = {
       creationTime: result.user.metadata.creationTime,
       displayName: result.user.displayName || "",
-      avatar: result.user.photoURL || "",
+      avatar:
+        result.user.photoURL ||
+        "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
       email: result.user.email,
       userID: result.user.email,
     };
@@ -178,18 +184,8 @@ export const getQueryFilter = async (
   setFunction(arr);
 };
 
-// const docRefId = doc(collection(db, "friendList")).id;
-// const postData = {
-//   id: docRefId,
-//   accept: false,
-//   receiver: searchResult.userName,
-//   sender: owner.userName,
-// };
-// await setDoc(doc(db, "friendList", docRefId), postData);
-
 export const createGroup = async (data, file) => {
   const docRefId = doc(collection(db, "groups")).id;
-
   const storageRef = ref(storage);
   const imagesRef = ref(storageRef, "cover-images/" + docRefId);
   const metadata = { contenType: file.type };
@@ -204,15 +200,69 @@ export const createGroup = async (data, file) => {
   };
   const response = await setDoc(doc(db, "groups", docRefId), finalData);
   console.log(response);
-  // const docRef = await addDoc(collection(db, "groups"), {
-  //   ...data,
-  // });
-  // const storageRef = ref(storage);
-  // const imagesRef = ref(storageRef, "cover-images/" + docRef.id);
-  // const metadata = { contenType: file.type };
-  // const uploadTask = await uploadBytes(imagesRef, file, metadata);
-  // const imgURL = await getDownloadURL(uploadTask.ref);
-  // console.log(docRef.id);
-  // console.log("imgURL", imgURL);
-  // console.log(uploadTask);
+};
+
+export const getGroupsList = async (setFonction) => {
+  const q = query(collection(db, "groups"));
+  const querySnapshot = await getDocs(q);
+  let data = [];
+  querySnapshot.forEach((doc) => {
+    console.log(doc.data());
+    data.push(doc.data());
+    console.log(data);
+  });
+  setFonction(data);
+};
+
+export const getGroupContent = async (groupID, setFonction) => {
+  const docRef = doc(db, "groups", groupID);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return setFonction(docSnap.data());
+
+    // console.log("Document data:", docSnap.data());
+  } else {
+    // doc.data() will be undefined in this case
+    console.log("No such document!");
+  }
+};
+
+export const sendGroupsPost = async (groupID, data) => {
+  const docRefId = doc(collection(db, "groups", groupID, "posts")).id;
+  const finalData = { ...data, postID: docRefId };
+
+  await setDoc(
+    doc(collection(db, "groups", groupID, "posts"), docRefId),
+    finalData
+  );
+};
+
+export const postsListener = async (groupID, setFunction) => {
+  console.log("hiiiiiiiiiiiiiiii");
+  const q = query(
+    collection(db, "groups", groupID, "posts"),
+    orderBy("creationTime", "desc")
+  );
+
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const data = [];
+    querySnapshot.forEach((doc) => {
+      // console.log(doc.data());
+      data.push(doc.data());
+    });
+    setFunction(data);
+    // console.log("data", data);
+  });
+};
+
+export const getTotalUserList = async (setFunction, optionName) => {
+  const q = query(collection(db, optionName));
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    // console.log(doc.data());
+    arr.push(doc.data());
+  });
+  setFunction(arr);
 };

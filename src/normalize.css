@@ -216,6 +216,14 @@ button::-moz-focus-inner,
   padding: 0;
 }
 
+/* emily */
+p {
+  margin: 0;
+}
+
+h2 {
+  margin: 0;
+}
 /**
  * Restore the focus styles unset by the previous rule.
  */

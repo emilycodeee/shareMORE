@@ -3,7 +3,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import Layouts from "./components/layouts/Layouts";
 import HomePage from "./pages/Home";
-
+import GroupPage from "./pages/Groups";
 import MilestoneEditor from "./pages/MileStone/MilestoneEditor";
 import BuildGroups from "./pages/Groups/BuildGroups";
 
@@ -13,7 +13,8 @@ import * as firebase from "./utils/firebase";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [categoriesName, setCategoriesName] = useState("");
+  const [userList, setUserList] = useState([]);
+  const [categoriesName, setCategoriesName] = useState([]);
   useEffect(() => {
     firebase.getOptionsName("categories", setCategoriesName);
     firebase.subscribeToUser((currentUser) => {
@@ -23,8 +24,9 @@ function App() {
         setUser(null);
       }
     });
+    firebase.getTotalUserList(setUserList, "users");
   }, []);
-
+  console.log("❣", userList);
   console.log("❣user", user);
   console.log("❣user.email", user && user.email);
 
@@ -32,7 +34,7 @@ function App() {
     <Layouts user={user}>
       <Switch>
         <Route path="/" exact>
-          <HomePage user={user} />
+          <HomePage user={user} categoriesName={categoriesName} />
         </Route>
         <Route path="/milestone/post" exact>
           <MilestoneEditor />
@@ -42,6 +44,10 @@ function App() {
         </Route>
         <Route path="/groups/post" exact>
           <BuildGroups user={user} categoriesName={categoriesName} />
+        </Route>
+
+        <Route path="/group/:groupID" exact>
+          <GroupPage user={user} userList={userList} />
         </Route>
       </Switch>
     </Layouts>
