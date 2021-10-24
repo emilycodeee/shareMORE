@@ -4,6 +4,7 @@ import Select from "react-select";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import * as firebase from "../../utils/firebase";
+import { useHistory } from "react-router-dom";
 
 const MainContainer = styled.div`
   display: flex;
@@ -50,6 +51,7 @@ const EditArea = styled.div`
 `;
 
 const BuildGroups = ({ user, categoriesName }) => {
+  const history = useHistory();
   console.log(user);
   const initText = `<p>-目標建立tips-</p><p>SMART 原則</p><p>S- Specific (具體的)</p><p>M- Measurable (可衡量的)</p><p>A- Attainable (可實現的)</p><p>R- Relevant（息息相關的）</p><p>T- Timely (有時限的)</p>`;
   //init
@@ -77,7 +79,7 @@ const BuildGroups = ({ user, categoriesName }) => {
   const previewImg = file
     ? URL.createObjectURL(file)
     : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
-
+  // console.log(user);
   const handleSubmit = () => {
     const data = {
       name,
@@ -87,10 +89,12 @@ const BuildGroups = ({ user, categoriesName }) => {
       subClass: selectedSubClass,
       creationTime: new Date(),
       introduce,
-      creatorId: user.email,
+      creatorID: user.uid,
       public: true,
     };
     firebase.createGroup(data, file);
+    alert("新社團建立成功");
+    history.push("/");
   };
 
   return (
@@ -118,7 +122,7 @@ const BuildGroups = ({ user, categoriesName }) => {
         />
       </Field>
       <Field>
-        <LabelCtn>社團名稱</LabelCtn>
+        <LabelCtn>社群名稱</LabelCtn>
         <InputCtn
           value={name}
           onChange={(e) => {
@@ -127,11 +131,11 @@ const BuildGroups = ({ user, categoriesName }) => {
         />
       </Field>
       <EditArea>
-        <LabelCtn>社團學習目標</LabelCtn>
+        <LabelCtn>學習目標</LabelCtn>
         <SimpleEditor goal={goal} setGoal={setGoal} />
       </EditArea>
       <Field>
-        <LabelCtn>為目標訂下完成日</LabelCtn>
+        <LabelCtn>目標完成日</LabelCtn>
         <InputCtn
           type="date"
           onChange={(e) => {
@@ -140,10 +144,10 @@ const BuildGroups = ({ user, categoriesName }) => {
         />
       </Field>
       <Field>
-        <LabelCtn>社團介紹</LabelCtn>
+        <LabelCtn>社群介紹</LabelCtn>
         <TextareaCtn
           style={{ minHeight: "100px" }}
-          placeholder="關於這個社團我想說......"
+          placeholder="我想這樣介紹這個社群......"
           value={introduce}
           onChange={(e) => {
             setIntroduce(e.target.value);

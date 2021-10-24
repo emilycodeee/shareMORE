@@ -54,9 +54,11 @@ export const socialMediaAuth = async (provider) => {
     // checkMembership(result.user);
     const q = query(collection(db, "users"));
     const querySnapshot = await getDocs(q);
+    console.log(querySnapshot);
     let data;
     querySnapshot.forEach((doc) => {
-      if (doc.id !== result.user.email) {
+      console.log("🧨docccccc🧨", doc);
+      if (doc.id !== result.user.uid) {
         data = {
           creationTime: result.user.metadata.creationTime,
           displayName: result.user.displayName || "",
@@ -64,45 +66,68 @@ export const socialMediaAuth = async (provider) => {
             result.user.photoURL ||
             "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
           email: result.user.email,
-          userID: result.user.email,
+          userID: result.user.uid,
         };
       }
     });
-    await setDoc(doc(db, "users", result.user.email), data);
+    console.log(data);
+    await setDoc(doc(db, "users", result.user.uid), data);
     console.log("我改寫成async", result.user);
   } catch (err) {
     console.log(err);
   }
 };
 
-export const register = async (email, password) => {
+export const register = async (name, email, password, setFunction) => {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
     console.log(result);
     const data = {
       creationTime: result.user.metadata.creationTime,
-      displayName: result.user.displayName || "",
+      displayName: name,
       avatar:
-        result.user.photoURL ||
         "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
       email: result.user.email,
-      userID: result.user.email,
+      userID: result.user.uid,
     };
-    await setDoc(doc(db, "users", result.user.email), data);
-  } catch (err) {
-    console.log(err);
+    await setDoc(doc(db, "users", result.user.uid), data);
+  } catch (error) {
+    console.log("🎆", error.code);
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        alert("信箱已存在");
+        break;
+      case "auth/invalid-email":
+        alert("密碼格式不正確");
+        break;
+      case "auth/weak-password":
+        alert("密碼強度不足");
+        break;
+      default:
+    }
   }
 };
-
-export const logIn = (email, password) => {
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      console.log(userCredential);
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-    });
+export const logIn = async (email, password, setFunction) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+  } catch (error) {
+    switch (error.code) {
+      case "auth/user-not-found":
+        alert("信箱不存在");
+        break;
+      case "auth/invalid-email":
+        alert("信箱格式不正確");
+        break;
+      case "auth/wrong-password":
+        alert("密碼錯誤");
+        break;
+      default:
+    }
+  }
 };
 
 export const logOut = () => {
@@ -122,19 +147,29 @@ export function subscribeToUser(callback) {
 /* */
 export const postArticles = async (data, file) => {
   console.log("file", file);
-  const docRef = await addDoc(collection(db, "articles"), {
-    name: "Tokyo",
-    country: "Japan",
-    hello: data,
-  });
+
+  const docRefId = doc(collection(db, "articles")).id;
+  // const docRef = await addDoc(collection(db, "articles"), {
+  //   name: "Tokyo",
+  //   country: "Japan",
+  //   hello: data,
+  // });
   const storageRef = ref(storage);
-  const imagesRef = ref(storageRef, "cover-images/" + docRef.id);
+  const imagesRef = ref(storageRef, "cover-images/" + docRefId);
   const metadata = { contenType: file.type };
   const uploadTask = await uploadBytes(imagesRef, file, metadata);
   const imgURL = await getDownloadURL(uploadTask.ref);
-  console.log(docRef.id);
-  console.log("imgURL", imgURL);
-  // console.log(uploadTask);
+
+  const finalData = {
+    ...data,
+    milestoneID: docRefId,
+    coverImage: imgURL,
+  };
+
+  const response = await setDoc(doc(db, "articles", docRefId), finalData);
+  console.log(imgURL);
+  console.log(docRefId);
+  alert("建立成功");
 };
 
 //for uploadReactQuillImage
@@ -177,10 +212,8 @@ export const getQueryFilter = async (
     doc.data().subClasses.forEach((each) => {
       arr.push({ value: each, label: each });
     });
-    // arr.push();
-    // console.log(doc.id, " => ", doc.data());
   });
-  // console.log(arr);
+
   setFunction(arr);
 };
 
@@ -199,11 +232,10 @@ export const createGroup = async (data, file) => {
     coverImage: imgURL,
   };
   const response = await setDoc(doc(db, "groups", docRefId), finalData);
-  console.log(response);
 };
 
-export const getGroupsList = async (setFonction) => {
-  const q = query(collection(db, "groups"));
+export const getContentsList = async (topic, setFonction) => {
+  const q = query(collection(db, topic));
   const querySnapshot = await getDocs(q);
   let data = [];
   querySnapshot.forEach((doc) => {
@@ -214,8 +246,8 @@ export const getGroupsList = async (setFonction) => {
   setFonction(data);
 };
 
-export const getGroupContent = async (groupID, setFonction) => {
-  const docRef = doc(db, "groups", groupID);
+export const getTopLevelContent = async (topic, docID, setFonction) => {
+  const docRef = doc(db, topic, docID);
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
@@ -239,24 +271,20 @@ export const sendGroupsPost = async (groupID, data) => {
 };
 
 export const postsListener = async (groupID, setFunction) => {
-  console.log("hiiiiiiiiiiiiiiii");
   const q = query(
     collection(db, "groups", groupID, "posts"),
     orderBy("creationTime", "desc")
   );
-
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const data = [];
     querySnapshot.forEach((doc) => {
-      // console.log(doc.data());
       data.push(doc.data());
     });
     setFunction(data);
-    // console.log("data", data);
   });
 };
 
-export const getTotalUserList = async (setFunction, optionName) => {
+export const getTotalDocList = async (setFunction, optionName) => {
   const q = query(collection(db, optionName));
   const querySnapshot = await getDocs(q);
   const arr = [];
@@ -265,4 +293,36 @@ export const getTotalUserList = async (setFunction, optionName) => {
     arr.push(doc.data());
   });
   setFunction(arr);
+};
+
+export const sendPostComment = async (groupID, postID, data) => {
+  const docRefId = doc(
+    collection(db, "groups", groupID, "posts", postID, "comments")
+  ).id;
+  const finalData = { ...data, commentID: docRefId };
+
+  await setDoc(
+    doc(
+      collection(db, "groups", groupID, "posts", postID, "comments"),
+      docRefId
+    ),
+    finalData
+  );
+};
+
+export const postCommentsListener = async (groupID, postID, setFunction) => {
+  console.log("ki");
+  const q = query(
+    collection(db, "groups", groupID, "posts", postID, "comments"),
+    orderBy("creationTime", "asc")
+  );
+
+  console.log(q);
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const data = [];
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+    setFunction(data);
+  });
 };

@@ -10,7 +10,7 @@ import chat from "../../sources/chat.png";
 
 const LogoCtn = styled.img`
   color: white;
-  height: 64px;
+  max-width: 315px;
 `;
 
 const HeaderContainer = styled.div`
@@ -68,11 +68,14 @@ const LoginPage = styled.div`
 
 const ImgCtn = styled.img`
   height: 30px;
+  border-radius: 50%;
 `;
 
 const Header = ({ user }) => {
   const [showLogin, setShowLogin] = useState(false);
-
+  const userAvatar =
+    user?.photoURL ||
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
   console.log(showLogin);
 
   const showLoginPage = () => {
@@ -91,7 +94,7 @@ const Header = ({ user }) => {
       </LoginPage>
     );
   }
-
+  console.log("🎈header", user);
   return (
     <HeaderContainer>
       <LogoContainer to="/">
@@ -99,7 +102,7 @@ const Header = ({ user }) => {
       </LogoContainer>
       <ListContainer>
         <input placeholder="搜尋" type="text" />
-        <ListStyled to="/milestone/post">我們的里程碑</ListStyled>
+        <ListStyled to="/milestones">我們的里程碑</ListStyled>
         {user && (
           <>
             <ListStyled to="/mygroups">我的社群</ListStyled>
@@ -108,7 +111,7 @@ const Header = ({ user }) => {
               <ImgCtn src={chat} />
             </ListStyled>
             <ListStyled to="/profile">
-              <ImgCtn src={userIcon} />
+              <ImgCtn src={userAvatar} />
             </ListStyled>
           </>
         )}

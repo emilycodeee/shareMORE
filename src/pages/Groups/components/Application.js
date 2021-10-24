@@ -108,11 +108,9 @@ export const ShowSignUp = styled.button`
 `;
 
 const SigninPopup = () => {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showMore, setShowMore] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleOnLogin = (provider) => {
     firebase.socialMediaAuth(provider);
@@ -124,60 +122,51 @@ const SigninPopup = () => {
         <h2>一起 走得更遠</h2>
         <h4>Sign in to continue to your account.</h4>
       </Sider>
-
       <AuthCtn>
-        {!showMore && (
-          <>
-            <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
-              <SocialIconCtn src={googleIcon} />
-              Continue with Google
-            </AuthButton>
-            <AuthButton
-              onClick={() => handleOnLogin(firebase.facebookProvider)}
-            >
-              <SocialIconCtn src={facebookIcon} />
-              Continue with Facebook
-            </AuthButton>
+        <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
+          <SocialIconCtn src={googleIcon} />
+          Continue with Google
+        </AuthButton>
+        <AuthButton onClick={() => handleOnLogin(firebase.facebookProvider)}>
+          <SocialIconCtn src={facebookIcon} />
+          Continue with Facebook
+        </AuthButton>
 
-            <InputStyled
-              placeholder="請輸入信箱"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-            <InputStyled
-              placeholder="請輸入密碼"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <AuthButton
-              onClick={() => {
-                firebase.logIn(email, password, setMessage);
-                message && alert(message);
-              }}
-            >
-              登入
-            </AuthButton>
-            <Horizontal>
-              <Ptag>or</Ptag>
-            </Horizontal>
-            <ShowSignUp
-              onClick={() => {
-                setShowMore(!showMore);
-              }}
-            >
-              使用Email進行註冊
-            </ShowSignUp>
-          </>
-        )}
+        <InputStyled
+          placeholder="請輸入信箱"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+        />
+        <InputStyled
+          placeholder="請輸入密碼"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <AuthButton
+          onClick={() => firebase.logIn(email, password)}
+          disabled={showMore && "disabled"}
+        >
+          登入
+        </AuthButton>
+        <Horizontal>
+          <Ptag>or</Ptag>
+        </Horizontal>
+        <ShowSignUp
+          onClick={() => {
+            setShowMore(!showMore);
+          }}
+        >
+          使用Email進行註冊
+        </ShowSignUp>
         {showMore && (
           <>
             <InputStyled
               placeholder="請輸入使用者名稱"
-              value={name}
+              value={email}
               onChange={(e) => {
-                setName(e.target.value);
+                setEmail(e.target.value);
               }}
             />
             <InputStyled
@@ -192,24 +181,9 @@ const SigninPopup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <AuthButton
-              onClick={() => {
-                firebase.register(name, email, password, setMessage);
-                message && alert(message);
-              }}
-            >
+            <AuthButton onClick={() => firebase.register(email, password)}>
               註冊
             </AuthButton>
-            <Horizontal>
-              <Ptag>or</Ptag>
-            </Horizontal>
-            <ShowSignUp
-              onClick={() => {
-                setShowMore(!showMore);
-              }}
-            >
-              透過Google/Facebook快速登入
-            </ShowSignUp>
           </>
         )}
       </AuthCtn>

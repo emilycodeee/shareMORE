@@ -7,6 +7,9 @@ import saved from "../../../sources/saved.png";
 import share from "../../../sources/share.png";
 import comment from "../../../sources/comment.png";
 import dots from "../../../sources/dots.png";
+import { useState, useEffect } from "react";
+import LeaveMessage from "./LeaveMessage";
+import * as firebase from "../../../utils/firebase";
 
 const Wrapper = styled.div`
   background-color: salmon;
@@ -38,6 +41,8 @@ const Pstyled = styled.div`
 `;
 
 const IconWrapper = styled.div`
+  display: grid;
+  grid-template-columns: 50% 50%;
   border: 1px solid red;
   margin-top: 10px;
 `;
@@ -45,42 +50,146 @@ const IconWrapper = styled.div`
 const HeadIcon = styled.img`
   height: 15px;
   margin-right: 5px;
+`;
+
+const IconDiv = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  &:hover {
+    background-color: lightblue;
+  }
 `;
 
 const Icon = styled.img`
   height: 15px;
-  margin-right: 5px;
+  margin: 0 auto;
   cursor: pointer;
 `;
 
-const PostContainet = ({ item, userList }) => {
-  const postSender = userList.find((each) => each.email === item.creatorID);
-  console.log(postSender);
+const MessageCtn = styled.div`
+  border: 1px solid red;
+`;
+
+const CountWrapper = styled.div`
+  /* border: 2px solid red; */
+  display: flex;
+  position: relative;
+`;
+
+const Count = styled.div`
+  position: absolute;
+  top: 0;
+  right: -10px;
+  font-size: 12px;
+`;
+
+const PostContainet = ({ item, userList, user }) => {
+  const [showComment, setShowComment] = useState(false);
+  const [showBtn, setShowBtn] = useState(false);
+  const [renderPost, setRenderPost] = useState([]);
+  const [textValue, setTextValue] = useState("");
+  const postSender = userList.find((each) => each.userID === item.creatorID);
+  // console.log(postSender);
+  // console.log(item.groupID, item.postID);
+
+  useEffect(() => {
+    firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
+  }, []);
+
+  const LeaveMsgHandler = () => {
+    const data = {
+      creatorID: user.uid,
+      content: textValue,
+      creationTime: new Date(),
+    };
+    firebase.sendPostComment(item.groupID, item.postID, data);
+    setTextValue("");
+    setShowBtn(false);
+    // console.log("k");
+  };
+
+  // console.log(textValue);
+
+  // console.log("🎗", renderPost);
 
   return (
-    <Wrapper>
-      <UserWrapper>
-        <AvatarCtn src={postSender?.avatar} />
-        <UserDetail>
-          <Pstyled>{postSender?.displayName}</Pstyled>
-          <Pstyled>
-            {item.creationTime?.toDate().toLocaleString("en-US")}
-          </Pstyled>
-        </UserDetail>
-        <HeadIcon src={dots} />
-      </UserWrapper>
-      <div>{item.content}</div>
-      <IconWrapper>
-        <Icon src={clap} />
-        <Icon src={comment} />
-        <Icon src={save} />
-        <Icon src={share} />
-      </IconWrapper>
-      {/* <button>刪除</button>
-      <button>編輯</button>
-      <button>設為精選筆記</button> */}
-    </Wrapper>
+    <div>
+      <Wrapper>
+        <UserWrapper>
+          <AvatarCtn src={postSender?.avatar} />
+          <UserDetail>
+            <Pstyled>{postSender?.displayName}</Pstyled>
+            <Pstyled>
+              {item.creationTime?.toDate().toLocaleString("en-US")}
+            </Pstyled>
+          </UserDetail>
+          <HeadIcon src={dots} />
+        </UserWrapper>
+        {/* <div>
+          <div>編輯</div>
+          <div>刪除</div>
+          <div>設為精選筆記</div>
+        </div> */}
+        <div>{item.content}</div>
+        <IconWrapper>
+          <IconDiv>
+            <CountWrapper>
+              <Icon src={clap} />
+              <Count>1</Count>
+            </CountWrapper>
+          </IconDiv>
+          <IconDiv
+            onClick={() => {
+              setShowComment(!showComment);
+            }}
+          >
+            <Icon src={comment} />
+          </IconDiv>
+        </IconWrapper>
+      </Wrapper>
+      {showComment && (
+        <MessageCtn>
+          <div>
+            <textarea
+              value={textValue}
+              onFocus={(e) => {
+                setShowBtn(true);
+              }}
+              onChange={(e) => {
+                setTextValue(e.target.value);
+              }}
+              placeholder="留言..."
+            />
+
+            {showBtn && (
+              <>
+                <button onClick={LeaveMsgHandler}>送出</button>
+                <button
+                  onClick={() => {
+                    setShowComment(!showComment);
+                    setShowBtn(false);
+                  }}
+                >
+                  取消
+                </button>
+              </>
+            )}
+          </div>
+
+          {renderPost.map((item) => {
+            return (
+              <LeaveMessage
+                itemData={item}
+                key={item.commentID}
+                userList={userList}
+              />
+            );
+          })}
+        </MessageCtn>
+      )}
+    </div>
   );
 };
 

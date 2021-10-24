@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
-import PostContainet from "./components/PostContainer";
+import PostContainer from "./components/PostContainer";
 import GroupHeader from "./components/GroupHeader";
 
 const SectionStyled = styled.section`
@@ -37,7 +37,7 @@ const GroupPage = ({ user, userList }) => {
   const [renderPost, setRenderPost] = useState([]);
 
   useEffect(() => {
-    firebase.getGroupContent(groupID, setContent);
+    firebase.getTopLevelContent("groups", groupID, setContent);
     firebase.postsListener(groupID, setRenderPost);
   }, []);
 
@@ -45,7 +45,8 @@ const GroupPage = ({ user, userList }) => {
     const data = {
       content: textValue,
       creationTime: new Date(),
-      creatorID: user.email,
+      creatorID: user.uid,
+      groupID: groupID,
     };
     firebase.sendGroupsPost(groupID, data);
     setTextValue("");
@@ -64,7 +65,7 @@ const GroupPage = ({ user, userList }) => {
         {/* <memberContainer></memberContainer> */}
       </SectionStyled>
       <SectionStyled>
-        <label>社團介紹</label>
+        <label>社群介紹</label>
         <div>{content.introduce}</div>
       </SectionStyled>
 
@@ -82,7 +83,14 @@ const GroupPage = ({ user, userList }) => {
         />
         <button onClick={postHandler}>發布</button>
         {renderPost.map((item) => {
-          return <PostContainet item={item} userList={userList} />;
+          return (
+            <PostContainer
+              key={item.postID}
+              item={item}
+              userList={userList}
+              user={user}
+            />
+          );
         })}
       </SectionStyled>
     </div>

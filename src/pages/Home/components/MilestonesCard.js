@@ -38,24 +38,28 @@ const TextContainer = styled.div`
   text-overflow: ellipsis;
 `;
 
-// style={{ textDecoration: "none" }}
-const GroupsCard = ({ item }) => {
-  // console.log(item);
+const MilestonesCard = ({ item, userList, groupList }) => {
+  const currentCreator = userList.find(
+    (data) => data.userID === item.creatorID
+  );
+  const currentGroup = groupList.find((data) => data.groupID === item.groupID);
+  console.log(currentCreator);
+  console.log(currentGroup);
   return (
-    <CartContainer to={`/group/${item.groupID}`}>
+    <CartContainer to={`/milestone/${item.milestoneID}`}>
       <CoverContainer style={{ backgroundImage: `url(${item.coverImage})` }}>
         {/* <ImgStyled src={item.coverImage} /> */}
       </CoverContainer>
       <ContentContainer>
-        <TagContainer>
-          <TextContainer>{item.category}</TextContainer>
-          <TextContainer>{item.subClass}</TextContainer>
-        </TagContainer>
-        <TextContainer>{item.name}</TextContainer>
-        <TextContainer>{item.introduce}</TextContainer>
+        <div>
+          <div>{item.title}</div>
+          <div>建立者：{currentCreator?.displayName}</div>
+        </div>
+        <TextContainer>社群：{currentGroup.name}</TextContainer>
+        <TextContainer>建立於加入社團的第33天</TextContainer>
       </ContentContainer>
     </CartContainer>
   );
 };
 
-export default GroupsCard;
+export default MilestonesCard;

@@ -10,6 +10,7 @@ import ReactHtmlParser from "react-html-parser";
 import * as firebase from "../../utils/firebase";
 import Select from "react-select";
 import Switch from "../../components/Switch";
+import { useHistory } from "react-router-dom";
 //init quillReact
 const Quill = ReactQuill.Quill;
 // Quill.register("modules/imageDrop", ImageDrop);
@@ -137,8 +138,11 @@ const modules = {
   },
 };
 
-const Miles = () => {
+const Miles = ({ user, groupList }) => {
+  console.log("groupListgroupListgroupListgroupList", groupList);
+
   const [showData, setShowData] = useState(false);
+  const [title, setTitle] = useState("");
   const [value, setValue] = useState("");
   const [file, setFile] = useState(null);
   const [groupsName, setgroupsName] = useState("");
@@ -150,25 +154,37 @@ const Miles = () => {
   };
 
   const handleSubmit = () => {
-    firebase.postArticles(value, file);
+    const data = {
+      creatorID: user.uid,
+      content: value,
+      groupID: selected,
+      public: check,
+      creationTime: new Date(),
+      title,
+    };
+
+    firebase.postArticles(data, file);
   };
 
   useEffect(() => {
     firebase.getOptionsName("groups", setgroupsName);
-    // console.log(groupsName);
   }, []);
 
   const previewImg = file
     ? URL.createObjectURL(file)
     : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
-
+  // console.log(selected);
   return (
     <ContainerStyled>
       <MainContainer>
         <h2>寫下你的里程碑吧!</h2>
 
         <LabelCtn>文章標題</LabelCtn>
-        <input placeholder="請輸入標題..." />
+        <input
+          placeholder="請輸入標題..."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <EditorArea>
           <ReactQuill
             ref={(el) => {
@@ -190,10 +206,15 @@ const Miles = () => {
         <Select
           defaultValue={selected}
           onChange={(e) => {
-            console.log(e);
             setSelected(e.value);
           }}
-          options={groupsName}
+          // options={groupsName}
+          options={groupList.map((item) => {
+            return {
+              value: item.groupID,
+              label: item.name,
+            };
+          })}
         />
         <input
           type="file"
@@ -213,9 +234,9 @@ const Miles = () => {
           {showData ? "隱藏資料" : "顯示資料"}
         </button>
         <button onClick={handleSubmit}>寫入資料庫</button>
-        <div>{showData ? value : ""}</div>
+        {/* <div>{showData ? value : ""}</div>
         <h1>轉譯後</h1>
-        <div>{showData ? ReactHtmlParser(value) : ""}</div>
+        <div>{showData ? ReactHtmlParser(value) : ""}</div> */}
       </SideSetting>
     </ContainerStyled>
   );

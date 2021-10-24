@@ -7,6 +7,7 @@ import welcome from "../../sources/video.mp4";
 import Signin from "../../components/Signin";
 import { TopCover, ViderCover, Shield } from "./index.styled";
 import GroupsCard from "./components/GroupsCard";
+import MilestonesCard from "./components/MilestonesCard";
 import { Link } from "react-router-dom";
 
 // const
@@ -23,11 +24,13 @@ const ListCtn = styled.li`
   }
 `;
 
-const HomePage = ({ user, categoriesName }) => {
+const HomePage = ({ user, categoriesName, userList, groupList }) => {
   const [groupsIntro, setGroupsIntro] = useState([]);
+  const [milestonesIntro, setMilestonesIntro] = useState([]);
 
   useEffect(() => {
-    firebase.getGroupsList(setGroupsIntro);
+    firebase.getContentsList("groups", setGroupsIntro);
+    firebase.getContentsList("articles", setMilestonesIntro);
   }, []);
 
   const Wrapper = styled.div`
@@ -45,7 +48,7 @@ const HomePage = ({ user, categoriesName }) => {
     margin: 10px 20px;
   `;
 
-  console.log(groupsIntro);
+  // console.log(groupsIntro);
   return (
     <div>
       <TopCover>
@@ -73,12 +76,26 @@ const HomePage = ({ user, categoriesName }) => {
         <div>看看最近大家在學些什麼</div>
         <Wrapper>
           {groupsIntro.map((item) => {
-            return <GroupsCard item={item} />;
+            return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>
       </SectionStyled>
       <hr />
-      <SectionStyled></SectionStyled>
+      <SectionStyled>
+        <div>一起的日子 慶祝我們的里程碑</div>
+        <Wrapper>
+          {milestonesIntro.map((item) => {
+            return (
+              <MilestonesCard
+                item={item}
+                key={item.milestoneID}
+                userList={userList}
+                groupList={groupList}
+              />
+            );
+          })}
+        </Wrapper>
+      </SectionStyled>
       <button onClick={() => firebase.logOut()}>logOut</button>;
     </div>
   );
