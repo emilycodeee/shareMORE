@@ -91,8 +91,6 @@ const PostContainet = ({ item, userList, user }) => {
   const [renderPost, setRenderPost] = useState([]);
   const [textValue, setTextValue] = useState("");
   const postSender = userList.find((each) => each.userID === item.creatorID);
-  // console.log(postSender);
-  // console.log(item.groupID, item.postID);
 
   useEffect(() => {
     firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
@@ -109,10 +107,6 @@ const PostContainet = ({ item, userList, user }) => {
     setShowBtn(false);
     // console.log("k");
   };
-
-  // console.log(textValue);
-
-  // console.log("🎗", renderPost);
 
   return (
     <div>

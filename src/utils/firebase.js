@@ -24,6 +24,7 @@ import {
   where,
   onSnapshot,
   orderBy,
+  deleteDoc,
   updateDoc,
   arrayUnion,
   arrayRemove,
@@ -48,31 +49,31 @@ const storage = getStorage(firebaseApp);
 
 export const facebookProvider = new FacebookAuthProvider();
 export const googleProvider = new GoogleAuthProvider();
+
 export const socialMediaAuth = async (provider) => {
   try {
     const result = await signInWithPopup(auth, provider);
-    // checkMembership(result.user);
     const q = query(collection(db, "users"));
     const querySnapshot = await getDocs(q);
-    console.log(querySnapshot);
+
     let data;
-    querySnapshot.forEach((doc) => {
-      console.log("🧨docccccc🧨", doc);
-      if (doc.id !== result.user.uid) {
-        data = {
-          creationTime: result.user.metadata.creationTime,
-          displayName: result.user.displayName || "",
-          avatar:
-            result.user.photoURL ||
-            "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
-          email: result.user.email,
-          userID: result.user.uid,
-        };
-      }
-    });
-    console.log(data);
+
+    if (querySnapshot.docs) {
+      querySnapshot.forEach((doc) => {
+        if (doc.id !== result.user.uid) {
+          data = {
+            creationTime: result.user.metadata.creationTime,
+            displayName: result.user.displayName || "",
+            avatar:
+              result.user.photoURL ||
+              "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
+            email: result.user.email,
+            userID: result.user.uid,
+          };
+        }
+      });
+    }
     await setDoc(doc(db, "users", result.user.uid), data);
-    console.log("我改寫成async", result.user);
   } catch (err) {
     console.log(err);
   }
@@ -81,7 +82,7 @@ export const socialMediaAuth = async (provider) => {
 export const register = async (name, email, password, setFunction) => {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, password);
-    console.log(result);
+
     const data = {
       creationTime: result.user.metadata.creationTime,
       displayName: name,
@@ -146,14 +147,7 @@ export function subscribeToUser(callback) {
 
 /* */
 export const postArticles = async (data, file) => {
-  console.log("file", file);
-
   const docRefId = doc(collection(db, "articles")).id;
-  // const docRef = await addDoc(collection(db, "articles"), {
-  //   name: "Tokyo",
-  //   country: "Japan",
-  //   hello: data,
-  // });
   const storageRef = ref(storage);
   const imagesRef = ref(storageRef, "cover-images/" + docRefId);
   const metadata = { contenType: file.type };
@@ -167,8 +161,6 @@ export const postArticles = async (data, file) => {
   };
 
   const response = await setDoc(doc(db, "articles", docRefId), finalData);
-  console.log(imgURL);
-  console.log(docRefId);
   alert("建立成功");
 };
 
@@ -185,23 +177,17 @@ export const uploadReactQuillImage = async (file, quillRef) => {
   quill.insertEmbed(range.index, "image", imgURL);
 };
 
-export const getOptionsName = async (optionName, setFunction) => {
+export const getOptionsName = async (optionName) => {
   const q = query(collection(db, optionName));
   const querySnapshot = await getDocs(q);
   const arr = [];
   querySnapshot.forEach((doc) => {
-    // console.log(doc.data());
     arr.push({ value: doc.data().name, label: doc.data().name });
   });
-  setFunction(arr);
+  return arr;
 };
 
-export const getQueryFilter = async (
-  collectionName,
-  fieldName,
-  queryName,
-  setFunction
-) => {
+export const getQueryFilter = async (collectionName, fieldName, queryName) => {
   const q = query(
     collection(db, collectionName),
     where(fieldName, "==", queryName)
@@ -213,8 +199,7 @@ export const getQueryFilter = async (
       arr.push({ value: each, label: each });
     });
   });
-
-  setFunction(arr);
+  return arr;
 };
 
 export const createGroup = async (data, file) => {
@@ -225,7 +210,6 @@ export const createGroup = async (data, file) => {
   const uploadTask = await uploadBytes(imagesRef, file, metadata);
   const imgURL = await getDownloadURL(uploadTask.ref);
 
-  console.log("file", file);
   const finalData = {
     ...data,
     groupID: docRefId,
@@ -239,25 +223,45 @@ export const getContentsList = async (topic, setFonction) => {
   const querySnapshot = await getDocs(q);
   let data = [];
   querySnapshot.forEach((doc) => {
-    console.log(doc.data());
     data.push(doc.data());
-    console.log(data);
   });
   setFonction(data);
 };
 
-export const getTopLevelContent = async (topic, docID, setFonction) => {
+export const getTopLevelContent = async (topic, docID) => {
   const docRef = doc(db, topic, docID);
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    return setFonction(docSnap.data());
-
-    // console.log("Document data:", docSnap.data());
+    return docSnap.data();
   } else {
-    // doc.data() will be undefined in this case
     console.log("No such document!");
   }
+};
+
+export const getMembersData = async (topic, docID) => {
+  const docRef = doc(db, topic, docID);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    console.log("No such document!");
+  }
+};
+
+export const getMembersList = async (groupID) => {
+  const querySnapshot = await getDocs(
+    collection(db, "groups", groupID, "members")
+  );
+  const data = [];
+  if (querySnapshot.docs) {
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+  }
+  console.log(data);
+  return data;
 };
 
 export const sendGroupsPost = async (groupID, data) => {
@@ -270,7 +274,7 @@ export const sendGroupsPost = async (groupID, data) => {
   );
 };
 
-export const postsListener = async (groupID, setFunction) => {
+export const postsListener = async (groupID, setRenderPost) => {
   const q = query(
     collection(db, "groups", groupID, "posts"),
     orderBy("creationTime", "desc")
@@ -280,19 +284,19 @@ export const postsListener = async (groupID, setFunction) => {
     querySnapshot.forEach((doc) => {
       data.push(doc.data());
     });
-    setFunction(data);
+    setRenderPost(data);
   });
 };
 
-export const getTotalDocList = async (setFunction, optionName) => {
+export const getTotalDocList = async (optionName) => {
   const q = query(collection(db, optionName));
   const querySnapshot = await getDocs(q);
   const arr = [];
   querySnapshot.forEach((doc) => {
-    // console.log(doc.data());
     arr.push(doc.data());
   });
-  setFunction(arr);
+
+  return arr;
 };
 
 export const sendPostComment = async (groupID, postID, data) => {
@@ -311,13 +315,11 @@ export const sendPostComment = async (groupID, postID, data) => {
 };
 
 export const postCommentsListener = async (groupID, postID, setFunction) => {
-  console.log("ki");
   const q = query(
     collection(db, "groups", groupID, "posts", postID, "comments"),
     orderBy("creationTime", "asc")
   );
 
-  console.log(q);
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const data = [];
     querySnapshot.forEach((doc) => {
@@ -325,4 +327,46 @@ export const postCommentsListener = async (groupID, postID, setFunction) => {
     });
     setFunction(data);
   });
+};
+
+export const SendApplication = async (groupID, data, docRefId) => {
+  const response = await setDoc(
+    doc(collection(db, "groups", groupID, "applications"), docRefId),
+    data
+  );
+  return response;
+};
+
+export const getTotalApplicationList = async (groupID) => {
+  const applicationRef = collection(db, "groups", groupID, "applications");
+
+  if (applicationRef) {
+    const q = query(applicationRef, where("approve", "==", false));
+    const querySnapshot = await getDocs(q);
+
+    const data = [];
+    if (querySnapshot.docs) {
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
+      });
+    }
+    return data;
+  }
+};
+
+export const confirmApplication = async (groupID, docRefId, data) => {
+  const applicationRef = doc(db, "groups", groupID, "applications", docRefId);
+  await updateDoc(applicationRef, {
+    approve: true,
+  });
+
+  const response = await setDoc(
+    doc(collection(db, "groups", groupID, "members"), docRefId),
+    data
+  );
+  return response;
+};
+
+export const rejectApplication = async (groupID, docRefId) => {
+  await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
 };

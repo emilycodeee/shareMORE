@@ -6,15 +6,25 @@ import HtmlParser from "react-html-parser";
 import styled from "styled-components";
 import PostContainer from "./components/PostContainer";
 import GroupHeader from "./components/GroupHeader";
+import fish from "../../sources/fish.png";
+import moreIcon from "../../sources/three-dots.png";
 
 const SectionStyled = styled.section`
   display: flex;
   flex-direction: column;
 `;
 
-const memberContainer = styled.div`
+const MemberContainer = styled.div`
   display: flex;
   flex-wrap: nowrap;
+  overflow: hidden;
+  padding: 0 10px;
+`;
+
+const MemberAvatar = styled.img`
+  border-radius: 50%;
+  height: 35px;
+  margin: 5px;
 `;
 
 const memberCard = styled.div`
@@ -29,16 +39,36 @@ const TopCover = styled.div`
   background-position: center;
 `;
 
+const LabelStyled = styled.label`
+  text-align: center;
+  padding: 10px;
+`;
+
+const ContentStyled = styled.div`
+  background-color: lightblue;
+  padding: 10px;
+`;
+
 const GroupPage = ({ user, userList }) => {
   const { groupID } = useParams();
   const [content, setContent] = useState({});
   const [textValue, setTextValue] = useState("");
-
   const [renderPost, setRenderPost] = useState([]);
+  const [renderMember, setRenderMember] = useState([]);
 
   useEffect(() => {
-    firebase.getTopLevelContent("groups", groupID, setContent);
+    firebase
+      .getTopLevelContent("groups", groupID)
+      .then((res) => setContent(res))
+      .catch((err) => console.log(err));
     firebase.postsListener(groupID, setRenderPost);
+
+    firebase.getMembersList(groupID).then((res) => setRenderMember(res));
+
+    // .then((res) => {
+    //   setRenderPost(res);
+    // })
+    // .catch((err) => console.log(err));
   }, []);
 
   const postHandler = () => {
@@ -52,47 +82,48 @@ const GroupPage = ({ user, userList }) => {
     setTextValue("");
   };
 
-  // userList.find((each) => {
-  //   each.email === item.creatorID;
-  // });
-  // console.log(userList);
   return (
     <div>
       <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
       <GroupHeader content={content} user={user} userList={userList} />
       <SectionStyled>
-        <label>學習夥伴</label>
-        {/* <memberContainer></memberContainer> */}
+        <LabelStyled>學習夥伴</LabelStyled>
+        <MemberContainer>
+          {renderMember.map((item) => (
+            <MemberAvatar src={fish} key={item.memberID} />
+          ))}
+        </MemberContainer>
       </SectionStyled>
       <SectionStyled>
-        <label>社群介紹</label>
-        <div>{content.introduce}</div>
+        <LabelStyled>社群介紹</LabelStyled>
+        <ContentStyled>{content.introduce}</ContentStyled>
       </SectionStyled>
-
       <SectionStyled>
-        <label>學習目標</label>
-        {HtmlParser(content.goal)}
+        <LabelStyled>學習目標</LabelStyled>
+        <ContentStyled>{HtmlParser(content.goal)}</ContentStyled>
       </SectionStyled>
       <hr />
-      <SectionStyled>
-        {/* <label>社團留言板</label> */}
-        <textarea
-          value={textValue}
-          placeholder="說點什麼吧"
-          onChange={(e) => setTextValue(e.target.value)}
-        />
-        <button onClick={postHandler}>發布</button>
-        {renderPost.map((item) => {
-          return (
-            <PostContainer
-              key={item.postID}
-              item={item}
-              userList={userList}
-              user={user}
-            />
-          );
-        })}
-      </SectionStyled>
+      {user !== null && (
+        <SectionStyled>
+          {/* <label>社團留言板</label> */}
+          <textarea
+            value={textValue}
+            placeholder="說點什麼吧"
+            onChange={(e) => setTextValue(e.target.value)}
+          />
+          <button onClick={postHandler}>發布</button>
+          {renderPost?.map((item) => {
+            return (
+              <PostContainer
+                key={item.postID}
+                item={item}
+                userList={userList}
+                user={user}
+              />
+            );
+          })}
+        </SectionStyled>
+      )}
     </div>
   );
 };

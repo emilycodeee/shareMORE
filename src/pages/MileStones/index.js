@@ -29,6 +29,8 @@ const TopCover = styled.div`
   background-position: center;
 `;
 
+const ContentCtn = styled.div``;
+
 const MilestonePage = ({ user, userList }) => {
   const { milestoneID } = useParams();
   const [content, setContent] = useState({});
@@ -37,25 +39,13 @@ const MilestonePage = ({ user, userList }) => {
   // const [renderPost, setRenderPost] = useState([]);
 
   useEffect(() => {
-    firebase.getTopLevelContent("articles", milestoneID, setContent);
+    firebase
+      .getTopLevelContent("articles", milestoneID)
+      .then((res) => setContent(res))
+      .catch((err) => console.log(err));
     // firebase.postsListener(groupID, setRenderPost);
   }, []);
-  console.log(content);
-  // const postHandler = () => {
-  //   const data = {
-  //     content: textValue,
-  //     creationTime: new Date(),
-  //     creatorID: user.uid,
-  //     groupID: groupID,
-  //   };
-  //   firebase.sendGroupsPost(groupID, data);
-  //   setTextValue("");
-  // };
 
-  // userList.find((each) => {
-  //   each.email === item.creatorID;
-  // });
-  // console.log(userList);
   return (
     <div>
       <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />

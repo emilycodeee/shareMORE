@@ -68,12 +68,10 @@ const BuildGroups = ({ user, categoriesName }) => {
   const [introduce, setIntroduce] = useState("");
 
   useEffect(() => {
-    firebase.getQueryFilter(
-      "categories",
-      "name",
-      selectedCategory,
-      setSubClassesName
-    );
+    firebase
+      .getQueryFilter("categories", "name", selectedCategory)
+      .then((res) => setSubClassesName(res))
+      .catch((err) => console.log(err));
   }, [selectedCategory]);
 
   const previewImg = file
@@ -163,7 +161,7 @@ const BuildGroups = ({ user, categoriesName }) => {
         }}
       />
       <img src={previewImg} style={{ width: "300px" }} />
-      <label htmlFor="upload-img">上傳文章圖片</label>
+      <label htmlFor="upload-img">上傳封面圖片</label>
 
       <button onClick={handleSubmit}>確認送出</button>
     </MainContainer>

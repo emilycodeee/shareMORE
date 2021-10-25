@@ -225,7 +225,7 @@ const Miles = ({ user, groupList }) => {
           }}
         />
         <img src={previewImg} style={{ width: "300px" }} />
-        <label htmlFor="upload-img">上傳文章圖片</label>
+        <label htmlFor="upload-img">上傳封面圖片</label>
         <button
           onClick={() => {
             setShowData(!showData);

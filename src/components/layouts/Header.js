@@ -76,7 +76,6 @@ const Header = ({ user }) => {
   const userAvatar =
     user?.photoURL ||
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
-  console.log(showLogin);
 
   const showLoginPage = () => {
     setShowLogin(!showLogin);
@@ -94,7 +93,7 @@ const Header = ({ user }) => {
       </LoginPage>
     );
   }
-  console.log("🎈header", user);
+  // console.log("🎈header", user);
   return (
     <HeaderContainer>
       <LogoContainer to="/">
@@ -110,7 +109,7 @@ const Header = ({ user }) => {
             <ListStyled to="/messages">
               <ImgCtn src={chat} />
             </ListStyled>
-            <ListStyled to="/profile">
+            <ListStyled to="/myProfile">
               <ImgCtn src={userAvatar} />
             </ListStyled>
           </>

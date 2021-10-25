@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-const CartContainer = styled(Link)`
+const CardContainer = styled(Link)`
   text-decoration: none;
   box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
   transition: transform 0.28s ease-in-out 0s;
@@ -26,7 +26,11 @@ const ContentContainer = styled.div`
 
 const TagContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  width: 250px;
+  /* justify-content: space-between; */
+  /* flex-grow: 1; */
+  /* justify-content: space-between; */
 `;
 
 const TextContainer = styled.div`
@@ -43,22 +47,22 @@ const MilestonesCard = ({ item, userList, groupList }) => {
     (data) => data.userID === item.creatorID
   );
   const currentGroup = groupList.find((data) => data.groupID === item.groupID);
-  console.log(currentCreator);
-  console.log(currentGroup);
+  // console.log(currentCreator);
+  // console.log(currentGroup);
   return (
-    <CartContainer to={`/milestone/${item.milestoneID}`}>
+    <CardContainer to={`/milestone/${item.milestoneID}`}>
       <CoverContainer style={{ backgroundImage: `url(${item.coverImage})` }}>
         {/* <ImgStyled src={item.coverImage} /> */}
       </CoverContainer>
       <ContentContainer>
-        <div>
+        <TagContainer>
           <div>{item.title}</div>
           <div>建立者：{currentCreator?.displayName}</div>
-        </div>
+        </TagContainer>
         <TextContainer>社群：{currentGroup.name}</TextContainer>
         <TextContainer>建立於加入社團的第33天</TextContainer>
       </ContentContainer>
-    </CartContainer>
+    </CardContainer>
   );
 };
 

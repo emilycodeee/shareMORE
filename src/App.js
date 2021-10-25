@@ -8,6 +8,10 @@ import MilestoneEditor from "./pages/MileStones/MilestoneEditor";
 import BuildGroups from "./pages/Groups/BuildGroups";
 import MilestonesPage from "./pages/MileStones/MilestonesPage";
 import MilestonePage from "./pages/MileStones";
+import MembersPage from "./pages/Groups/MembersPage";
+import NotesPage from "./pages/Groups/NotesPage";
+import MyProfilePage from "./pages/Profile/MyProfile";
+import ProfilePage from "./pages/Profile";
 
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -19,7 +23,12 @@ function App() {
   const [groupList, setGroupList] = useState([]);
   const [categoriesName, setCategoriesName] = useState([]);
   useEffect(() => {
-    firebase.getOptionsName("categories", setCategoriesName);
+    firebase
+      .getOptionsName("categories")
+      .then((res) => {
+        setCategoriesName(res);
+      })
+      .catch((err) => console.log(err));
     firebase.subscribeToUser((currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -27,12 +36,16 @@ function App() {
         setUser(null);
       }
     });
-    firebase.getTotalDocList(setUserList, "users");
-    firebase.getTotalDocList(setGroupList, "groups");
+
+    firebase
+      .getTotalDocList("users")
+      .then((res) => setUserList(res))
+      .catch((err) => console.log(err));
+    firebase
+      .getTotalDocList("groups")
+      .then((res) => setGroupList(res))
+      .catch((err) => console.log(err));
   }, []);
-  console.log("❣", userList);
-  console.log("❣user", user);
-  console.log("❣user.email", user && user.email);
 
   return (
     <Layouts user={user}>
@@ -57,11 +70,23 @@ function App() {
         <Route path="/group/:groupID" exact>
           <GroupPage user={user} userList={userList} />
         </Route>
+        <Route path="/group/:groupID/members" exact>
+          <MembersPage user={user} userList={userList} />
+        </Route>
+        <Route path="/group/:groupID/notes" exact>
+          <NotesPage user={user} userList={userList} />
+        </Route>
         <Route path="/milestones" exact>
           <MilestonesPage user={user} userList={userList} />
         </Route>
         <Route path="/milestone/:milestoneID" exact>
           <MilestonePage user={user} userList={userList} />
+        </Route>
+        <Route path="/myprofile" exact>
+          <MyProfilePage user={user} userList={userList} />
+        </Route>
+        <Route path="/profile/:memberID" exact>
+          <ProfilePage user={user} userList={userList} />
         </Route>
       </Switch>
     </Layouts>

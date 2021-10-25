@@ -10,7 +10,12 @@ import GroupsCard from "./components/GroupsCard";
 import MilestonesCard from "./components/MilestonesCard";
 import { Link } from "react-router-dom";
 
-// const
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  /* align-items: center; */
+`;
 
 const ListCtn = styled.li`
   padding-bottom: 5px;
@@ -24,6 +29,31 @@ const ListCtn = styled.li`
   }
 `;
 
+const Wrapper = styled.div`
+  max-width: 1000px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-column-gap: 10px;
+`;
+
+const Image = styled.img`
+  height: 100px;
+  border: 1px solid red;
+`;
+
+const SectionStyled = styled.section`
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LinkStyled = styled(Link)`
+  /* text-align: center; */
+`;
+
 const HomePage = ({ user, categoriesName, userList, groupList }) => {
   const [groupsIntro, setGroupsIntro] = useState([]);
   const [milestonesIntro, setMilestonesIntro] = useState([]);
@@ -33,24 +63,9 @@ const HomePage = ({ user, categoriesName, userList, groupList }) => {
     firebase.getContentsList("articles", setMilestonesIntro);
   }, []);
 
-  const Wrapper = styled.div`
-    display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
-    grid-column-gap: 10px;
-  `;
-
-  const Image = styled.img`
-    height: 100px;
-    border: 1px solid red;
-  `;
-
-  const SectionStyled = styled.section`
-    margin: 10px 20px;
-  `;
-
   // console.log(groupsIntro);
   return (
-    <div>
+    <>
       <TopCover>
         <ViderCover autoPlay loop muted>
           <source src={welcome} type="video/mp4" />
@@ -64,7 +79,7 @@ const HomePage = ({ user, categoriesName, userList, groupList }) => {
           {categoriesName.map((item, i) => {
             return (
               <ListCtn key={i}>
-                <Link key={i} style={{ textDecoration: "none" }} to="/groups/">
+                <Link to="/groups/" style={{ textDecoration: "none" }}>
                   {item.value}
                 </Link>
               </ListCtn>
@@ -72,32 +87,36 @@ const HomePage = ({ user, categoriesName, userList, groupList }) => {
           })}
         </ul>
       </div>
-      <SectionStyled>
-        <div>看看最近大家在學些什麼</div>
-        <Wrapper>
-          {groupsIntro.map((item) => {
-            return <GroupsCard item={item} key={item.groupID} />;
-          })}
-        </Wrapper>
-      </SectionStyled>
-      <hr />
-      <SectionStyled>
-        <div>一起的日子 慶祝我們的里程碑</div>
-        <Wrapper>
-          {milestonesIntro.map((item) => {
-            return (
-              <MilestonesCard
-                item={item}
-                key={item.milestoneID}
-                userList={userList}
-                groupList={groupList}
-              />
-            );
-          })}
-        </Wrapper>
-      </SectionStyled>
-      <button onClick={() => firebase.logOut()}>logOut</button>;
-    </div>
+      <Container>
+        <SectionStyled>
+          <div>看看最近大家在學些什麼</div>
+          <Wrapper>
+            {groupsIntro.map((item) => {
+              return <GroupsCard item={item} key={item.groupID} />;
+            })}
+          </Wrapper>
+          <LinkStyled to="/groups">查看更多</LinkStyled>
+        </SectionStyled>
+        <hr />
+        <SectionStyled>
+          <div>一起的日子 慶祝我們的里程碑</div>
+          <Wrapper>
+            {milestonesIntro.map((item) => {
+              return (
+                <MilestonesCard
+                  item={item}
+                  key={item.milestoneID}
+                  userList={userList}
+                  groupList={groupList}
+                />
+              );
+            })}
+          </Wrapper>
+          <LinkStyled to="/milestones">查看更多</LinkStyled>
+        </SectionStyled>
+        <button onClick={() => firebase.logOut()}>logOut</button>;
+      </Container>
+    </>
   );
 };
 

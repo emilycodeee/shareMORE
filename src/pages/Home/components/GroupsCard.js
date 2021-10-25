@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
-const CartContainer = styled(Link)`
+const CardContainer = styled(Link)`
   text-decoration: none;
   box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
   transition: transform 0.28s ease-in-out 0s;
@@ -42,7 +42,7 @@ const TextContainer = styled.div`
 const GroupsCard = ({ item }) => {
   // console.log(item);
   return (
-    <CartContainer to={`/group/${item.groupID}`}>
+    <CardContainer to={`/group/${item.groupID}`}>
       <CoverContainer style={{ backgroundImage: `url(${item.coverImage})` }}>
         {/* <ImgStyled src={item.coverImage} /> */}
       </CoverContainer>
@@ -54,7 +54,7 @@ const GroupsCard = ({ item }) => {
         <TextContainer>{item.name}</TextContainer>
         <TextContainer>{item.introduce}</TextContainer>
       </ContentContainer>
-    </CartContainer>
+    </CardContainer>
   );
 };
 
