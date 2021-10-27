@@ -31,13 +31,14 @@ const MainContainer = styled.div`
 
 const InputCtn = styled.input`
   /* width: 200px; */
-  flex-grow: 1;
-  resize: none;
+  /* flex-grow: 1; */
+  /* resize: none; */
   /* background-color: red; */
-  height: 2rem;
+  /* height: 2rem; */
   border-radius: 10px;
   padding: 3px 10px;
   font-size: 1.2rem;
+  margin: 1rem 0;
   border: 1px solid #b5b2b0;
   /* overflow: hidden; */
   /* width: 100%; */
@@ -62,6 +63,21 @@ const LabelCtn = styled.label`
   margin-right: 10px;
 `;
 
+const UploadBtn = styled.label`
+  /* background-color: black;
+  color: white;
+  padding: 1rem;
+  width: 10rem; */
+  background-color: transparent;
+  /* text-align: center; */
+`;
+
+const SubmitBtn = styled.button`
+  align-self: end;
+  margin: 0 auto;
+  padding: 10px;
+`;
+
 const NotesEditorPage = ({ user }) => {
   const { groupID, postID } = useParams();
   const history = useHistory();
@@ -78,9 +94,9 @@ const NotesEditorPage = ({ user }) => {
   useEffect(() => {
     firebase.getRawGroupNotes(groupID, postID).then((res) => {
       const { mainPost, comments } = res;
-      console.log(res);
-      console.log(mainPost);
-      console.log(comments);
+      // console.log(res);
+      // console.log(mainPost);
+      // console.log(comments);
       const html = generateText(mainPost, comments);
       setValue(html);
     });
@@ -117,7 +133,8 @@ const NotesEditorPage = ({ user }) => {
     <div>
       <ContainerStyled>
         <MainContainer>
-          <LabelCtn>筆記標題</LabelCtn>
+          <LabelCtn>建立社群筆記</LabelCtn>
+          <div>※將留言串收藏為筆記後，該筆留言串將從留言板刪除。</div>
           <InputCtn
             placeholder="請輸入標題..."
             value={title}
@@ -128,7 +145,7 @@ const NotesEditorPage = ({ user }) => {
           </EditorArea>
         </MainContainer>
         <SideSetting>
-          <LabelCtn> 筆記文章設定</LabelCtn>
+          <LabelCtn> 設定筆記封面</LabelCtn>
           <input
             type="file"
             id="upload-img"
@@ -137,10 +154,11 @@ const NotesEditorPage = ({ user }) => {
               setFile(e.target.files[0]);
             }}
           />
-          <img src={previewImg} style={{ width: "300px" }} />
-          <label htmlFor="upload-img">上傳封面圖片</label>
+          <UploadBtn htmlFor="upload-img">
+            <img src={previewImg} style={{ width: "300px" }} />
+          </UploadBtn>
 
-          <button onClick={handleSubmit}>寫入資料庫</button>
+          <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
         </SideSetting>
       </ContainerStyled>
     </div>

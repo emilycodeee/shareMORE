@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";
 import * as firebase from "../../utils/firebase";
 import { useHistory } from "react-router-dom";
-
+import { initText } from "../../utils/commonText";
 const MainContainer = styled.div`
   /* padding: 20px; */
   /* margin: 20px; */
@@ -110,7 +110,7 @@ const SubmitBtn = styled.button`
 const BuildGroups = ({ user, categoriesName }) => {
   const history = useHistory();
   console.log(user);
-  const initText = `<p>-目標建立tips-</p><p>SMART 原則</p><p>S- Specific (具體的)</p><p>M- Measurable (可衡量的)</p><p>A- Attainable (可實現的)</p><p>R- Relevant（息息相關的）</p><p>T- Timely (有時限的)</p>`;
+  // const initText = `<p>-目標建立tips-</p><p>SMART 原則</p><p>S- Specific (具體的)</p><p>M- Measurable (可衡量的)</p><p>A- Attainable (可實現的)</p><p>R- Relevant（息息相關的）</p><p>T- Timely (有時限的)</p>`;
   //init
   const [file, setFile] = useState(null);
 
