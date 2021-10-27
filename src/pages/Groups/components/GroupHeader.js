@@ -5,33 +5,70 @@ import ApplicationPopup from "./ApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 
+const AvatarImg = styled.img`
+  max-height: 3rem;
+  border-radius: 50%;
+  box-shadow: 0px 2px 6px grey;
+`;
+
+const NameLogo = styled.div`
+  align-self: center;
+  font-weight: 550;
+  font-size: 2rem;
+  flex-grow: 1;
+  /* border: 1px solid red; */
+`;
+
 const Wrapper = styled.div`
+  padding: 0 2rem;
   display: flex;
   justify-content: end;
-  background-color: salmon;
+  /* background-color: salmon; */
 `;
 
 const UlStyled = styled.ul`
   display: flex;
+  align-items: center;
 `;
 
 const LiStyled = styled.li`
-  padding: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
   height: auto;
   display: inline-block;
-  background-color: lightblue;
+  /* background-color: lightblue; */
   text-decoration: none;
   margin-right: 10px;
   cursor: pointer;
+  border-radius: 40px;
+  border: 1px solid rgb(70 69 65);
 `;
 
 const LinkStyled = styled(Link)`
-  padding: 10px;
+  font-weight: 600;
+  color: black;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
   height: auto;
   display: inline-block;
-  background-color: lightblue;
+  /* background-color: lightblue; */
   text-decoration: none;
   margin-right: 10px;
+  /* padding: 6px 6px; */
+  border-radius: 40px;
+  border: 1px solid rgb(70 69 65);
+`;
+
+const LinkAvatar = styled(Link)`
+  padding: 0;
+  /* border-radius: 50%; */
+  height: auto;
+  display: inline-block;
+  margin-right: 1rem;
+  /* box-shadow: 10px 5px 5px black; */
+  /* box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px; */
 `;
 
 const Shield = styled.div`
@@ -45,7 +82,7 @@ const Shield = styled.div`
   /* cursor: zoom-out; */
 `;
 
-const GroupHeader = ({ content, user, userList }) => {
+const GroupHeader = ({ content, user, userList, stationHead }) => {
   console.log("🎇", user);
 
   // console.log(useLocation());
@@ -59,23 +96,25 @@ const GroupHeader = ({ content, user, userList }) => {
 
   useEffect(() => {
     if (content.groupID) {
-      const response = firebase.getTotalApplicationList(content.groupID);
+      firebase.getTotalApplicationList(content.groupID, setApplicationData);
+      // const response = firebase.getTotalApplicationList(content.groupID);
 
-      response
-        .then((res) => {
-          setApplicationData({ count: res.length, data: res });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      // response
+      //   .then((res) => {
+      //     console.log(res);
+      //     setApplicationData({ count: res.length, data: res });
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     }
   }, [content]);
 
   useEffect(() => {
     const data = applicationData.data?.find(
-      (each) => each.applicantID === user.uid
+      (each) => each.applicantID === user?.uid
     );
-    console.log(data);
+    // console.log(data);
     if (data) {
       setAppliedData(data);
     }
@@ -104,12 +143,14 @@ const GroupHeader = ({ content, user, userList }) => {
       </Shield>
     );
   }
-  console.log(applicationData);
-  console.log(appliedData);
 
   return (
     <Wrapper>
+      <NameLogo>{content.name}</NameLogo>
       <UlStyled>
+        <LinkAvatar to={`/profile/${stationHead?.userID}`}>
+          <AvatarImg src={stationHead?.avatar} />
+        </LinkAvatar>
         <LiStyled
           onClick={() => {
             navigator.clipboard.writeText(root + location.pathname);
@@ -119,12 +160,7 @@ const GroupHeader = ({ content, user, userList }) => {
           分享連結
         </LiStyled>
         {user !== null && (
-          <>
-            <LinkStyled to={`${location.pathname}/members`}>
-              夥伴列表
-            </LinkStyled>
-            <LinkStyled to={`${location.pathname}/notes`}>社群筆記</LinkStyled>
-          </>
+          <LinkStyled to={`${location.pathname}/notes`}>社群筆記</LinkStyled>
         )}
         {content.creatorID === user?.uid ? (
           <LiStyled

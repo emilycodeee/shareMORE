@@ -8,23 +8,31 @@ import PostContainer from "./components/PostContainer";
 import GroupHeader from "./components/GroupHeader";
 import fish from "../../sources/fish.png";
 import moreIcon from "../../sources/three-dots.png";
+import MemberAvatar from "./components/MemberAvatar";
+import { dateCounter } from "../../utils/commonText";
 
 const SectionStyled = styled.section`
   display: flex;
   flex-direction: column;
+  margin-bottom: 1rem;
 `;
 
 const MemberContainer = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-  overflow: hidden;
-  padding: 0 10px;
-`;
+  /* line-height: 1.5rem; */
+  min-height: 35px;
+  box-shadow: 2px 2px 3px #d1cbcb;
+  border-radius: 20px;
+  border: 1px solid #d1cbcb;
+  /* background-color: lightblue; */
+  /* padding: 1rem; */
 
-const MemberAvatar = styled.img`
-  border-radius: 50%;
-  height: 35px;
-  margin: 5px;
+  display: flex;
+  flex-wrap: wrap;
+
+  justify-content: start;
+  /* overflow: hidden; */
+  padding: 0.6rem;
+  /* padding: 0 10px; */
 `;
 
 const memberCard = styled.div`
@@ -32,25 +40,82 @@ const memberCard = styled.div`
 `;
 
 const TopCover = styled.div`
+  border-radius: 30px;
   opacity: 0.8;
+  margin-bottom: 0.8rem;
   height: 300px;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   background-size: cover;
   background-position: center;
+  box-shadow: 0px 2px 5px grey;
 `;
 
 const LabelStyled = styled.label`
-  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
   padding: 10px;
 `;
 
 const ContentStyled = styled.div`
-  background-color: lightblue;
-  padding: 10px;
+  line-height: 1.5rem;
+  box-shadow: 2px 2px 3px #d1cbcb;
+  border-radius: 20px;
+  border: 1px solid #d1cbcb;
+  /* background-color: lightblue; */
+  padding: 1rem;
+`;
+
+const Wrapper = styled.div`
+  margin: 30px;
+  border-radius: 30px;
+  padding: 30px;
+  border: 1px solid #3e2914;
+`;
+
+const Text = styled.div`
+  align-self: center;
+  /* align-sel: center; */
+`;
+
+const PostArea = styled.textarea`
+  /* rows:4;
+  cols:50; */
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  background-color: #eeeeee;
+  /* opacity: 0.3; */
+  color: black;
+`;
+
+const PostBtn = styled.button`
+  margin-top: 0.5rem;
+  height: 2rem;
+  /* align-self: flex-end; */
+  /* height: 2rem;
+  width: 4rem; */
+  /* margin: 0.5rem; */
+  border-radius: 10px;
+`;
+
+const GoalDate = styled.div`
+  display: flex;
+  justify-content: space-between;
+  /* height: 100%; */
+  /* background-color: red;
+  align-self: flex-end;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  padding: 10px; */
 `;
 
 const GroupPage = ({ user, userList }) => {
   const { groupID } = useParams();
+  const [showBtn, setShowBtn] = useState(false);
   const [content, setContent] = useState({});
   const [textValue, setTextValue] = useState("");
   const [renderPost, setRenderPost] = useState([]);
@@ -63,13 +128,19 @@ const GroupPage = ({ user, userList }) => {
       .catch((err) => console.log(err));
     firebase.postsListener(groupID, setRenderPost);
 
-    firebase.getMembersList(groupID).then((res) => setRenderMember(res));
+    firebase.getMembersList(groupID, setRenderMember);
+
+    // firebase.getMembersList(groupID).then((res) => setRenderMember(res));
 
     // .then((res) => {
     //   setRenderPost(res);
     // })
     // .catch((err) => console.log(err));
   }, []);
+
+  console.log(content);
+
+  dateCounter(content.goalDate);
 
   const postHandler = () => {
     const data = {
@@ -79,39 +150,75 @@ const GroupPage = ({ user, userList }) => {
       groupID: groupID,
     };
     firebase.sendGroupsPost(groupID, data);
+    setShowBtn(false);
     setTextValue("");
   };
+  const stationHead = userList.find(
+    (item) => item.userID === content.creatorID
+  );
+
+  const dateText = ` 預計實踐日：${content.goalDate}，還有
+            ${dateCounter(content.goalDate)}天`;
 
   return (
-    <div>
+    <Wrapper>
       <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
-      <GroupHeader content={content} user={user} userList={userList} />
+      <GroupHeader
+        content={content}
+        user={user}
+        userList={userList}
+        stationHead={stationHead}
+      />
+      {/* <SectionStyled>
+        <LabelStyled>社群名稱</LabelStyled>
+        <div>{content.name}</div>
+      </SectionStyled> */}
       <SectionStyled>
         <LabelStyled>學習夥伴</LabelStyled>
         <MemberContainer>
+          {renderMember.length === 0 && (
+            <Text>再等一下，夥伴們正在火速趕來中</Text>
+          )}
+
           {renderMember.map((item) => (
-            <MemberAvatar src={fish} key={item.memberID} />
+            <MemberAvatar
+              src={fish}
+              key={item.memberID}
+              data={item}
+              userList={userList}
+            />
           ))}
         </MemberContainer>
       </SectionStyled>
       <SectionStyled>
-        <LabelStyled>社群介紹</LabelStyled>
+        <LabelStyled>關於我們</LabelStyled>
         <ContentStyled>{content.introduce}</ContentStyled>
       </SectionStyled>
       <SectionStyled>
-        <LabelStyled>學習目標</LabelStyled>
+        <GoalDate>
+          <LabelStyled>學習目標</LabelStyled>
+          <LabelStyled>{dateText}</LabelStyled>
+        </GoalDate>
         <ContentStyled>{HtmlParser(content.goal)}</ContentStyled>
       </SectionStyled>
       <hr />
       {user !== null && (
         <SectionStyled>
           {/* <label>社團留言板</label> */}
-          <textarea
+          <PostArea
             value={textValue}
-            placeholder="說點什麼吧"
+            placeholder="說點什麼吧..."
+            onFocus={() => {
+              setShowBtn(true);
+            }}
+            // onBlur={() => {
+            //   setShowBtn(false);
+            // }}
             onChange={(e) => setTextValue(e.target.value)}
           />
-          <button onClick={postHandler}>發布</button>
+          {showBtn && <PostBtn onClick={postHandler}>留言</PostBtn>}
+
+          {/* <PostBtn onClick={postHandler}>發布</PostBtn> */}
           {renderPost?.map((item) => {
             return (
               <PostContainer
@@ -124,7 +231,7 @@ const GroupPage = ({ user, userList }) => {
           })}
         </SectionStyled>
       )}
-    </div>
+    </Wrapper>
   );
 };
 

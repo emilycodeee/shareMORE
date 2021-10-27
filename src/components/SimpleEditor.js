@@ -1,16 +1,6 @@
 import React from "react";
-import styled from "styled-components";
-
 import ReactQuill from "react-quill";
-import { useState } from "react";
-import ReactHtmlParser from "react-html-parser";
-
-import Select from "react-select";
-import Switch from "./Switch";
-//init quillReact
 const Quill = ReactQuill.Quill;
-// Quill.register("modules/imageDrop", ImageDrop);
-// Quill.register("modules/imageResize", ImageResize);
 let quillRef = null;
 
 const formats = [
@@ -56,8 +46,6 @@ const modules = {
 };
 
 const SimpleEditor = ({ goal, setGoal }) => {
-  // const [value, setValue] = useState("");
-
   const editorHandler = (e) => {
     setGoal(e);
   };

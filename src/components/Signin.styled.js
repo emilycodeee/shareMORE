@@ -81,3 +81,10 @@ export const ShowSignUp = styled.button`
   margin-bottom: 16px;
   cursor: pointer;
 `;
+
+export const ErrorMsg = styled.p`
+  text-align: center;
+  color: red;
+  font-size: 1rem;
+  font-weight: 600;
+`;

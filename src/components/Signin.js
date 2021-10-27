@@ -3,6 +3,7 @@ import * as firebase from "../utils/firebase";
 import { useState } from "react";
 import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
+import { BlockLoading } from "react-loadingg";
 import {
   EmbedSignIn,
   AuthButton,
@@ -11,9 +12,11 @@ import {
   Horizontal,
   Ptag,
   ShowSignUp,
+  ErrorMsg,
 } from "./Signin.styled";
 
 const Signin = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -21,18 +24,29 @@ const Signin = () => {
   const [message, setMessage] = useState("");
 
   const handleOnLogin = (provider) => {
-    firebase.socialMediaAuth(provider);
+    setMessage("");
+    firebase.socialMediaAuth(provider, setMessage);
   };
-
+  // console.log("😍😍", message);
   return (
     <EmbedSignIn>
       {!showSignUp && (
         <>
-          <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
+          {isLoading && <BlockLoading />}
+          {/* {} */}
+          <AuthButton
+            onClick={() => {
+              handleOnLogin(firebase.googleProvider);
+            }}
+          >
             <SocialIconCtn src={googleIcon} />
             Continue with Google
           </AuthButton>
-          <AuthButton onClick={() => handleOnLogin(firebase.facebookProvider)}>
+          <AuthButton
+            onClick={() => {
+              handleOnLogin(firebase.facebookProvider);
+            }}
+          >
             <SocialIconCtn src={facebookIcon} />
             Continue with Facebook
           </AuthButton>
@@ -51,12 +65,17 @@ const Signin = () => {
           />
           <AuthButton
             onClick={() => {
+              setMessage("");
+              setIsLoading(true);
               firebase.logIn(email, password, setMessage);
-              message && alert(message);
+              // message && alert(message);
             }}
           >
             登入
           </AuthButton>
+
+          {message && <ErrorMsg>{message}</ErrorMsg>}
+
           <Horizontal>
             <Ptag>or</Ptag>
           </Horizontal>
@@ -71,6 +90,7 @@ const Signin = () => {
       )}
       {showSignUp && (
         <>
+          {isLoading && <BlockLoading />}
           <InputStyled
             placeholder="請輸入使用者名稱"
             value={name}
@@ -92,8 +112,10 @@ const Signin = () => {
           />
           <AuthButton
             onClick={() => {
+              setMessage("");
+              setIsLoading(true);
               firebase.register(name, email, password, setMessage);
-              message && alert(message);
+              // message && alert(message);
             }}
           >
             註冊
@@ -103,6 +125,7 @@ const Signin = () => {
               setShowSignUp(!showSignUp);
             }}
           >
+            {message && <ErrorMsg>{message}</ErrorMsg>}
             <Horizontal>
               <Ptag>or</Ptag>
             </Horizontal>

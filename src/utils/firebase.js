@@ -28,6 +28,7 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  writeBatch,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 require("dotenv").config();
@@ -50,7 +51,7 @@ const storage = getStorage(firebaseApp);
 export const facebookProvider = new FacebookAuthProvider();
 export const googleProvider = new GoogleAuthProvider();
 
-export const socialMediaAuth = async (provider) => {
+export const socialMediaAuth = async (provider, setFunction) => {
   try {
     const result = await signInWithPopup(auth, provider);
     const q = query(collection(db, "users"));
@@ -74,8 +75,19 @@ export const socialMediaAuth = async (provider) => {
       });
     }
     await setDoc(doc(db, "users", result.user.uid), data);
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    switch (error.code) {
+      case "auth/user-not-found":
+        setFunction("信箱不存在，請重試");
+        break;
+      case "auth/invalid-email":
+        setFunction("信箱格式不正確，請重試");
+        break;
+      case "auth/wrong-password":
+        setFunction("密碼錯誤，請重試");
+        break;
+      default:
+    }
   }
 };
 
@@ -96,13 +108,13 @@ export const register = async (name, email, password, setFunction) => {
     console.log("🎆", error.code);
     switch (error.code) {
       case "auth/email-already-in-use":
-        alert("信箱已存在");
+        setFunction("信箱已存在，請重試");
         break;
       case "auth/invalid-email":
-        alert("密碼格式不正確");
+        setFunction("密碼格式不正確，請重試");
         break;
       case "auth/weak-password":
-        alert("密碼強度不足");
+        setFunction("密碼強度不足，請重試");
         break;
       default:
     }
@@ -118,13 +130,13 @@ export const logIn = async (email, password, setFunction) => {
   } catch (error) {
     switch (error.code) {
       case "auth/user-not-found":
-        alert("信箱不存在");
+        setFunction("信箱不存在，請重試");
         break;
       case "auth/invalid-email":
-        alert("信箱格式不正確");
+        setFunction("信箱格式不正確，請重試");
         break;
       case "auth/wrong-password":
-        alert("密碼錯誤");
+        setFunction("密碼錯誤，請重試");
         break;
       default:
     }
@@ -148,12 +160,15 @@ export function subscribeToUser(callback) {
 /* */
 export const postArticles = async (data, file) => {
   const docRefId = doc(collection(db, "articles")).id;
-  const storageRef = ref(storage);
-  const imagesRef = ref(storageRef, "cover-images/" + docRefId);
-  const metadata = { contenType: file.type };
-  const uploadTask = await uploadBytes(imagesRef, file, metadata);
-  const imgURL = await getDownloadURL(uploadTask.ref);
-
+  let imgURL =
+    "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+  if (file) {
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    imgURL = await getDownloadURL(uploadTask.ref);
+  }
   const finalData = {
     ...data,
     milestoneID: docRefId,
@@ -162,6 +177,60 @@ export const postArticles = async (data, file) => {
 
   const response = await setDoc(doc(db, "articles", docRefId), finalData);
   alert("建立成功");
+};
+
+export const getRawGroupNotes = async (groupID, postID) => {
+  const data = {};
+  const docRef = doc(db, "groups", groupID, "posts", postID);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    data.mainPost = docSnap.data();
+  } else {
+    console.log("No such document!");
+  }
+
+  const q = query(
+    collection(db, "groups", groupID, "posts", postID, "comments")
+  );
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  data.comments = arr;
+
+  return data;
+};
+
+export const postGroupNotes = async (groupID, data, file) => {
+  const docRefId = doc(collection(db, "groups", groupID, "notes")).id;
+
+  let imgURL =
+    "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+  if (file) {
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    imgURL = await getDownloadURL(uploadTask.ref);
+  }
+  const finalData = {
+    ...data,
+    noteID: docRefId,
+    coverImage: imgURL,
+  };
+
+  const response = await setDoc(
+    doc(db, "groups", groupID, "notes", docRefId),
+    finalData
+  );
+  return response;
+};
+
+export const removeTopLevelPost = async (groupID, docRefId) => {
+  await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
 
 //for uploadReactQuillImage
@@ -202,13 +271,27 @@ export const getQueryFilter = async (collectionName, fieldName, queryName) => {
   return arr;
 };
 
+// let imgURL =
+//   "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+// if (file) {
+//   const storageRef = ref(storage);
+//   const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+//   const metadata = { contenType: file.type };
+//   const uploadTask = await uploadBytes(imagesRef, file, metadata);
+//   imgURL = await getDownloadURL(uploadTask.ref);
+// }
+
 export const createGroup = async (data, file) => {
+  let imgURL =
+    "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
   const docRefId = doc(collection(db, "groups")).id;
-  const storageRef = ref(storage);
-  const imagesRef = ref(storageRef, "cover-images/" + docRefId);
-  const metadata = { contenType: file.type };
-  const uploadTask = await uploadBytes(imagesRef, file, metadata);
-  const imgURL = await getDownloadURL(uploadTask.ref);
+  if (file) {
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    imgURL = await getDownloadURL(uploadTask.ref);
+  }
 
   const finalData = {
     ...data,
@@ -250,18 +333,19 @@ export const getMembersData = async (topic, docID) => {
   }
 };
 
-export const getMembersList = async (groupID) => {
-  const querySnapshot = await getDocs(
-    collection(db, "groups", groupID, "members")
+export const getMembersList = async (groupID, setFunction) => {
+  const q = query(
+    collection(db, "groups", groupID, "members"),
+    orderBy("joinTime", "desc")
   );
-  const data = [];
-  if (querySnapshot.docs) {
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const data = [];
     querySnapshot.forEach((doc) => {
       data.push(doc.data());
     });
-  }
-  console.log(data);
-  return data;
+    console.log(data);
+    setFunction(data);
+  });
 };
 
 export const sendGroupsPost = async (groupID, data) => {
@@ -337,20 +421,20 @@ export const SendApplication = async (groupID, data, docRefId) => {
   return response;
 };
 
-export const getTotalApplicationList = async (groupID) => {
+export const getTotalApplicationList = async (groupID, setApplicationData) => {
   const applicationRef = collection(db, "groups", groupID, "applications");
-
+  console.log(applicationRef);
   if (applicationRef) {
     const q = query(applicationRef, where("approve", "==", false));
-    const querySnapshot = await getDocs(q);
-
-    const data = [];
-    if (querySnapshot.docs) {
-      querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-      });
-    }
-    return data;
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const data = [];
+      if (querySnapshot.docs) {
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+      }
+      setApplicationData({ count: data.length, data: data });
+    });
   }
 };
 
@@ -369,4 +453,89 @@ export const confirmApplication = async (groupID, docRefId, data) => {
 
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
+};
+
+///mess///
+
+// export const sendMessage = async (
+//   userID,
+//   dataSend,
+//   receiverID,
+//   dataReceive
+// ) => {
+//   const batch = writeBatch(db);
+//   const docSendRef = doc(
+//     collection(db, "users", userID, "messages", receiverID, "chats")
+//   );
+//   batch.set(docSendRef, dataSend);
+//   const docSendCluRef = doc(db, "users", userID, "messages", receiverID);
+//   batch.set(docSendCluRef, { messageID: receiverID });
+
+//   const docReceiverRef = doc(
+//     collection(db, "users", receiverID, "messages", userID, "chats")
+//   );
+//   batch.set(docReceiverRef, dataReceive);
+//   const docReceiverCluRef = doc(db, "users", receiverID, "messages", userID);
+
+//   batch.set(docReceiverCluRef, { messageID: userID });
+
+//   await batch.commit();
+//   // alert("send");
+// };
+
+// const q = query(
+//   collection(db, "groups", groupID, "posts"),
+//   orderBy("creationTime", "desc")
+// );
+// const unsubscribe = onSnapshot(q, (querySnapshot) => {
+//   const data = [];
+//   querySnapshot.forEach((doc) => {
+//     data.push(doc.data());
+//   });
+//   setRenderPost(data);
+// });
+
+export const sendMessage = async (data, userID) => {
+  // await setDoc(doc(db, "cities", "LA")
+
+  const docRefId = doc(collection(db, "messages", userID, "chats")).id;
+  const finalData = { ...data, chatsID: docRefId };
+
+  await setDoc(
+    doc(collection(db, "messages", userID, "chats"), docRefId),
+    finalData
+  );
+
+  // const msgRef = doc(db, "messages", userID, "chats").id;
+
+  //  const response = await setDoc(
+  //    doc(collection(db, "groups", groupID, "members"), docRefId),
+  //    data
+  //  );
+
+  // const docRef = await setDoc(
+  //   collection(db, "messages", userID, "chats"),
+  //   data
+  // );
+  // const docRef = await setDoc(collection(db, "messages",userID,'chats'), data);
+};
+
+export const getMessagesData = async (userID, setFunction) => {
+  console.log("usssssssssssssss", userID);
+
+  const q = query(
+    collection(db, "messages", userID, "chats"),
+    orderBy("creationTime", "asc")
+  );
+  // const q = query(collection(db, "messages"), where("sender", "==", userID));
+  // console.log(q);
+
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const data = [];
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+    setFunction(data);
+    return data;
+  });
 };

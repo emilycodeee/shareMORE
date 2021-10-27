@@ -60,24 +60,24 @@ const ApplicationList = ({
       membersDocID: currentUser.userID,
     };
 
+    // console.log(applicationData);
+
     firebase
       .confirmApplication(
         groupData.groupID,
-        applicationData.data[0].applicantionID,
+        applicationData.applicantionID,
         data
       )
       .then(() => {
         alert("確認完成");
-        window.location.reload();
+        // window.location.reload();
       });
   };
 
   const handleReject = () => {
+    // console.log(applicationData.data[0].applicantionID);
     firebase
-      .rejectApplication(
-        groupData.groupID,
-        applicationData.data[0].applicantionID
-      )
+      .rejectApplication(groupData.groupID, applicationData.applicantionID)
       .then(() => {
         alert("拒絕申請並不會通知申請人");
         window.location.reload();

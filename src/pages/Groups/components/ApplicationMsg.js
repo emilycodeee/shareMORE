@@ -69,13 +69,13 @@ const ApplicationMsg = ({
     );
     response.then((res) => {
       console.log(res);
-      setShowApplication(false);
+      // setShowApplication(false);
       alert("送出成功，請等候申請");
-      window.location.reload();
+      // window.location.reload();
     });
   };
   // const role = "visitor";
-  console.log(value);
+  // console.log(value);
   if (groupData.creatorID !== user.uid) {
     if (appliedData) {
       return (
@@ -108,11 +108,12 @@ const ApplicationMsg = ({
     return (
       <>
         {applicationData.data.map((item) => {
+          console.log("xxxxxxxxxxxxxxxxxx", item);
           return (
             <ApplicationList
               applicant={item}
               key={item.applicantID}
-              applicationData={applicationData}
+              applicationData={item}
               userList={userList}
               user={user}
               groupData={groupData}

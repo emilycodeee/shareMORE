@@ -5,25 +5,20 @@ import { useState } from "react";
 
 import SigninPopup from "../SigninPopup";
 import logo from "../../sharemore.png";
-import userIcon from "../../sources/user.png";
 import chat from "../../sources/chat.png";
 
 const LogoCtn = styled.img`
-  color: white;
   max-width: 315px;
 `;
 
 const HeaderContainer = styled.div`
-  /* float: left; */
-  border: 1px solid salmon;
+  width: 100%;
   display: flex;
-
   align-items: center;
   background-color: rgb(255 234 182);
 `;
 
 const LogoContainer = styled(Link)`
-  /* font-size: 50px; */
   flex-grow: 1;
 `;
 
@@ -41,7 +36,7 @@ const ListStyled = styled(Link)`
 
 const LoginBtn = styled.button`
   margin-right: 20px;
-  height: 40px;
+  height: 3em;
   cursor: pointer;
   font-weight: 600;
   border-radius: 6px;
@@ -67,8 +62,18 @@ const LoginPage = styled.div`
 `;
 
 const ImgCtn = styled.img`
-  height: 30px;
+  height: 2rem;
   border-radius: 50%;
+`;
+
+const Input = styled.input`
+  float: left;
+  width: 3rem;
+  height: 2rem;
+  padding: 0 15px;
+  border: 1px solid var(--light);
+  background-color: #eceff1;
+  border-radius: 21px;
 `;
 
 const Header = ({ user }) => {
@@ -93,20 +98,19 @@ const Header = ({ user }) => {
       </LoginPage>
     );
   }
-  // console.log("🎈header", user);
   return (
     <HeaderContainer>
       <LogoContainer to="/">
         <LogoCtn src={logo} />
       </LogoContainer>
       <ListContainer>
-        <input placeholder="搜尋" type="text" />
+        <Input placeholder="搜尋" type="text" />
         <ListStyled to="/milestones">我們的里程碑</ListStyled>
         {user && (
           <>
             <ListStyled to="/mygroups">我的社群</ListStyled>
             <ListStyled to="/groups/post">發起社群</ListStyled>
-            <ListStyled to="/messages">
+            <ListStyled to="/messages/ ">
               <ImgCtn src={chat} />
             </ListStyled>
             <ListStyled to="/myProfile">

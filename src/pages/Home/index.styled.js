@@ -5,6 +5,7 @@ export const TopCover = styled.div`
   padding: 0;
   margin: 0;
   height: 720px;
+  width: 100%;
   overflow: hidden;
   position: relative;
 `;

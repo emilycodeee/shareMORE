@@ -1,8 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+// import { useState, useEffect } from "react";
 
 const CardContainer = styled(Link)`
+  width: 100%;
   text-decoration: none;
   box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
   transition: transform 0.28s ease-in-out 0s;
@@ -14,8 +16,6 @@ const CoverContainer = styled.div`
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 150px;
-  /* overflow: hidden; */
-  /* position: absolute; */
   background-size: cover;
   background-position: center;
 `;
@@ -26,11 +26,7 @@ const ContentContainer = styled.div`
 
 const TagContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  width: 250px;
-  /* justify-content: space-between; */
-  /* flex-grow: 1; */
-  /* justify-content: space-between; */
+  justify-content: space-between;
 `;
 
 const TextContainer = styled.div`
@@ -42,28 +38,39 @@ const TextContainer = styled.div`
   text-overflow: ellipsis;
 `;
 
-const MilestonesCard = ({ item, userList, groupList }) => {
-  const currentCreator = userList.find(
-    (data) => data.userID === item.creatorID
-  );
-  const currentGroup = groupList.find((data) => data.groupID === item.groupID);
-  // console.log(currentCreator);
-  // console.log(currentGroup);
+// style={{ textDecoration: "none" }}
+const MilestonesCarf = ({ item, userList, groupList }) => {
+  // console.log(item);
+  let currentCreator, currentGroup;
+  let url = `/group/${item.groupID}`;
+  if (userList) {
+    currentCreator = userList.find((data) => data.userID === item.creatorID);
+    currentGroup = groupList.find((data) => data.groupID === item.groupID);
+    url = `/milestone/${item.milestoneID}`;
+  }
+
+  // if (userList)
   return (
-    <CardContainer to={`/milestone/${item.milestoneID}`}>
-      <CoverContainer style={{ backgroundImage: `url(${item.coverImage})` }}>
-        {/* <ImgStyled src={item.coverImage} /> */}
-      </CoverContainer>
-      <ContentContainer>
-        <TagContainer>
-          <div>{item.title}</div>
-          <div>建立者：{currentCreator?.displayName}</div>
-        </TagContainer>
-        <TextContainer>社群：{currentGroup.name}</TextContainer>
-        <TextContainer>建立於加入社團的第33天</TextContainer>
-      </ContentContainer>
+    <CardContainer to={url}>
+      <div>
+        <CoverContainer style={{ backgroundImage: `url(${item.coverImage})` }}>
+          {/* <ImgStyled src={item.coverImage} /> */}
+        </CoverContainer>
+        <ContentContainer>
+          <TagContainer>
+            <TextContainer>{item.category || item.title}</TextContainer>
+            <TextContainer>
+              {item.subClass || `by ${currentCreator?.displayName}`}
+            </TextContainer>
+          </TagContainer>
+          <TextContainer>{currentGroup?.name || item.name}</TextContainer>
+          <TextContainer>
+            {item.introduce || "建立於加入社團的第33天"}
+          </TextContainer>
+        </ContentContainer>
+      </div>
     </CardContainer>
   );
 };
 
-export default MilestonesCard;
+export default Card;

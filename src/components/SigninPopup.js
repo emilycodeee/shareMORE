@@ -107,6 +107,13 @@ export const ShowSignUp = styled.button`
   cursor: pointer;
 `;
 
+export const ErrorMsg = styled.p`
+  text-align: center;
+  color: red;
+  font-size: 1rem;
+  font-weight: 600;
+`;
+
 const SigninPopup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -115,7 +122,8 @@ const SigninPopup = () => {
   const [message, setMessage] = useState("");
 
   const handleOnLogin = (provider) => {
-    firebase.socialMediaAuth(provider);
+    setMessage("");
+    firebase.socialMediaAuth(provider, setMessage);
   };
 
   return (
@@ -138,7 +146,6 @@ const SigninPopup = () => {
               <SocialIconCtn src={facebookIcon} />
               Continue with Facebook
             </AuthButton>
-
             <InputStyled
               placeholder="請輸入信箱"
               value={email}
@@ -153,12 +160,13 @@ const SigninPopup = () => {
             />
             <AuthButton
               onClick={() => {
+                setMessage("");
                 firebase.logIn(email, password, setMessage);
-                message && alert(message);
               }}
             >
               登入
             </AuthButton>
+            {message && <ErrorMsg>{message}</ErrorMsg>}
             <Horizontal>
               <Ptag>or</Ptag>
             </Horizontal>
@@ -194,12 +202,13 @@ const SigninPopup = () => {
             />
             <AuthButton
               onClick={() => {
+                setMessage("");
                 firebase.register(name, email, password, setMessage);
-                message && alert(message);
               }}
             >
               註冊
             </AuthButton>
+            {message && <ErrorMsg>{message}</ErrorMsg>}
             <Horizontal>
               <Ptag>or</Ptag>
             </Horizontal>
