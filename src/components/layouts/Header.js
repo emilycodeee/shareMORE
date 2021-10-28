@@ -1,45 +1,124 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import Signin from "./Signin";
+
+import SigninPopup from "../SigninPopup";
+import logo from "../../sharemore.png";
+import chat from "../../sources/chat.png";
+
+const LogoCtn = styled.img`
+  max-width: 315px;
+`;
 
 const HeaderContainer = styled.div`
-  border: 1px solid salmon;
+  width: 100%;
   display: flex;
+  align-items: center;
+  background-color: rgb(255 234 182);
 `;
 
 const LogoContainer = styled(Link)`
-  font-size: 50px;
+  flex-grow: 1;
 `;
 
 const ListContainer = styled.ul`
   display: flex;
+  align-items: center;
 `;
 
 const ListStyled = styled(Link)`
-  /* color: blue; */
+  font-weight: 600;
+  margin: 0 20px;
   list-style: none;
+  text-decoration: none;
 `;
 
-const Header = () => {
-  const [showLogin, setShowLogin] = useState(false);
+const LoginBtn = styled.button`
+  margin-right: 20px;
+  height: 3em;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 6px;
+  background-color: transparent;
+  border: 1px solid #fff;
+  color: black;
+  text-decoration: none;
+  &:hover {
+    background-color: white;
+    color: rgb(255 234 182);
+  }
+`;
 
-  const loginHandler = () => {
+const LoginPage = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.8);
+  /* cursor: zoom-out; */
+`;
+
+const ImgCtn = styled.img`
+  height: 2rem;
+  border-radius: 50%;
+`;
+
+const Input = styled.input`
+  float: left;
+  width: 3rem;
+  height: 2rem;
+  padding: 0 15px;
+  border: 1px solid var(--light);
+  background-color: #eceff1;
+  border-radius: 21px;
+`;
+
+const Header = ({ user }) => {
+  const [showLogin, setShowLogin] = useState(false);
+  const userAvatar =
+    user?.photoURL ||
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
+
+  const showLoginPage = () => {
     setShowLogin(!showLogin);
   };
 
-  if (showLogin) {
-    return <Signin />;
+  if (!user && showLogin) {
+    return (
+      <LoginPage
+        data-target="shield"
+        onClick={(e) => {
+          e.target.dataset.target === "shield" && setShowLogin(!showLogin);
+        }}
+      >
+        <SigninPopup setShowLogin={setShowLogin} />
+      </LoginPage>
+    );
   }
-
   return (
     <HeaderContainer>
-      <LogoContainer to="/">LOGO</LogoContainer>
+      <LogoContainer to="/">
+        <LogoCtn src={logo} />
+      </LogoContainer>
       <ListContainer>
-        <ListStyled to="/milestone/post">我們的里程碑</ListStyled>
-        <input placeholder="搜尋" type="text" />
-        <button onClick={loginHandler}>登入/註冊</button>
+        <Input placeholder="搜尋" type="text" />
+        <ListStyled to="/milestones">我們的里程碑</ListStyled>
+        {user && (
+          <>
+            <ListStyled to="/mygroups">我的社群</ListStyled>
+            <ListStyled to="/groups/post">發起社群</ListStyled>
+            <ListStyled to="/messages/ ">
+              <ImgCtn src={chat} />
+            </ListStyled>
+            <ListStyled to="/myProfile">
+              <ImgCtn src={userAvatar} />
+            </ListStyled>
+          </>
+        )}
+        {!user && <LoginBtn onClick={showLoginPage}>登入/註冊</LoginBtn>}
       </ListContainer>
     </HeaderContainer>
   );
