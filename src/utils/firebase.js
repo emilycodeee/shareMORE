@@ -257,12 +257,35 @@ export const getOptionsName = async (optionName) => {
 
 // 😎
 export const getMyGroupsName = async (userID) => {
-  const q = query(collection(db, "groups"));
-  const querySnapshot = await getDocs(q);
+  const memberQ = query(
+    collection(db, "groups"),
+    where("membersList", "array-contains", userID)
+  );
+
+  const memberQuerySnapshot = await getDocs(memberQ);
   const arr = [];
-  querySnapshot.forEach((doc) => {
-    arr.push({ value: doc.data().name, label: doc.data().name });
+  memberQuerySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+
+    arr.push({ value: doc.data().groupID, label: doc.data().name });
+    // console.log(doc.id, " => ", doc.data());
   });
+
+  const creatorQ = query(
+    collection(db, "groups"),
+    where("creatorID", "==", userID)
+  );
+
+  const creatorQuerySnapshot = await getDocs(creatorQ);
+  // const arr = [];
+  creatorQuerySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+
+    arr.push({ value: doc.data().groupID, label: doc.data().name });
+    // console.log(doc.id, " => ", doc.data());
+  });
+
+  console.log("🍕🍕🍕🍕", arr);
   return arr;
 };
 
@@ -367,6 +390,28 @@ export const sendGroupsPost = async (groupID, data) => {
     finalData
   );
 };
+
+export const clapsForPost = async (groupID, docID, userID) => {
+  console.log(docID, userID);
+  const docRef = doc(db, "groups", groupID, "posts", docID);
+  const docSnap = await getDoc(docRef);
+  console.log("sssssss", docSnap.data());
+
+  if (docSnap.data().clapBy?.includes(userID)) {
+    await updateDoc(docRef, {
+      // regions: arrayRemove("east_coast"),
+      clapBy: arrayRemove(userID),
+    });
+    // setFunction(false);
+  } else {
+    await updateDoc(docRef, {
+      clapBy: arrayUnion(userID),
+    });
+    // setFunction(true);
+  }
+};
+
+// export const getClaps =
 
 export const postsListener = async (groupID, setRenderPost) => {
   const q = query(
@@ -488,6 +533,10 @@ export const confirmApplication = async (memberID, groupID, data) => {
 
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
+};
+
+export const deleteComment = async (groupID, docRefId) => {
+  await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
 
 // export const sendMessage = async (data) => {

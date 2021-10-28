@@ -75,12 +75,10 @@ const Wrapper = styled.div`
 
 const Text = styled.div`
   align-self: center;
-  /* align-sel: center; */
 `;
 
 const PostArea = styled.textarea`
-  /* rows:4;
-  cols:50; */
+  resize: none;
   border: none;
   outline: none;
   font-size: 1rem;
@@ -94,23 +92,13 @@ const PostArea = styled.textarea`
 const PostBtn = styled.button`
   margin-top: 0.5rem;
   height: 2rem;
-  /* align-self: flex-end; */
-  /* height: 2rem;
-  width: 4rem; */
-  /* margin: 0.5rem; */
+  cursor: pointer;
   border-radius: 10px;
 `;
 
 const GoalDate = styled.div`
   display: flex;
   justify-content: space-between;
-  /* height: 100%; */
-  /* background-color: red;
-  align-self: flex-end;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  padding: 10px; */
 `;
 
 const GroupPage = ({ user, userList }) => {
@@ -138,7 +126,7 @@ const GroupPage = ({ user, userList }) => {
     // .catch((err) => console.log(err));
   }, []);
 
-  console.log(content);
+  console.log("cccccc", content);
 
   dateCounter(content.goalDate);
 
@@ -160,6 +148,9 @@ const GroupPage = ({ user, userList }) => {
   const dateText = ` 預計實踐日：${content.goalDate}，還有
             ${dateCounter(content.goalDate)}天`;
 
+  const checkMember =
+    (user !== null && content?.membersList?.includes(user.uid)) ||
+    content?.creatorID === user?.uid;
   return (
     <Wrapper>
       <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
@@ -202,23 +193,18 @@ const GroupPage = ({ user, userList }) => {
         <ContentStyled>{HtmlParser(content.goal)}</ContentStyled>
       </SectionStyled>
       <hr />
-      {user !== null && (
+      {checkMember && (
         <SectionStyled>
-          {/* <label>社團留言板</label> */}
           <PostArea
             value={textValue}
             placeholder="說點什麼吧..."
             onFocus={() => {
               setShowBtn(true);
             }}
-            // onBlur={() => {
-            //   setShowBtn(false);
-            // }}
             onChange={(e) => setTextValue(e.target.value)}
           />
           {showBtn && <PostBtn onClick={postHandler}>留言</PostBtn>}
 
-          {/* <PostBtn onClick={postHandler}>發布</PostBtn> */}
           {renderPost?.map((item) => {
             return (
               <PostContainer
@@ -226,6 +212,7 @@ const GroupPage = ({ user, userList }) => {
                 item={item}
                 userList={userList}
                 user={user}
+                content={content}
               />
             );
           })}

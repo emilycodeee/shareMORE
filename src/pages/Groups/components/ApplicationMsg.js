@@ -15,29 +15,33 @@ const Avatar = styled.img`
   margin-right: 10px;
 `;
 
-const Header = styled.div`
-  display: flex;
-
-  /* flex-direction: column; */
-`;
-const UserWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+const Label = styled.label`
+  font-weight: 550;
 `;
 
-const ButtonWrapper = styled.div`
-  display: flex;
+const TextCtn = styled.textarea`
+  resize: none;
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px;
 `;
 
 const Button = styled.button`
-  color: #3722d3;
-  font-size: 18px;
-  background: none;
-  font-weight: 600;
-  border-style: none;
-  margin-bottom: 16px;
+  padding: 10px;
+  border-radius: 10px;
   cursor: pointer;
+`;
+
+const ContentStyled = styled.div`
+  font-weight: 550;
+  margin-bottom: 10px;
+`;
+
+const ApplicationStyled = styled.div`
+  margin: 0 10px;
+  background-color: #f2f2f2;
+  padding: 10px;
+  border-radius: 10px;
 `;
 
 const ApplicationMsg = ({
@@ -51,9 +55,7 @@ const ApplicationMsg = ({
   const [value, setValue] = useState("");
   const pathname = useLocation().pathname;
   const history = useHistory();
-  // console.log(user);
-  // console.log(groupData);
-
+  console.log(applicationData.data.length);
   const handleSubmit = () => {
     const data = {
       content: value,
@@ -68,47 +70,45 @@ const ApplicationMsg = ({
       user.uid
     );
     response.then((res) => {
-      console.log(res);
-      // setShowApplication(false);
-      alert("送出成功，請等候申請");
-      // window.location.reload();
+      alert("送出成功，請等候社長審核");
     });
   };
-  // const role = "visitor";
-  // console.log(value);
+
   if (groupData.creatorID !== user.uid) {
     if (appliedData) {
       return (
         <>
-          <div>加入申請已送出，請耐心等候</div>
-          <div>
-            {`申請日:${appliedData.creationTime
+          <ContentStyled>加入申請已送出，請耐心等候</ContentStyled>
+          <ContentStyled>
+            {`申請日：${appliedData.creationTime
               .toDate()
               .toLocaleString("zh-TW")}`}
-          </div>
-          <div>申請內容：</div>
-          <div>{appliedData.content}</div>
+          </ContentStyled>
+          <ContentStyled>申請內容：</ContentStyled>
+          <ApplicationStyled>{appliedData.content}</ApplicationStyled>
         </>
       );
     }
     return (
       <SendApplication>
-        <div>請寫下你想加入的原因？</div>
-        <textarea
+        <Label>請寫下你想加入的原因？</Label>
+        <TextCtn
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="送出後不可修改"
         />
-        <button onClick={handleSubmit}>確認送出</button>
+        <Button onClick={handleSubmit}>確認送出</Button>
       </SendApplication>
     );
   }
 
-  if (groupData.creatorID === user.uid) {
+  if (groupData.creatorID === user.uid && applicationData.data.length === 0) {
+    return <div>社群申請已審核完畢</div>;
+  } else if (groupData.creatorID === user.uid) {
     return (
       <>
         {applicationData.data.map((item) => {
-          console.log("xxxxxxxxxxxxxxxxxx", item);
+          // console.log("xxxxxxxxxxxxxxxxxx", item);
           return (
             <ApplicationList
               applicant={item}

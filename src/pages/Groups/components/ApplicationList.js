@@ -49,8 +49,6 @@ const ApplicationList = ({
 
   console.log(currentUser);
   console.log(applicant);
-  // console.log(groupData.groupID);
-  // console.log();
 
   const handleConfirm = () => {
     const data = {
@@ -81,7 +79,6 @@ const ApplicationList = ({
       .rejectApplication(groupData.groupID, applicationData.applicantionID)
       .then(() => {
         alert("拒絕申請並不會通知申請人");
-        // window.location.reload();
       });
   };
 

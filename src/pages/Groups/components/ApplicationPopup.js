@@ -6,8 +6,6 @@ import ApplicationMsg from "./ApplicationMsg";
 import styled from "styled-components";
 
 const Container = styled.div`
-  /* max-height: 500px; */
-  /* overflow: scroll; */
   display: flex;
   padding: 0px;
   position: relative;
@@ -17,7 +15,6 @@ const Container = styled.div`
   margin-right: 120px;
   width: 668px;
   outline: none;
-  border: 2px solid red;
 `;
 
 const MainCtn = styled.div`
@@ -50,7 +47,6 @@ export const InputStyled = styled.input`
   border-radius: 4px;
   border: #dcdee1 1px solid;
   width: auto;
-  /* height: 40px; */
 `;
 
 const ApplicationPopup = ({

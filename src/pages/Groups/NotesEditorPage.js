@@ -90,9 +90,9 @@ const NotesEditorPage = ({ user }) => {
 
     firebase
       .postGroupNotes(groupID, data, file)
-      .then(() => {
-        firebase.removeTopLevelPost(groupID, postID);
-      })
+      // .then(() => {
+      //   firebase.removeTopLevelPost(groupID, postID);
+      // })
       .then(() => {
         alert("建立成功");
         history.push(`/group/${groupID}`);

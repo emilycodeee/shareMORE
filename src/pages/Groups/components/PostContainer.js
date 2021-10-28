@@ -19,6 +19,8 @@ const Wrapper = styled.div`
   background-color: #f5f5f5;
   margin: 1rem 0;
   padding: 1rem 2rem;
+  /* border: 1px solid red; */
+  position: relative;
 `;
 
 const AvatarCtn = styled.img`
@@ -79,6 +81,32 @@ const CountWrapper = styled.div`
   position: relative;
 `;
 
+const DropDown = styled.div`
+  /* border: 1px solid red; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  position: absolute;
+  top: 2.5rem;
+  right: 0;
+  z-index: 99;
+  /* transition: 0.3s; */
+`;
+
+const MoreBtn = styled.div`
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  background-color: #e5e5e5;
+  font-weight: 550;
+  padding: 0.5rem 0.2rem;
+
+  &:hover {
+    background-color: #eeeeee;
+  }
+`;
+
 const Count = styled.div`
   position: absolute;
   top: 0;
@@ -89,20 +117,14 @@ const Count = styled.div`
 const CommentCtn = styled.div`
   display: flex;
   flex-direction: column;
-
-  /* width: 100%; */
 `;
 
 const PostArea = styled.textarea`
   margin-top: 0.5rem;
-  /* margin: 0.5rem; */
-  /* margin-right: 0.5rem; */
-  /* width: 100%; */
   font-size: 1rem;
   padding: 1rem 1.5rem;
   border-radius: 10px;
   background-color: #eeeeee;
-  /* opacity: 0.3; */
   border: none;
   outline: none;
   color: black;
@@ -112,6 +134,11 @@ const ButtonSet = styled.div`
   display: flex;
   justify-content: end;
   margin-top: 0.5rem;
+`;
+
+const LinkStyle = styled(Link)`
+  text-decoration: none;
+  color: black;
 `;
 
 const ButtonStyled = styled.button`
@@ -126,8 +153,8 @@ const ButtonStyled = styled.button`
   justify-content: end;
 `;
 
-const PostContainet = ({ item, userList, user }) => {
-  console.log(item);
+const PostContainet = ({ item, userList, user, content }) => {
+  // console.log("sss", item);
   const { groupID } = useParams();
   const postID = item.postID;
   const [showComment, setShowComment] = useState(false);
@@ -150,7 +177,24 @@ const PostContainet = ({ item, userList, user }) => {
     firebase.sendPostComment(item.groupID, item.postID, data);
     setTextValue("");
     setShowBtn(false);
-    // console.log("k");
+  };
+
+  const handleClap = () => {
+    console.log("ssss", item.postID);
+    firebase.clapsForPost(item.groupID, item.postID, user.uid);
+  };
+
+  const handleDelete = () => {
+    console.log("delete");
+    setShowDots(!showDots);
+    firebase.deleteComment(item.groupID, item.postID).then(() => {
+      alert("刪除成功");
+    });
+  };
+
+  const handleEdit = () => {
+    console.log("edit");
+    setShowDots(!showDots);
   };
 
   return (
@@ -164,30 +208,37 @@ const PostContainet = ({ item, userList, user }) => {
               {item.creationTime?.toDate().toLocaleString("zh-TW")}
             </Pstyled>
           </UserDetail>
-          <HeadIcon
-            src={dots}
-            onClick={() => setShowDots(!showDots)}
-            // onMouseOver={() => setShowDots(true)}
-            // onMouseLeave={() => setShowDots(false)}
-          />
+          {content.creatorID === user.uid && (
+            <HeadIcon
+              src={dots}
+              onClick={() => setShowDots(!showDots)}
+              // onMouseOver={() => setShowDots(true)}
+              // onMouseLeave={() => setShowDots(false)}
+            />
+          )}
         </UserWrapper>
 
         {showDots && (
-          <div>
-            <button>編輯</button>
-            <button>刪除</button>
-
-            <Link to={`/group/${groupID}/notes/${postID}/post`}>
-              設為精選筆記
-            </Link>
-          </div>
+          <DropDown>
+            <MoreBtn onClick={handleEdit}>編輯</MoreBtn>
+            <MoreBtn onClick={handleDelete}>刪除</MoreBtn>
+            <MoreBtn>
+              <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
+                設為精選筆記
+              </LinkStyle>
+            </MoreBtn>
+          </DropDown>
         )}
         <div>{item.content}</div>
         <IconWrapper>
-          <IconDiv>
+          <IconDiv
+            onClick={() => {
+              handleClap();
+            }}
+          >
             <CountWrapper>
-              <Icon src={clap} />
-              <Count>1</Count>
+              <Icon src={item.clapBy?.includes(user.uid) ? claped : clap} />
+              <Count>{item.clapBy?.length > 0 && item.clapBy.length}</Count>
             </CountWrapper>
           </IconDiv>
           <IconDiv

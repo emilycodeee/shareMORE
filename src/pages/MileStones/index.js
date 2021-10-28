@@ -29,14 +29,25 @@ const TopCover = styled.div`
   background-position: center;
 `;
 
+const Wrapper = styled.div`
+  margin: 30px;
+  border-radius: 30px;
+  padding: 30px;
+  border: 1px solid #3e2914;
+`;
+
+const SideSetting = styled.div`
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+`;
+
 const ContentCtn = styled.div``;
 
 const MilestonePage = ({ user, userList }) => {
   const { milestoneID } = useParams();
   const [content, setContent] = useState({});
-  // const [textValue, setTextValue] = useState("");
-
-  // const [renderPost, setRenderPost] = useState([]);
 
   useEffect(() => {
     firebase
@@ -48,50 +59,18 @@ const MilestonePage = ({ user, userList }) => {
 
   return (
     <div>
-      <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
-      <div>里程碑標題</div>
+      <Wrapper>
+        <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
+        <div>里程碑標題</div>
 
-      <div>{content.title}</div>
-      <div>里程碑內容</div>
-      <div>{HtmlParser(content.content)}</div>
+        <div>{content.title}</div>
+        <div>里程碑內容</div>
+        <div>{HtmlParser(content.content)}</div>
+      </Wrapper>
+      <SideSetting>
+        <div>作者</div>
+      </SideSetting>
     </div>
-    // <div>
-    //   <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
-    //   <GroupHeader content={content} user={user} userList={userList} />
-    //   <SectionStyled>
-    //     <label>學習夥伴</label>
-    //     {/* <memberContainer></memberContainer> */}
-    //   </SectionStyled>
-    //   <SectionStyled>
-    //     <label>社群介紹</label>
-    //     <div>{content.introduce}</div>
-    //   </SectionStyled>
-
-    //   <SectionStyled>
-    //     <label>學習目標</label>
-    //     {HtmlParser(content.goal)}
-    //   </SectionStyled>
-    //   <hr />
-    //   <SectionStyled>
-    //     {/* <label>社團留言板</label> */}
-    //     <textarea
-    //       value={textValue}
-    //       placeholder="說點什麼吧"
-    //       onChange={(e) => setTextValue(e.target.value)}
-    //     />
-    //     <button onClick={postHandler}>發布</button>
-    //     {renderPost.map((item) => {
-    //       return (
-    //         <PostContainer
-    //           key={item.postID}
-    //           item={item}
-    //           userList={userList}
-    //           user={user}
-    //         />
-    //       );
-    //     })}
-    //   </SectionStyled>
-    // </div>
   );
 };
 

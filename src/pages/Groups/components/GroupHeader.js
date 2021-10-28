@@ -97,16 +97,6 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
   useEffect(() => {
     if (content.groupID) {
       firebase.getTotalApplicationList(content.groupID, setApplicationData);
-      // const response = firebase.getTotalApplicationList(content.groupID);
-
-      // response
-      //   .then((res) => {
-      //     console.log(res);
-      //     setApplicationData({ count: res.length, data: res });
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
     }
   }, [content]);
 
@@ -114,7 +104,7 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
     const data = applicationData.data?.find(
       (each) => each.applicantID === user?.uid
     );
-    // console.log(data);
+
     if (data) {
       setAppliedData(data);
     }
@@ -122,6 +112,9 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
 
   const root = "http://localhost:3000";
   const location = useLocation();
+  const checkMember =
+    (user !== null && content?.membersList?.includes(user.uid)) ||
+    content?.creatorID === user?.uid;
 
   if (showApplication) {
     return (
@@ -159,7 +152,7 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
         >
           分享連結
         </LiStyled>
-        {user !== null && (
+        {checkMember && (
           <LinkStyled to={`${location.pathname}/notes`}>社群筆記</LinkStyled>
         )}
         {content.creatorID === user?.uid ? (

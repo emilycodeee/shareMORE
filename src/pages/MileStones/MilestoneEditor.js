@@ -93,6 +93,10 @@ const Miles = ({ user, groupList }) => {
   const [selected, setSelected] = useState(null);
   const [check, setCheck] = useState(false);
 
+  // const
+
+  console.log("ddddddddddd", groupList);
+
   const editorHandler = (e) => {
     setValue(e);
   };
@@ -114,10 +118,18 @@ const Miles = ({ user, groupList }) => {
   };
 
   useEffect(() => {
-    firebase.getMyGroupsName(user?.uid).then((res) => console.log(res));
-    // , setgroupsName
-    // firebase.getOptionsName("groups", setgroupsName);
-  }, []);
+    if (user) {
+      firebase.getMyGroupsName(user?.uid).then((res) => {
+        // console.log("😁😁😀😀", res);
+        setgroupsName(res);
+
+        if (res.length === 0) {
+          alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
+          history.push("/");
+        }
+      });
+    }
+  }, [user]);
 
   const previewImg = file
     ? URL.createObjectURL(file)
@@ -149,12 +161,7 @@ const Miles = ({ user, groupList }) => {
             onChange={(e) => {
               setSelected(e.value);
             }}
-            options={groupList.map((item) => {
-              return {
-                value: item.groupID,
-                label: item.name,
-              };
-            })}
+            options={groupsName}
           />
           <input
             type="file"
