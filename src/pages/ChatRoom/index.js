@@ -22,55 +22,50 @@ const SearchCtn = styled.input`
   }
 `;
 
+const ME = styled.p`
+  color: red;
+`;
+
+const YOU = styled.p`
+  color: blue;
+`;
+
 const Chat = styled.div`
   display: flex;
 `;
 
 const ChatRoom = ({ user, userList }) => {
-  console.log(user?.uid);
+  // console.log(user?.uid);
+  // console.log("xxx", user);
   const { sendTo } = useParams();
   const [text, setText] = useState("");
   const [messagesData, setMessagesData] = useState([]);
   console.log(sendTo.trim().length);
-  const senderData = userList.find((item) => item.userID === user?.uid);
+  const senderData = userList?.find((item) => item.userID === user?.uid);
   console.log(senderData);
 
   useEffect(() => {
     if (!user) return;
     console.log(user.uid);
-    firebase
-      .getMessagesData(user.uid, setMessagesData)
-      .then((res) => console.log(res));
+    firebase.getMessagesData(user.uid, sendTo, setMessagesData);
+    // firebase;
+    //   .getMessagesData(user.uid, setMessagesData)
+    //   .then((res) => console.log(res));
   }, [user]);
 
   const handleSendMsg = () => {
-    // if (sendTo.trim().length) {
-    //   return;
-    // }
-
+    const usersID = [sendTo, user.uid];
     const data = {
       sender: user.uid,
       receiver: sendTo,
+      usersID,
       text,
       creationTime: new Date(),
     };
-    firebase.sendMessage(data, sendTo);
-    // console.log("di");
-    // const sendData = {
-    //   caretionTime: new Date(),
-    //   role: "sender",
-    //   text,
-    // };
 
-    // const receivedData = {
-    //   caretionTime: new Date(),
-    //   role: "receiver",
-    //   text,
-    // };
-
-    // firebase.sendMessage(user.uid, sendData, sendTo, receivedData);
+    firebase.sendMessage(data, user.uid, sendTo);
   };
-  console.log(messagesData);
+  // console.log(messagesData);
   // console.log(text);
   return (
     <Wrapper>
@@ -86,18 +81,33 @@ const ChatRoom = ({ user, userList }) => {
         <div>
           <h1>跟{sendTo}</h1>
           <div>開始聊天</div>
-          {messagesData.map((item) => {
+          {messagesData?.map((item) => {
             return (
-              <Chat key={item.chatsID}>
+              <Chat key={item.docID}>
                 <div>
-                  {
-                    // console.log(item)
-                    userList.find((p) => item.sender === p.userID).displayName
-                  }
-                  說:
+                  <div>
+                    {/* {
+                      // console.log(item)
+                      userList.find((p) => item.sender === p.userID)
+                        ?.displayName
+                    }
+                    說: */}
+                  </div>
+                  <div>{item.text}</div>
+                  <div>2012/02/13</div>
                 </div>
-                <div>{item.text}</div>
-                <div>2012/02/13</div>
+                <div>
+                  <div>
+                    {
+                      // console.log(item)
+                      userList.find((p) => item.receiver === p.userID)
+                        ?.displayName
+                    }
+                    說:
+                  </div>
+                  <div>{item.text}</div>
+                  <div>2012/02/13</div>
+                </div>
               </Chat>
             );
           })}

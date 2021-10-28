@@ -64,8 +64,9 @@ const ApplicationList = ({
 
     firebase
       .confirmApplication(
-        groupData.groupID,
         applicationData.applicantionID,
+        groupData.groupID,
+        // applicationData.applicantionID,
         data
       )
       .then(() => {
@@ -80,7 +81,7 @@ const ApplicationList = ({
       .rejectApplication(groupData.groupID, applicationData.applicantionID)
       .then(() => {
         alert("拒絕申請並不會通知申請人");
-        window.location.reload();
+        // window.location.reload();
       });
   };
 

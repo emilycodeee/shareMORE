@@ -1,33 +1,21 @@
 import React from "react";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import ReactQuill from "react-quill";
-// import { ImageDrop } from "quill-image-drop-module";
-import ImageResize from "quill-image-resize-module-react";
-import Compressor from "compressorjs";
-import "react-quill/dist/quill.snow.css";
-import ReactHtmlParser from "react-html-parser";
+import RichTextEditor from "../../components/RichTextEditor";
 import * as firebase from "../../utils/firebase";
 import Select from "react-select";
 import Switch from "../../components/Switch";
 import { useHistory } from "react-router-dom";
-//init quillReact
-const Quill = ReactQuill.Quill;
-// Quill.register("modules/imageDrop", ImageDrop);
-Quill.register("modules/imageResize", ImageResize);
-let quillRef = null;
 
 const ContainerStyled = styled.div`
-  max-width: 80%;
-  border: 2px solid salmon;
-  margin: 0 auto;
+  border-radius: 20px;
+  border: 1px solid #3e2914;
   display: flex;
-  justify-content: space-between;
-  /* flex-direction: column; */
+  margin: 3rem 5rem;
+  padding: 3rem 5rem;
 `;
 
 const MainContainer = styled.div`
-  border: 2px solid yellow;
   display: flex;
   flex-direction: column;
 `;
@@ -36,112 +24,68 @@ const SideSetting = styled.div`
   padding: 10px;
   display: flex;
   flex-direction: column;
-  background-color: salmon;
   margin: 0 auto;
 `;
-
-const EditorArea = styled.div`
-  margin: 0 auto;
-`;
-
-const formats = [
-  "header",
-  "font",
-  "size",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "image",
-  "video",
-  "link",
-  "formula",
-  "audio",
-  "color",
-  "background",
-  "align",
-];
-
-const fileCompress = (file) => {
-  return new Promise((resolve, reject) => {
-    new Compressor(file, {
-      file: "File",
-      quality: 0.5,
-      maxWidth: 640,
-      maxHeight: 640,
-      success(file) {
-        return resolve({
-          success: true,
-          file: file,
-        });
-      },
-      error(err) {
-        return reject({
-          success: false,
-          message: err.message,
-        });
-      },
-    });
-  });
-};
-
-const imageCallBack = () => {
-  const input = document.createElement("input");
-  input.setAttribute("type", "file");
-  input.setAttribute("accept", "image/*");
-  input.click();
-  input.onchange = async () => {
-    const file = input.files[0];
-    const compressState = await fileCompress(file);
-    if (compressState.success) {
-      firebase.uploadReactQuillImage(compressState.file, quillRef);
-    }
-  };
-};
 
 const LabelCtn = styled.label`
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 550;
+  margin-right: 10px;
 `;
 
-const modules = {
-  toolbar: {
-    container: [
-      [{ header: "1" }, { header: "2" }, { font: [] }],
-      [{ size: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      [{ color: [] }, { background: [] }],
-      [{ align: [] }],
-      // ["link"],
-      ["link", "video", "image"],
-      ["clean"],
-    ],
-    handlers: { image: () => imageCallBack() },
-  },
-  clipboard: {
-    matchVisual: false,
-  },
-  // imageDrop: true,
-  imageResize: {
-    parchment: Quill.import("parchment"),
-    modules: ["Resize", "DisplaySize"],
-  },
-};
+const InputCtn = styled.input`
+  border-radius: 10px;
+  padding: 3px 10px;
+  font-size: 1.2rem;
+  margin: 1rem 0;
+  border: 1px solid #b5b2b0;
+`;
+
+const UploadBtn = styled.label`
+  background-color: transparent;
+`;
+
+const SubmitBtn = styled.button`
+  align-self: end;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 10px;
+`;
+
+const SwitchCtn = styled.div`
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+`;
+
+const SettingLb = styled.label`
+  align-self: center;
+  font-size: 1.1rem;
+  font-weight: 550;
+  margin-bottom: 10px;
+`;
+
+const PreViewCtn = styled.img`
+  width: 300px;
+  margin: 10px 0;
+`;
+
+const WrapperStyled = styled.div`
+  padding: 10px;
+`;
+
+const SettingWrapper = styled.div`
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #b5b2b0;
+  border-radius: 10px;
+`;
 
 const Miles = ({ user, groupList }) => {
-  console.log("groupListgroupListgroupListgroupList", groupList);
+  const history = useHistory();
 
-  const [showData, setShowData] = useState(false);
+  // const [showData, setShowData] = useState(false);
   const [title, setTitle] = useState("");
   const [value, setValue] = useState("");
   const [file, setFile] = useState(null);
@@ -163,11 +107,16 @@ const Miles = ({ user, groupList }) => {
       title,
     };
 
-    firebase.postArticles(data, file);
+    firebase.postArticles(data, file).then(() => {
+      alert("建立成功");
+      history.push("/");
+    });
   };
 
   useEffect(() => {
-    firebase.getOptionsName("groups", setgroupsName);
+    firebase.getMyGroupsName(user?.uid).then((res) => console.log(res));
+    // , setgroupsName
+    // firebase.getOptionsName("groups", setgroupsName);
   }, []);
 
   const previewImg = file
@@ -177,66 +126,49 @@ const Miles = ({ user, groupList }) => {
   return (
     <ContainerStyled>
       <MainContainer>
-        <h2>寫下你的里程碑吧!</h2>
-
-        <LabelCtn>文章標題</LabelCtn>
-        <input
+        {/* <h2>分享新的里程碑</h2> */}
+        <LabelCtn>分享新的里程碑</LabelCtn>
+        <InputCtn
           placeholder="請輸入標題..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <EditorArea>
-          <ReactQuill
-            ref={(el) => {
-              quillRef = el;
-            }}
-            theme="snow"
-            value={value}
-            onChange={editorHandler}
-            modules={modules}
-            formats={formats}
-            placeholder="開始建立里程碑吧..."
-          />
-        </EditorArea>
+        <WrapperStyled>
+          <RichTextEditor value={value} editorHandler={editorHandler} />
+        </WrapperStyled>
       </MainContainer>
       <SideSetting>
-        <LabelCtn> 文章設定</LabelCtn>
-        <Switch check={check} setCheck={setCheck} />
-
-        <Select
-          defaultValue={selected}
-          onChange={(e) => {
-            setSelected(e.value);
-          }}
-          // options={groupsName}
-          options={groupList.map((item) => {
-            return {
-              value: item.groupID,
-              label: item.name,
-            };
-          })}
-        />
-        <input
-          type="file"
-          id="upload-img"
-          style={{ display: "none" }}
-          onChange={(e) => {
-            setFile(e.target.files[0]);
-          }}
-        />
-        <img src={previewImg} style={{ width: "300px" }} />
-        <label htmlFor="upload-img">上傳封面圖片</label>
-        <button
-          onClick={() => {
-            setShowData(!showData);
-          }}
-        >
-          {showData ? "隱藏資料" : "顯示資料"}
-        </button>
-        <button onClick={handleSubmit}>寫入資料庫</button>
-        {/* <div>{showData ? value : ""}</div>
-        <h1>轉譯後</h1>
-        <div>{showData ? ReactHtmlParser(value) : ""}</div> */}
+        <SettingLb> 文章設定</SettingLb>
+        <SettingWrapper>
+          <SwitchCtn>
+            <div>設為公開</div>
+            <Switch check={check} setCheck={setCheck} />
+          </SwitchCtn>
+          <Select
+            defaultValue={selected}
+            onChange={(e) => {
+              setSelected(e.value);
+            }}
+            options={groupList.map((item) => {
+              return {
+                value: item.groupID,
+                label: item.name,
+              };
+            })}
+          />
+          <input
+            type="file"
+            id="upload-img"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              setFile(e.target.files[0]);
+            }}
+          />
+          <UploadBtn htmlFor="upload-img">
+            <PreViewCtn src={previewImg} />
+          </UploadBtn>
+        </SettingWrapper>
+        <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
       </SideSetting>
     </ContainerStyled>
   );

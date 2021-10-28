@@ -7,49 +7,30 @@ import { useParams, useHistory } from "react-router";
 import generateText from "../../utils/commonText";
 
 const ContainerStyled = styled.div`
-  /* background-color: red; */
-  /* max-width: 80%; */
-  /* border: 2px solid salmon;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between; */
-
   border-radius: 20px;
   border: 1px solid #3e2914;
   display: flex;
-  /* flex-direction: column; */
-
   margin: 3rem 5rem;
   padding: 3rem 5rem;
 `;
 
 const MainContainer = styled.div`
-  border: 2px solid yellow;
   display: flex;
   flex-direction: column;
 `;
 
 const InputCtn = styled.input`
-  /* width: 200px; */
-  /* flex-grow: 1; */
-  /* resize: none; */
-  /* background-color: red; */
-  /* height: 2rem; */
   border-radius: 10px;
   padding: 3px 10px;
   font-size: 1.2rem;
   margin: 1rem 0;
   border: 1px solid #b5b2b0;
-  /* overflow: hidden; */
-  /* width: 100%; */
-  /* min-height: 50px; */
 `;
 
 const SideSetting = styled.div`
   padding: 10px;
   display: flex;
   flex-direction: column;
-  /* background-color: salmon; */
   margin: 0 auto;
 `;
 
@@ -64,12 +45,7 @@ const LabelCtn = styled.label`
 `;
 
 const UploadBtn = styled.label`
-  /* background-color: black;
-  color: white;
-  padding: 1rem;
-  width: 10rem; */
   background-color: transparent;
-  /* text-align: center; */
 `;
 
 const SubmitBtn = styled.button`

@@ -176,7 +176,6 @@ export const postArticles = async (data, file) => {
   };
 
   const response = await setDoc(doc(db, "articles", docRefId), finalData);
-  alert("建立成功");
 };
 
 export const getRawGroupNotes = async (groupID, postID) => {
@@ -248,6 +247,17 @@ export const uploadReactQuillImage = async (file, quillRef) => {
 
 export const getOptionsName = async (optionName) => {
   const q = query(collection(db, optionName));
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push({ value: doc.data().name, label: doc.data().name });
+  });
+  return arr;
+};
+
+// 😎
+export const getMyGroupsName = async (userID) => {
+  const q = query(collection(db, "groups"));
   const querySnapshot = await getDocs(q);
   const arr = [];
   querySnapshot.forEach((doc) => {
@@ -438,104 +448,110 @@ export const getTotalApplicationList = async (groupID, setApplicationData) => {
   }
 };
 
-export const confirmApplication = async (groupID, docRefId, data) => {
-  const applicationRef = doc(db, "groups", groupID, "applications", docRefId);
-  await updateDoc(applicationRef, {
+export const confirmApplication = async (memberID, groupID, data) => {
+  const batch = writeBatch(db);
+
+  const applicationRef = doc(
+    collection(db, "groups", groupID, "applications"),
+    memberID
+  );
+  batch.update(applicationRef, {
     approve: true,
   });
 
-  const response = await setDoc(
-    doc(collection(db, "groups", groupID, "members"), docRefId),
-    data
-  );
-  return response;
+  const sfRef = doc(collection(db, "groups", groupID, "members"), memberID);
+  batch.set(sfRef, data);
+
+  const memberListRef = doc(collection(db, "groups"), groupID);
+  await updateDoc(memberListRef, {
+    membersList: arrayUnion(memberID),
+  });
+
+  await batch.commit();
+  // const response = await setDoc(
+  //   doc(collection(db, "groups", groupID, "members"), docRefId),
+  //   data
+  // );
+  // return response;
+
+  // 🥱🥱
+  // const applicationRef = doc(db, "groups", groupID, "applications", docRefId);
+  // await updateDoc(applicationRef, {
+  //   approve: true,
+  // });
+  // const response = await setDoc(
+  //   doc(collection(db, "groups", groupID, "members"), docRefId),
+  //   data
+  // );
+  // return response;
 };
 
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
 };
 
-///mess///
-
-// export const sendMessage = async (
-//   userID,
-//   dataSend,
-//   receiverID,
-//   dataReceive
-// ) => {
-//   const batch = writeBatch(db);
-//   const docSendRef = doc(
-//     collection(db, "users", userID, "messages", receiverID, "chats")
-//   );
-//   batch.set(docSendRef, dataSend);
-//   const docSendCluRef = doc(db, "users", userID, "messages", receiverID);
-//   batch.set(docSendCluRef, { messageID: receiverID });
-
-//   const docReceiverRef = doc(
-//     collection(db, "users", receiverID, "messages", userID, "chats")
-//   );
-//   batch.set(docReceiverRef, dataReceive);
-//   const docReceiverCluRef = doc(db, "users", receiverID, "messages", userID);
-
-//   batch.set(docReceiverCluRef, { messageID: userID });
-
-//   await batch.commit();
-//   // alert("send");
+// export const sendMessage = async (data) => {
+//   const docRefId = doc(collection(db, "messages")).id;
+//   const d = { ...data, docID: docRefId };
+// await setDoc(doc(collection(db, "messages"), docRefId), d);
 // };
 
-// const q = query(
-//   collection(db, "groups", groupID, "posts"),
-//   orderBy("creationTime", "desc")
-// );
-// const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//   const data = [];
-//   querySnapshot.forEach((doc) => {
-//     data.push(doc.data());
-//   });
-//   setRenderPost(data);
-// });
+export const sendMessage = async (data, meID, youID) => {
+  // const batch = writeBatch(db);
 
-export const sendMessage = async (data, userID) => {
-  // await setDoc(doc(db, "cities", "LA")
+  const meChatRef = doc(db, "users", meID);
+  await updateDoc(meChatRef, {
+    chatWith: arrayUnion(youID),
+  });
+  // batch.update(meChatRef, {
+  //   chatWith: arrayUnion(youID),
+  // });
 
-  const docRefId = doc(collection(db, "messages", userID, "chats")).id;
-  const finalData = { ...data, chatsID: docRefId };
+  const youChatRef = doc(db, "users", youID);
+  // batch.update(youChatRef, {
+  //   chatWith: arrayUnion(meID),
+  // });
 
-  await setDoc(
-    doc(collection(db, "messages", userID, "chats"), docRefId),
-    finalData
-  );
+  await updateDoc(youChatRef, {
+    chatWith: arrayUnion(meID),
+  });
 
-  // const msgRef = doc(db, "messages", userID, "chats").id;
+  // await updateDoc(meChatRef, {
+  //   chatWith: arrayUnion(youID),
+  // });
 
-  //  const response = await setDoc(
-  //    doc(collection(db, "groups", groupID, "members"), docRefId),
-  //    data
-  //  );
-
-  // const docRef = await setDoc(
-  //   collection(db, "messages", userID, "chats"),
-  //   data
-  // );
-  // const docRef = await setDoc(collection(db, "messages",userID,'chats'), data);
+  const docRefId = doc(collection(db, "messages")).id;
+  const d = { ...data, docID: docRefId };
+  await setDoc(doc(collection(db, "messages"), docRefId), d);
+  // batch.set(docRefId, d);
 };
 
-export const getMessagesData = async (userID, setFunction) => {
-  console.log("usssssssssssssss", userID);
+export const getMessagesData = async (me, you, setFunction) => {
+  const t = [you, me];
+  console.log("😍😍😎😍😍😍😍", [me, you]);
+  const messagesRef = collection(db, "messages");
 
+  // const q = query(messagesRef);
+  // const q = query(collection(db, "cities"), where("state", "==", "CA"));
   const q = query(
-    collection(db, "messages", userID, "chats"),
+    collection(db, "messages"),
+    where("usersID", "in", [t]),
     orderBy("creationTime", "asc")
+    // where("usersID", "in", [t])
+    // orderBy("creationTime", "desc")
   );
-  // const q = query(collection(db, "messages"), where("sender", "==", userID));
-  // console.log(q);
-
+  console.log(q);
+  // const q = query(
+  //   citiesRef,
+  //   where("regions", "in", [["west_coast", "east_coast"]])
+  // );
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const data = [];
     querySnapshot.forEach((doc) => {
       data.push(doc.data());
     });
     setFunction(data);
+    console.log("😍😍😎", data);
     return data;
   });
 };
