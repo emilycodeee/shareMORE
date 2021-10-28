@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
+import { useSelector } from "react-redux";
 import SigninPopup from "../SigninPopup";
 import logo from "../../sharemore.png";
 import chat from "../../sources/chat.png";
@@ -76,17 +76,18 @@ const Input = styled.input`
   border-radius: 21px;
 `;
 
-const Header = ({ user }) => {
+const Header = () => {
+  const userData = useSelector((state) => state.userData);
   const [showLogin, setShowLogin] = useState(false);
   const userAvatar =
-    user?.photoURL ||
+    userData?.photoURL ||
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
 
   const showLoginPage = () => {
     setShowLogin(!showLogin);
   };
 
-  if (!user && showLogin) {
+  if (!userData && showLogin) {
     return (
       <LoginPage
         data-target="shield"
@@ -106,7 +107,7 @@ const Header = ({ user }) => {
       <ListContainer>
         <Input placeholder="搜尋" type="text" />
         <ListStyled to="/milestones">我們的里程碑</ListStyled>
-        {user && (
+        {userData && (
           <>
             <ListStyled to="/mygroups">我的社群</ListStyled>
             <ListStyled to="/groups/post">發起社群</ListStyled>
@@ -118,7 +119,7 @@ const Header = ({ user }) => {
             </ListStyled>
           </>
         )}
-        {!user && <LoginBtn onClick={showLoginPage}>登入/註冊</LoginBtn>}
+        {!userData && <LoginBtn onClick={showLoginPage}>登入/註冊</LoginBtn>}
       </ListContainer>
     </HeaderContainer>
   );

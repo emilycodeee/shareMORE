@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-// import { useState, useEffect } from "react";
-
+import { useSelector } from "react-redux";
 const TestD = styled.div`
   width: 100%;
   border: 1px solid red;
@@ -42,18 +41,17 @@ const TextContainer = styled.div`
   text-overflow: ellipsis;
 `;
 
-// style={{ textDecoration: "none" }}
-const Card = ({ item, userList, groupList }) => {
-  // console.log(item);
+const Card = ({ item }) => {
+  const usersList = useSelector((state) => state.usersList);
+  const groupsList = useSelector((state) => state.groupsList);
   let currentCreator, currentGroup;
   let url = `/group/${item.groupID}`;
-  if (userList) {
-    currentCreator = userList.find((data) => data.userID === item.creatorID);
-    currentGroup = groupList.find((data) => data.groupID === item.groupID);
+  if (item.milestoneID) {
+    currentCreator = usersList.find((data) => data.userID === item.creatorID);
+    currentGroup = groupsList.find((data) => data.groupID === item.groupID);
     url = `/milestone/${item.milestoneID}`;
   }
 
-  // if (userList)
   return (
     <CardContainer to={url}>
       <TestD>

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import * as firebase from "../../../utils/firebase";
-
+import { useSelector } from "react-redux";
 const RecApplication = styled.div`
   display: flex;
 `;
@@ -36,19 +36,11 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const ApplicationList = ({
-  user,
-  groupData,
-  applicationData,
-  userList,
-  applicant,
-}) => {
-  const currentUser = userList.find(
+const ApplicationList = ({ groupData, applicationData, applicant }) => {
+  const usersList = useSelector((state) => state.usersList);
+  const currentUser = usersList.find(
     (each) => each.userID === applicant.applicantID
   );
-
-  console.log(currentUser);
-  console.log(applicant);
 
   const handleConfirm = () => {
     const data = {
@@ -58,13 +50,10 @@ const ApplicationList = ({
       membersDocID: currentUser.userID,
     };
 
-    // console.log(applicationData);
-
     firebase
       .confirmApplication(
         applicationData.applicantionID,
         groupData.groupID,
-        // applicationData.applicantionID,
         data
       )
       .then(() => {
@@ -74,7 +63,6 @@ const ApplicationList = ({
   };
 
   const handleReject = () => {
-    // console.log(applicationData.data[0].applicantionID);
     firebase
       .rejectApplication(groupData.groupID, applicationData.applicantionID)
       .then(() => {

@@ -2,15 +2,13 @@ import React from "react";
 import styled from "styled-components";
 import clap from "../../../sources/clap.png";
 import claped from "../../../sources/claped.png";
-import save from "../../../sources/save.png";
-import saved from "../../../sources/saved.png";
-import share from "../../../sources/share.png";
 import comment from "../../../sources/comment.png";
 import dots from "../../../sources/dots.png";
 import { useState, useEffect } from "react";
 import LeaveMessage from "./LeaveMessage";
 import * as firebase from "../../../utils/firebase";
 import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Wrapper = styled.div`
   margin: 0 auto;
@@ -142,19 +140,15 @@ const LinkStyle = styled(Link)`
 `;
 
 const ButtonStyled = styled.button`
-  /* width: 60px;
-  height: 30px; */
   padding: 8px 12px;
   margin-left: 10px;
-
-  /* border-radius: 10px; */
-  /* background-color: black; */
   display: flex;
   justify-content: end;
 `;
 
-const PostContainet = ({ item, userList, user, content }) => {
-  // console.log("sss", item);
+const PostContainet = ({ item, content }) => {
+  const userData = useSelector((state) => state.userData);
+  const usersList = useSelector((state) => state.usersList);
   const { groupID } = useParams();
   const postID = item.postID;
   const [showComment, setShowComment] = useState(false);
@@ -162,7 +156,7 @@ const PostContainet = ({ item, userList, user, content }) => {
   const [showDots, setShowDots] = useState(false);
   const [renderPost, setRenderPost] = useState([]);
   const [textValue, setTextValue] = useState("");
-  const postSender = userList.find((each) => each.userID === item.creatorID);
+  const postSender = usersList.find((each) => each.userID === item.creatorID);
 
   useEffect(() => {
     firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
@@ -170,7 +164,7 @@ const PostContainet = ({ item, userList, user, content }) => {
 
   const LeaveMsgHandler = () => {
     const data = {
-      creatorID: user.uid,
+      creatorID: userData.uid,
       content: textValue,
       creationTime: new Date(),
     };
@@ -181,7 +175,7 @@ const PostContainet = ({ item, userList, user, content }) => {
 
   const handleClap = () => {
     console.log("ssss", item.postID);
-    firebase.clapsForPost(item.groupID, item.postID, user.uid);
+    firebase.clapsForPost(item.groupID, item.postID, userData.uid);
   };
 
   const handleDelete = () => {
@@ -208,7 +202,7 @@ const PostContainet = ({ item, userList, user, content }) => {
               {item.creationTime?.toDate().toLocaleString("zh-TW")}
             </Pstyled>
           </UserDetail>
-          {content.creatorID === user.uid && (
+          {content.creatorID === userData.uid && (
             <HeadIcon
               src={dots}
               onClick={() => setShowDots(!showDots)}
@@ -237,7 +231,7 @@ const PostContainet = ({ item, userList, user, content }) => {
             }}
           >
             <CountWrapper>
-              <Icon src={item.clapBy?.includes(user.uid) ? claped : clap} />
+              <Icon src={item.clapBy?.includes(userData.uid) ? claped : clap} />
               <Count>{item.clapBy?.length > 0 && item.clapBy.length}</Count>
             </CountWrapper>
           </IconDiv>
@@ -257,13 +251,7 @@ const PostContainet = ({ item, userList, user, content }) => {
       {showComment && (
         <div>
           {renderPost.map((item) => {
-            return (
-              <LeaveMessage
-                itemData={item}
-                key={item.commentID}
-                userList={userList}
-              />
-            );
+            return <LeaveMessage itemData={item} key={item.commentID} />;
           })}
           <CommentCtn>
             <PostArea
@@ -291,16 +279,6 @@ const PostContainet = ({ item, userList, user, content }) => {
               </ButtonSet>
             )}
           </CommentCtn>
-
-          {/* {renderPost.map((item) => {
-            return (
-              <LeaveMessage
-                itemData={item}
-                key={item.commentID}
-                userList={userList}
-              />
-            );
-          })} */}
         </div>
       )}
     </div>

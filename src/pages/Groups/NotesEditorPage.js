@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useParams, useHistory } from "react-router";
 import generateText from "../../utils/commonText";
 
+import { useSelector } from "react-redux";
+
 const ContainerStyled = styled.div`
   border-radius: 20px;
   border: 1px solid #3e2914;
@@ -54,7 +56,8 @@ const SubmitBtn = styled.button`
   padding: 10px;
 `;
 
-const NotesEditorPage = ({ user }) => {
+const NotesEditorPage = () => {
+  const userData = useSelector((state) => state.userData);
   const { groupID, postID } = useParams();
   const history = useHistory();
   console.log(groupID, postID);
@@ -82,7 +85,7 @@ const NotesEditorPage = ({ user }) => {
     console.log(groupID, postID);
 
     const data = {
-      creatorID: user.uid,
+      creatorID: userData.uid,
       content: value,
       creationTime: new Date(),
       title,

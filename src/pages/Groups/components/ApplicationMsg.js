@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import * as firebase from "../../../utils/firebase";
 import ApplicationList from "./ApplicationList";
-import { useLocation, useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 const SendApplication = styled.div`
   display: flex;
   flex-direction: column;
@@ -44,37 +44,29 @@ const ApplicationStyled = styled.div`
   border-radius: 10px;
 `;
 
-const ApplicationMsg = ({
-  user,
-  groupData,
-  applicationData,
-  userList,
-  setShowApplication,
-  appliedData,
-}) => {
+const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
   const [value, setValue] = useState("");
-  const pathname = useLocation().pathname;
-  const history = useHistory();
+  const userData = useSelector((state) => state.userData);
   console.log(applicationData.data.length);
   const handleSubmit = () => {
     const data = {
       content: value,
       creationTime: new Date(),
       approve: false,
-      applicantID: user.uid,
-      applicantionID: user.uid,
+      applicantID: userData.uid,
+      applicantionID: userData.uid,
     };
     const response = firebase.SendApplication(
       groupData.groupID,
       data,
-      user.uid
+      userData.uid
     );
     response.then((res) => {
       alert("送出成功，請等候社長審核");
     });
   };
 
-  if (groupData.creatorID !== user.uid) {
+  if (groupData.creatorID !== userData.uid) {
     if (appliedData) {
       return (
         <>
@@ -102,20 +94,20 @@ const ApplicationMsg = ({
     );
   }
 
-  if (groupData.creatorID === user.uid && applicationData.data.length === 0) {
+  if (
+    groupData.creatorID === userData.uid &&
+    applicationData.data.length === 0
+  ) {
     return <div>社群申請已審核完畢</div>;
-  } else if (groupData.creatorID === user.uid) {
+  } else if (groupData.creatorID === userData.uid) {
     return (
       <>
         {applicationData.data.map((item) => {
-          // console.log("xxxxxxxxxxxxxxxxxx", item);
           return (
             <ApplicationList
               applicant={item}
               key={item.applicantID}
               applicationData={item}
-              userList={userList}
-              user={user}
               groupData={groupData}
             />
           );

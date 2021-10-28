@@ -6,7 +6,7 @@ import * as firebase from "../../utils/firebase";
 import Select from "react-select";
 import Switch from "../../components/Switch";
 import { useHistory } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 const ContainerStyled = styled.div`
   border-radius: 20px;
   border: 1px solid #3e2914;
@@ -82,10 +82,8 @@ const SettingWrapper = styled.div`
   border-radius: 10px;
 `;
 
-const Miles = ({ user, groupList }) => {
+const Miles = () => {
   const history = useHistory();
-
-  // const [showData, setShowData] = useState(false);
   const [title, setTitle] = useState("");
   const [value, setValue] = useState("");
   const [file, setFile] = useState(null);
@@ -93,9 +91,7 @@ const Miles = ({ user, groupList }) => {
   const [selected, setSelected] = useState(null);
   const [check, setCheck] = useState(false);
 
-  // const
-
-  console.log("ddddddddddd", groupList);
+  const userData = useSelector((state) => state.userData);
 
   const editorHandler = (e) => {
     setValue(e);
@@ -103,7 +99,7 @@ const Miles = ({ user, groupList }) => {
 
   const handleSubmit = () => {
     const data = {
-      creatorID: user.uid,
+      creatorID: userData.uid,
       content: value,
       groupID: selected,
       public: check,
@@ -118,8 +114,8 @@ const Miles = ({ user, groupList }) => {
   };
 
   useEffect(() => {
-    if (user) {
-      firebase.getMyGroupsName(user?.uid).then((res) => {
+    if (userData) {
+      firebase.getMyGroupsName(userData?.uid).then((res) => {
         // console.log("😁😁😀😀", res);
         setgroupsName(res);
 
@@ -129,7 +125,7 @@ const Miles = ({ user, groupList }) => {
         }
       });
     }
-  }, [user]);
+  }, []);
 
   const previewImg = file
     ? URL.createObjectURL(file)
@@ -138,7 +134,6 @@ const Miles = ({ user, groupList }) => {
   return (
     <ContainerStyled>
       <MainContainer>
-        {/* <h2>分享新的里程碑</h2> */}
         <LabelCtn>分享新的里程碑</LabelCtn>
         <InputCtn
           placeholder="請輸入標題..."

@@ -7,7 +7,7 @@ import Card from "./components/Card";
 import Signin from "../../components/Signin";
 import { TopCover, ViderCover, Shield } from "./index.styled";
 import { Link } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
@@ -75,7 +75,10 @@ const Slogan = styled.div`
   margin: 2rem;
 `;
 
-const HomePage = ({ user, categoriesName, userList, groupList }) => {
+const HomePage = ({ userList, groupList }) => {
+  const categoryList = useSelector((state) => state.categoryList);
+  const userData = useSelector((state) => state.userData);
+
   const [groupsIntro, setGroupsIntro] = useState([]);
   const [milestonesIntro, setMilestonesIntro] = useState([]);
 
@@ -93,10 +96,10 @@ const HomePage = ({ user, categoriesName, userList, groupList }) => {
         <Shield />
       </TopCover>
       <hr />
-      {!user && <Signin />}
+      {!userData && <Signin />}
       <div>
         <ListWrapper>
-          {categoriesName.map((item, i) => {
+          {categoryList.map((item, i) => {
             return (
               <ListCtn key={i}>
                 <Link to="/groups/" style={{ textDecoration: "none" }}>
@@ -122,6 +125,7 @@ const HomePage = ({ user, categoriesName, userList, groupList }) => {
         <Slogan>一起的日子 慶祝我們的里程碑</Slogan>
         <Wrapper>
           {milestonesIntro.map((item) => {
+            console.log(item);
             return (
               <Card
                 item={item}
