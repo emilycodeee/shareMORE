@@ -14,84 +14,85 @@ import ProfilePage from "./pages/Profile";
 import NotesEditorPage from "./pages/Groups/NotesEditorPage";
 import ChatRoom from "./pages/ChatRoom";
 
-import { useEffect, useState } from "react";
-import styled from "styled-components";
+import { useEffect } from "react";
 import * as firebase from "./utils/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getGroupsList,
+  getUsersList,
+  getUserData,
+  getCategoryList,
+} from "./redux/actions";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [userList, setUserList] = useState([]);
-  const [groupList, setGroupList] = useState([]);
-  const [categoriesName, setCategoriesName] = useState([]);
+  const d = useDispatch();
+  const userData = useSelector((state) => state.userData);
+
   useEffect(() => {
+    // if (userData) return;
     firebase
       .getOptionsName("categories")
       .then((res) => {
-        setCategoriesName(res);
+        //redux
+        d(getCategoryList(res));
       })
       .catch((err) => console.log(err));
     firebase.subscribeToUser((currentUser) => {
       if (currentUser) {
-        setUser(currentUser);
+        //redux
+        d(getUserData(currentUser));
       } else {
-        setUser(null);
+        d(getUserData(null));
       }
     });
-
+    //redux
     firebase
       .getTotalDocList("users")
-      .then((res) => setUserList(res))
+      .then((res) => d(getUsersList(res)))
       .catch((err) => console.log(err));
+
     firebase
       .getTotalDocList("groups")
-      .then((res) => setGroupList(res))
+      .then((res) => d(getGroupsList(res)))
       .catch((err) => console.log(err));
   }, []);
 
   return (
-    <Layouts user={user}>
+    <Layouts>
       <Switch>
         <Route path="/" exact>
-          <HomePage
-            user={user}
-            categoriesName={categoriesName}
-            userList={userList}
-            groupList={groupList}
-          />
+          <HomePage />
         </Route>
         <Route path="/milestones/post" exact>
-          <MilestoneEditor user={user} groupList={groupList} />
-        </Route>
-        <Route path="/show" exact>
           <MilestoneEditor />
         </Route>
+
         <Route path="/groups/post" exact>
-          <BuildGroups user={user} categoriesName={categoriesName} />
+          <BuildGroups />
         </Route>
         <Route path="/group/:groupID" exact>
-          <GroupPage user={user} userList={userList} />
+          <GroupPage />
         </Route>
         <Route path="/group/:groupID/notes" exact>
-          <NotesPage user={user} userList={userList} />
+          <NotesPage />
         </Route>
         <Route path="/group/:groupID/notes/:postID/post" exact>
-          <NotesEditorPage user={user} userList={userList} />
+          <NotesEditorPage />
         </Route>
         <Route path="/milestones" exact>
-          <MilestonesPage user={user} userList={userList} />
+          <MilestonesPage />
         </Route>
         <Route path="/milestone/:milestoneID" exact>
-          <MilestonePage user={user} userList={userList} />
+          <MilestonePage />
         </Route>
         <Route path="/myprofile" exact>
-          <MyProfilePage user={user} userList={userList} />
+          <MyProfilePage />
         </Route>
-
-        <Route path="/messages/:sendTo">
-          <ChatRoom user={user} userList={userList} />
+        <Route path="/messages/:sendTo" exact>
+          <ChatRoom />
         </Route>
         <Route path="/profile/:userID" exact>
-          <ProfilePage user={user} userList={userList} />
+          <ProfilePage />
         </Route>
       </Switch>
     </Layouts>

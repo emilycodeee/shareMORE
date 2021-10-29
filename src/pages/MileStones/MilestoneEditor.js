@@ -6,7 +6,7 @@ import * as firebase from "../../utils/firebase";
 import Select from "react-select";
 import Switch from "../../components/Switch";
 import { useHistory } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 const ContainerStyled = styled.div`
   border-radius: 20px;
   border: 1px solid #3e2914;
@@ -43,6 +43,7 @@ const InputCtn = styled.input`
 
 const UploadBtn = styled.label`
   background-color: transparent;
+  margin: 0 auto;
 `;
 
 const SubmitBtn = styled.button`
@@ -76,39 +77,59 @@ const WrapperStyled = styled.div`
 `;
 
 const SettingWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #b5b2b0;
   border-radius: 10px;
 `;
 
-const Miles = ({ user, groupList }) => {
-  const history = useHistory();
+const Introduce = styled.textarea`
+  border: none;
+  background-color: #f5f5f5;
+  padding: 10px;
+  resize: none;
+  margin: 10px;
+`;
 
-  // const [showData, setShowData] = useState(false);
+const Miles = () => {
+  const history = useHistory();
   const [title, setTitle] = useState("");
+  const [introduce, setIntroduce] = useState("");
   const [value, setValue] = useState("");
   const [file, setFile] = useState(null);
   const [groupsName, setgroupsName] = useState("");
   const [selected, setSelected] = useState(null);
-  const [check, setCheck] = useState(false);
+  const [check, setCheck] = useState(true);
 
-  // const
-
-  console.log("ddddddddddd", groupList);
+  const userData = useSelector((state) => state.userData);
 
   const editorHandler = (e) => {
     setValue(e);
   };
 
   const handleSubmit = () => {
+    if (value.length === 0 || introduce.length === 0) {
+      alert("請填寫完整內容");
+      return;
+    }
+
+    if (selected === null) {
+      alert("請選擇社群名稱");
+      return;
+    }
+
     const data = {
-      creatorID: user.uid,
+      creatorID: userData.uid,
       content: value,
       groupID: selected,
       public: check,
       creationTime: new Date(),
       title,
+      introduce,
     };
 
     firebase.postArticles(data, file).then(() => {
@@ -118,8 +139,12 @@ const Miles = ({ user, groupList }) => {
   };
 
   useEffect(() => {
-    if (user) {
-      firebase.getMyGroupsName(user?.uid).then((res) => {
+    if (!userData) {
+      // alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
+      history.push("/");
+    }
+    if (userData) {
+      firebase.getMyGroupsName(userData?.uid).then((res) => {
         // console.log("😁😁😀😀", res);
         setgroupsName(res);
 
@@ -129,7 +154,7 @@ const Miles = ({ user, groupList }) => {
         }
       });
     }
-  }, [user]);
+  }, []);
 
   const previewImg = file
     ? URL.createObjectURL(file)
@@ -138,7 +163,6 @@ const Miles = ({ user, groupList }) => {
   return (
     <ContainerStyled>
       <MainContainer>
-        {/* <h2>分享新的里程碑</h2> */}
         <LabelCtn>分享新的里程碑</LabelCtn>
         <InputCtn
           placeholder="請輸入標題..."
@@ -162,6 +186,11 @@ const Miles = ({ user, groupList }) => {
               setSelected(e.value);
             }}
             options={groupsName}
+          />
+          <Introduce
+            value={introduce}
+            placeholder="請輸入文章摘要"
+            onChange={(e) => setIntroduce(e.target.value)}
           />
           <input
             type="file"

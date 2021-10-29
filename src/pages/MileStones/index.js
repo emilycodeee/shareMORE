@@ -43,9 +43,7 @@ const SideSetting = styled.div`
   margin: 0 auto;
 `;
 
-const ContentCtn = styled.div``;
-
-const MilestonePage = ({ user, userList }) => {
+const MilestonePage = () => {
   const { milestoneID } = useParams();
   const [content, setContent] = useState({});
 

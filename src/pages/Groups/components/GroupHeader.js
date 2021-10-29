@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { Link, useLocation, useHistory } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ApplicationPopup from "./ApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
-
+import { useSelector } from "react-redux";
 const AvatarImg = styled.img`
   max-height: 3rem;
   border-radius: 50%;
@@ -16,14 +16,12 @@ const NameLogo = styled.div`
   font-weight: 550;
   font-size: 2rem;
   flex-grow: 1;
-  /* border: 1px solid red; */
 `;
 
 const Wrapper = styled.div`
   padding: 0 2rem;
   display: flex;
   justify-content: end;
-  /* background-color: salmon; */
 `;
 
 const UlStyled = styled.ul`
@@ -37,7 +35,6 @@ const LiStyled = styled.li`
   padding: 0.6rem 1rem;
   height: auto;
   display: inline-block;
-  /* background-color: lightblue; */
   text-decoration: none;
   margin-right: 10px;
   cursor: pointer;
@@ -53,22 +50,17 @@ const LinkStyled = styled(Link)`
   padding: 0.6rem 1rem;
   height: auto;
   display: inline-block;
-  /* background-color: lightblue; */
   text-decoration: none;
   margin-right: 10px;
-  /* padding: 6px 6px; */
   border-radius: 40px;
   border: 1px solid rgb(70 69 65);
 `;
 
 const LinkAvatar = styled(Link)`
   padding: 0;
-  /* border-radius: 50%; */
   height: auto;
   display: inline-block;
   margin-right: 1rem;
-  /* box-shadow: 10px 5px 5px black; */
-  /* box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px; */
 `;
 
 const Shield = styled.div`
@@ -79,20 +71,17 @@ const Shield = styled.div`
   position: fixed;
   z-index: 99;
   background-color: rgba(0, 0, 0, 0.8);
-  /* cursor: zoom-out; */
 `;
 
-const GroupHeader = ({ content, user, userList, stationHead }) => {
-  console.log("🎇", user);
+const GroupHeader = ({ content, stationHead }) => {
+  const userData = useSelector((state) => state.userData);
+  // const usersList = useSelector((state) => state.usersList);
 
-  // console.log(useLocation());
   const [showApplication, setShowApplication] = useState(false);
-  // const [applicationCount, setApplicationCount] = useState("");
+
   const [applicationData, setApplicationData] = useState({});
 
   const [appliedData, setAppliedData] = useState("");
-
-  console.log(applicationData);
 
   useEffect(() => {
     if (content.groupID) {
@@ -102,7 +91,7 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
 
   useEffect(() => {
     const data = applicationData.data?.find(
-      (each) => each.applicantID === user?.uid
+      (each) => each.applicantID === userData?.uid
     );
 
     if (data) {
@@ -113,8 +102,8 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
   const root = "http://localhost:3000";
   const location = useLocation();
   const checkMember =
-    (user !== null && content?.membersList?.includes(user.uid)) ||
-    content?.creatorID === user?.uid;
+    (userData !== null && content?.membersList?.includes(userData.uid)) ||
+    content?.creatorID === userData?.uid;
 
   if (showApplication) {
     return (
@@ -127,11 +116,8 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
       >
         <ApplicationPopup
           appliedData={appliedData}
-          setShowApplication={setShowApplication}
-          user={user}
           groupData={content}
           applicationData={applicationData}
-          userList={userList}
         />
       </Shield>
     );
@@ -155,7 +141,7 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
         {checkMember && (
           <LinkStyled to={`${location.pathname}/notes`}>社群筆記</LinkStyled>
         )}
-        {content.creatorID === user?.uid ? (
+        {content.creatorID === userData?.uid ? (
           <LiStyled
             setShowApplication={setShowApplication}
             onClick={() => {
@@ -168,7 +154,7 @@ const GroupHeader = ({ content, user, userList, stationHead }) => {
         ) : (
           <LiStyled
             onClick={() => {
-              if (user === null) {
+              if (userData === null) {
                 alert("請先登入或加入會員");
                 return;
               }

@@ -11,6 +11,8 @@ import moreIcon from "../../sources/three-dots.png";
 import MemberAvatar from "./components/MemberAvatar";
 import { dateCounter } from "../../utils/commonText";
 
+import { useSelector } from "react-redux";
+
 const SectionStyled = styled.section`
   display: flex;
   flex-direction: column;
@@ -18,25 +20,14 @@ const SectionStyled = styled.section`
 `;
 
 const MemberContainer = styled.div`
-  /* line-height: 1.5rem; */
   min-height: 35px;
   box-shadow: 2px 2px 3px #d1cbcb;
   border-radius: 20px;
   border: 1px solid #d1cbcb;
-  /* background-color: lightblue; */
-  /* padding: 1rem; */
-
   display: flex;
   flex-wrap: wrap;
-
   justify-content: start;
-  /* overflow: hidden; */
   padding: 0.6rem;
-  /* padding: 0 10px; */
-`;
-
-const memberCard = styled.div`
-  border-radius: 50%;
 `;
 
 const TopCover = styled.div`
@@ -44,7 +35,6 @@ const TopCover = styled.div`
   opacity: 0.8;
   margin-bottom: 0.8rem;
   height: 300px;
-  /* border: 1px solid red; */
   background-size: cover;
   background-position: center;
   box-shadow: 0px 2px 5px grey;
@@ -62,7 +52,6 @@ const ContentStyled = styled.div`
   box-shadow: 2px 2px 3px #d1cbcb;
   border-radius: 20px;
   border: 1px solid #d1cbcb;
-  /* background-color: lightblue; */
   padding: 1rem;
 `;
 
@@ -85,7 +74,6 @@ const PostArea = styled.textarea`
   padding: 1rem 1.5rem;
   border-radius: 10px;
   background-color: #eeeeee;
-  /* opacity: 0.3; */
   color: black;
 `;
 
@@ -101,7 +89,10 @@ const GoalDate = styled.div`
   justify-content: space-between;
 `;
 
-const GroupPage = ({ user, userList }) => {
+const GroupPage = () => {
+  const userData = useSelector((state) => state.userData);
+  const usersList = useSelector((state) => state.usersList);
+
   const { groupID } = useParams();
   const [showBtn, setShowBtn] = useState(false);
   const [content, setContent] = useState({});
@@ -117,16 +108,7 @@ const GroupPage = ({ user, userList }) => {
     firebase.postsListener(groupID, setRenderPost);
 
     firebase.getMembersList(groupID, setRenderMember);
-
-    // firebase.getMembersList(groupID).then((res) => setRenderMember(res));
-
-    // .then((res) => {
-    //   setRenderPost(res);
-    // })
-    // .catch((err) => console.log(err));
   }, []);
-
-  console.log("cccccc", content);
 
   dateCounter(content.goalDate);
 
@@ -134,14 +116,14 @@ const GroupPage = ({ user, userList }) => {
     const data = {
       content: textValue,
       creationTime: new Date(),
-      creatorID: user.uid,
+      creatorID: userData.uid,
       groupID: groupID,
     };
     firebase.sendGroupsPost(groupID, data);
     setShowBtn(false);
     setTextValue("");
   };
-  const stationHead = userList.find(
+  const stationHead = usersList.find(
     (item) => item.userID === content.creatorID
   );
 
@@ -149,21 +131,12 @@ const GroupPage = ({ user, userList }) => {
             ${dateCounter(content.goalDate)}天`;
 
   const checkMember =
-    (user !== null && content?.membersList?.includes(user.uid)) ||
-    content?.creatorID === user?.uid;
+    (userData !== null && content?.membersList?.includes(userData.uid)) ||
+    content?.creatorID === userData?.uid;
   return (
     <Wrapper>
       <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
-      <GroupHeader
-        content={content}
-        user={user}
-        userList={userList}
-        stationHead={stationHead}
-      />
-      {/* <SectionStyled>
-        <LabelStyled>社群名稱</LabelStyled>
-        <div>{content.name}</div>
-      </SectionStyled> */}
+      <GroupHeader content={content} stationHead={stationHead} />
       <SectionStyled>
         <LabelStyled>學習夥伴</LabelStyled>
         <MemberContainer>
@@ -172,12 +145,7 @@ const GroupPage = ({ user, userList }) => {
           )}
 
           {renderMember.map((item) => (
-            <MemberAvatar
-              src={fish}
-              key={item.memberID}
-              data={item}
-              userList={userList}
-            />
+            <MemberAvatar src={fish} key={item.memberID} data={item} />
           ))}
         </MemberContainer>
       </SectionStyled>
@@ -207,13 +175,7 @@ const GroupPage = ({ user, userList }) => {
 
           {renderPost?.map((item) => {
             return (
-              <PostContainer
-                key={item.postID}
-                item={item}
-                userList={userList}
-                user={user}
-                content={content}
-              />
+              <PostContainer key={item.postID} item={item} content={content} />
             );
           })}
         </SectionStyled>

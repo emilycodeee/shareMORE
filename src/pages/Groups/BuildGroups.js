@@ -6,10 +6,8 @@ import styled from "styled-components";
 import * as firebase from "../../utils/firebase";
 import { useHistory } from "react-router-dom";
 import { initText } from "../../utils/commonText";
+import { useSelector } from "react-redux";
 const MainContainer = styled.div`
-  /* padding: 20px; */
-  /* margin: 20px; */
-  /* background-color: red; */
   border-radius: 20px;
   border: 1px solid #3e2914;
   display: flex;
@@ -20,12 +18,8 @@ const MainContainer = styled.div`
 `;
 
 const LabelCtn = styled.label`
-  /* color: red; */
   font-size: 1.1rem;
   font-weight: 550;
-  /* display: flex;
-  flex-wrap: nowrap; */
-  /* justify-content: space-between; */
   margin-right: 10px;
 `;
 
@@ -44,34 +38,21 @@ const Field = styled.div`
 `;
 
 const InputCtn = styled.input`
-  /* width: 200px; */
   flex-grow: 1;
   resize: none;
-  /* background-color: red; */
   height: 2rem;
   border-radius: 10px;
   padding: 3px 10px;
   font-size: 1.2rem;
   border: 1px solid #b5b2b0;
-  /* overflow: hidden; */
-  /* width: 100%; */
-  /* min-height: 50px; */
 `;
 
 const TextareaCtn = styled.textarea`
   flex-grow: 1;
   border-radius: 10px;
   border: 1px solid #b5b2b0;
+  padding: 10px;
 `;
-
-// const customStyles = {
-//   option: (provided, state) => ({
-//     ...provided,
-//     // // borderBottom: "1px dotted pink",
-//     // // color: state.isSelected ? "red" : "blue",
-//     width: state.selectProps.width,
-//   }),
-// };
 
 const EditArea = styled.div`
   display: flex;
@@ -84,7 +65,6 @@ const Slogan = styled.div`
   font-weight: 550;
   font-size: 2rem;
   margin-bottom: 3rem;
-  /* flex-grow: 1; */
 `;
 
 const UploadBtn = styled.label`
@@ -107,11 +87,11 @@ const SubmitBtn = styled.button`
   padding: 10px;
 `;
 
-const BuildGroups = ({ user, categoriesName }) => {
+const BuildGroups = () => {
   const history = useHistory();
-  console.log(user);
-  // const initText = `<p>-目標建立tips-</p><p>SMART 原則</p><p>S- Specific (具體的)</p><p>M- Measurable (可衡量的)</p><p>A- Attainable (可實現的)</p><p>R- Relevant（息息相關的）</p><p>T- Timely (有時限的)</p>`;
-  //init
+  const categoryList = useSelector((state) => state.categoryList);
+  const userData = useSelector((state) => state.userData);
+
   const [file, setFile] = useState(null);
 
   const [subClassesName, setSubClassesName] = useState("");
@@ -134,7 +114,7 @@ const BuildGroups = ({ user, categoriesName }) => {
   const previewImg = file
     ? URL.createObjectURL(file)
     : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
-  // console.log(user);
+
   const handleSubmit = () => {
     const data = {
       name,
@@ -144,7 +124,7 @@ const BuildGroups = ({ user, categoriesName }) => {
       subClass: selectedSubClass,
       creationTime: new Date(),
       introduce,
-      creatorID: user.uid,
+      creatorID: userData.uid,
       public: true,
     };
     firebase.createGroup(data, file);
@@ -158,18 +138,18 @@ const BuildGroups = ({ user, categoriesName }) => {
         <Slogan>shareMore。一起，走得更遠</Slogan>
         <Field>
           <LabelWrapper>
-            <LabelCtn>主題類別：</LabelCtn>
+            <LabelCtn>主題類別</LabelCtn>
             <Select
               defaultValue={selectedCategory}
               onChange={(e) => {
                 console.log(e);
                 setSelectedCategory(e.value);
               }}
-              options={categoriesName}
+              options={categoryList}
             />
           </LabelWrapper>
           <LabelWrapper>
-            <LabelCtn>子類別：</LabelCtn>
+            <LabelCtn>子類別</LabelCtn>
             <Select
               defaultValue={selectedSubClass}
               onChange={(e) => {
@@ -182,7 +162,7 @@ const BuildGroups = ({ user, categoriesName }) => {
         </Field>
 
         <Field>
-          <LabelCtn>社群名稱：</LabelCtn>
+          <LabelCtn>社群名稱</LabelCtn>
           <InputCtn
             placeholder="為社群取個喜歡的名字吧"
             value={name}
@@ -205,7 +185,7 @@ const BuildGroups = ({ user, categoriesName }) => {
           />
         </Field>
         <Field>
-          <LabelCtn>社群介紹：</LabelCtn>
+          <LabelCtn>社群介紹</LabelCtn>
           <TextareaCtn
             style={{ minHeight: "100px" }}
             placeholder="我想這樣介紹這個社群......"

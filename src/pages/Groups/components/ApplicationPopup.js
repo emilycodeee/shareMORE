@@ -49,14 +49,7 @@ export const InputStyled = styled.input`
   width: auto;
 `;
 
-const ApplicationPopup = ({
-  user,
-  groupData,
-  applicationData,
-  userList,
-  setShowApplication,
-  appliedData,
-}) => {
+const ApplicationPopup = ({ groupData, applicationData, appliedData }) => {
   return (
     <Container>
       <Sider>
@@ -66,11 +59,8 @@ const ApplicationPopup = ({
       <MainCtn>
         <ApplicationMsg
           appliedData={appliedData}
-          setShowApplication={setShowApplication}
-          user={user}
           groupData={groupData}
           applicationData={applicationData}
-          userList={userList}
         />
       </MainCtn>
     </Container>
