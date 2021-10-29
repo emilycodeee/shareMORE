@@ -1,7 +1,7 @@
 const groupsListReducer = (state = [], action) => {
   switch (action.type) {
     case "GET_GROUPSLIST":
-      return state.concat(action.payload);
+      return (state = action.payload);
     default:
       return state;
   }

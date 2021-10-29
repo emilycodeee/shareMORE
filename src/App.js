@@ -26,13 +26,10 @@ import {
 
 function App() {
   const d = useDispatch();
-  const categoryList = useSelector((state) => state.categoryList);
-  // const [user, setUser] = useState(null);
-  // const [userList, setUserList] = useState([]);
-  // const [groupList, setGroupList] = useState([]);
-  // const [categoriesName, setCategoriesName] = useState([]);
+  const userData = useSelector((state) => state.userData);
+
   useEffect(() => {
-    if (categoryList.length > 0) return;
+    // if (userData) return;
     firebase
       .getOptionsName("categories")
       .then((res) => {
@@ -91,8 +88,7 @@ function App() {
         <Route path="/myprofile" exact>
           <MyProfilePage />
         </Route>
-
-        <Route path="/messages/:sendTo">
+        <Route path="/messages/:sendTo" exact>
           <ChatRoom />
         </Route>
         <Route path="/profile/:userID" exact>

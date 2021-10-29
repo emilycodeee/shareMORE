@@ -288,6 +288,39 @@ export const getMyGroupsName = async (userID) => {
   console.log("🍕🍕🍕🍕", arr);
   return arr;
 };
+//
+export const getMyGroupsObj = async (userID) => {
+  const memberQ = query(
+    collection(db, "groups"),
+    where("membersList", "array-contains", userID)
+  );
+
+  const memberQuerySnapshot = await getDocs(memberQ);
+  const memberArr = [];
+  memberQuerySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+
+    memberArr.push(doc.data());
+    // console.log(doc.id, " => ", doc.data());
+  });
+
+  const creatorQ = query(
+    collection(db, "groups"),
+    where("creatorID", "==", userID)
+  );
+
+  const creatorQuerySnapshot = await getDocs(creatorQ);
+  const creatorArr = [];
+  creatorQuerySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+
+    creatorArr.push(doc.data());
+    // console.log(doc.id, " => ", doc.data());
+  });
+
+  // console.log("🍕🍕🍕🍕", arr);
+  return { participate: memberArr, owner: creatorArr };
+};
 
 export const getQueryFilter = async (collectionName, fieldName, queryName) => {
   const q = query(
@@ -301,6 +334,26 @@ export const getQueryFilter = async (collectionName, fieldName, queryName) => {
       arr.push({ value: each, label: each });
     });
   });
+  return arr;
+};
+
+export const getMyMilestones = async (userID) => {
+  const q = query(
+    collection(db, "articles"),
+    where("creatorID", "==", userID),
+    where("public", "==", true)
+  );
+
+  const qSnapshot = await getDocs(q);
+  const arr = [];
+  qSnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+
+    arr.push(doc.data());
+    // console.log(doc.id, " => ", doc.data());
+  });
+
+  // console.log("🍕🍕🍕🍕", arr);
   return arr;
 };
 

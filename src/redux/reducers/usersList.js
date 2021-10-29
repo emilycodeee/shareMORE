@@ -1,7 +1,7 @@
 const usersListReducer = (state = [], action) => {
   switch (action.type) {
     case "GET_USERSLIST":
-      return state.concat(action.payload);
+      return (state = action.payload);
     default:
       return state;
   }

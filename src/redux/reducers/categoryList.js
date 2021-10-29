@@ -2,7 +2,7 @@
 const categoryListReducer = (state = [], action) => {
   switch (action.type) {
     case "GET_CATEGORY":
-      return state.concat(action.payload);
+      return (state = action.payload);
     default:
       return state;
   }

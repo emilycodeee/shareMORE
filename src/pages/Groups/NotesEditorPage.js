@@ -34,6 +34,10 @@ const SideSetting = styled.div`
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  border-radius: 10px;
+  border: 1px solid rgb(219, 216, 214);
+  /* align-items: center;
+  justify-content: center; */
 `;
 
 const EditorArea = styled.div`
@@ -46,6 +50,12 @@ const LabelCtn = styled.label`
   margin-right: 10px;
 `;
 
+const SideLabel = styled.label`
+  font-size: 1.1rem;
+  font-weight: 550;
+  text-align: center;
+`;
+
 const UploadBtn = styled.label`
   background-color: transparent;
 `;
@@ -54,6 +64,15 @@ const SubmitBtn = styled.button`
   align-self: end;
   margin: 0 auto;
   padding: 10px;
+`;
+
+const Introduce = styled.textarea`
+  border: none;
+  background-color: #f5f5f5;
+  padding: 10px;
+  resize: none;
+  margin: 10px;
+  /* width: 300px; */
 `;
 
 const NotesEditorPage = () => {
@@ -65,7 +84,7 @@ const NotesEditorPage = () => {
   const [title, setTitle] = useState("");
   const [value, setValue] = useState("");
   const [file, setFile] = useState(null);
-
+  const [introduce, setIntroduce] = useState("");
   const editorHandler = (e) => {
     setValue(e);
   };
@@ -84,11 +103,17 @@ const NotesEditorPage = () => {
   const handleSubmit = () => {
     console.log(groupID, postID);
 
+    if (introduce.length === 0) {
+      alert("請填寫筆記摘要");
+      return;
+    }
+
     const data = {
       creatorID: userData.uid,
       content: value,
       creationTime: new Date(),
       title,
+      introduce,
     };
 
     firebase
@@ -124,7 +149,12 @@ const NotesEditorPage = () => {
           </EditorArea>
         </MainContainer>
         <SideSetting>
-          <LabelCtn> 設定筆記封面</LabelCtn>
+          <SideLabel>筆記文章設定</SideLabel>
+          <Introduce
+            value={introduce}
+            placeholder="請輸入文章摘要"
+            onChange={(e) => setIntroduce(e.target.value)}
+          />
           <input
             type="file"
             id="upload-img"

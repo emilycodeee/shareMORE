@@ -51,6 +51,7 @@ const TextareaCtn = styled.textarea`
   flex-grow: 1;
   border-radius: 10px;
   border: 1px solid #b5b2b0;
+  padding: 10px;
 `;
 
 const EditArea = styled.div`
@@ -137,7 +138,7 @@ const BuildGroups = () => {
         <Slogan>shareMore。一起，走得更遠</Slogan>
         <Field>
           <LabelWrapper>
-            <LabelCtn>主題類別：</LabelCtn>
+            <LabelCtn>主題類別</LabelCtn>
             <Select
               defaultValue={selectedCategory}
               onChange={(e) => {
@@ -148,7 +149,7 @@ const BuildGroups = () => {
             />
           </LabelWrapper>
           <LabelWrapper>
-            <LabelCtn>子類別：</LabelCtn>
+            <LabelCtn>子類別</LabelCtn>
             <Select
               defaultValue={selectedSubClass}
               onChange={(e) => {
@@ -161,7 +162,7 @@ const BuildGroups = () => {
         </Field>
 
         <Field>
-          <LabelCtn>社群名稱：</LabelCtn>
+          <LabelCtn>社群名稱</LabelCtn>
           <InputCtn
             placeholder="為社群取個喜歡的名字吧"
             value={name}
@@ -184,7 +185,7 @@ const BuildGroups = () => {
           />
         </Field>
         <Field>
-          <LabelCtn>社群介紹：</LabelCtn>
+          <LabelCtn>社群介紹</LabelCtn>
           <TextareaCtn
             style={{ minHeight: "100px" }}
             placeholder="我想這樣介紹這個社群......"
