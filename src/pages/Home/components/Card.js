@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 const TestD = styled.div`
   width: 100%;
-  border: 1px solid red;
+  /* border: 1px solid red; */
 `;
 
 const CardContainer = styled(Link)`
@@ -12,6 +12,7 @@ const CardContainer = styled(Link)`
   box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
   border-radius: 10px;
   margin-bottom: 10px;
+  height: 280px;
 `;
 
 const CoverContainer = styled.div`

@@ -13,6 +13,7 @@ import MyProfilePage from "./pages/Profile/MyProfile";
 import ProfilePage from "./pages/Profile";
 import NotesEditorPage from "./pages/Groups/NotesEditorPage";
 import ChatRoom from "./pages/ChatRoom";
+import ProfileSetting from "./pages/Profile/ProfileSetting";
 
 import { useEffect } from "react";
 import * as firebase from "./utils/firebase";
@@ -66,7 +67,6 @@ function App() {
         <Route path="/milestones/post" exact>
           <MilestoneEditor />
         </Route>
-
         <Route path="/groups/post" exact>
           <BuildGroups />
         </Route>
@@ -93,6 +93,9 @@ function App() {
         </Route>
         <Route path="/profile/:userID" exact>
           <ProfilePage />
+        </Route>
+        <Route path="/profile/:userID/edit" exact>
+          <ProfileSetting />
         </Route>
       </Switch>
     </Layouts>

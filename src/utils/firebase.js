@@ -340,8 +340,8 @@ export const getQueryFilter = async (collectionName, fieldName, queryName) => {
 export const getMyMilestones = async (userID) => {
   const q = query(
     collection(db, "articles"),
-    where("creatorID", "==", userID),
-    where("public", "==", true)
+    where("creatorID", "==", userID)
+    // where("public", "==", true)
   );
 
   const qSnapshot = await getDocs(q);

@@ -3,21 +3,22 @@ import styled from "styled-components";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-// import SideCard from "./components/SideCard";
 import { useEffect, useRef } from "react";
 import facebookTag from "../../sources/facebookTag.png";
 import email from "../../sources/email.png";
 import ig from "../../sources/ig.png";
 import linkedin from "../../sources/linkedin.png";
 import web from "../../sources/web.png";
+import github from "../../sources/github.png";
 import * as firebase from "../../utils/firebase";
 import ContentCards from "./components/ContentCards";
+
 import { v4 as uuidv4 } from "uuid";
 
 const SideCard = styled.div`
   padding: 1rem;
   width: 400px;
-  height: 550px;
+  /* height: 550px; */
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
@@ -116,16 +117,41 @@ const LinkStyle = styled(Link)`
   color: black;
 `;
 
+const SettingBtn = styled(Link)`
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 30px 0;
+  padding: 10px 0;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  border: 1px solid rgb(219, 216, 214);
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    color: gray;
+  }
+`;
+
 const ProfilePage = () => {
   const { userID } = useParams();
   console.log(userID);
   const usersList = useSelector((state) => state.usersList);
+  const userData = useSelector((state) => state.userData);
   const currentUser = usersList?.find((item) => item.userID === userID);
 
   const [myGroupsObj, setMyGroupsObj] = useState({});
   const [myMilestones, setMyMilestones] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [showSetting, setShowSetting] = useState(false);
+  // const [isOwner, setIsOwner] = useState(false);
+  const isOwner = useRef(false);
   const defaultRender = useRef(true);
+
   useEffect(() => {
     firebase
       .getMyGroupsObj(userID)
@@ -137,8 +163,13 @@ const ProfilePage = () => {
       .catch((err) => console.error(err));
   }, []);
 
+  if (userData?.uid === userID) {
+    isOwner.current = true;
+  }
+
   const handleChoose = (e) => {
     console.log(e.target.dataset.id);
+    // setActive(true);
     defaultRender.current = false;
     switch (e.target.dataset.id) {
       case "part":
@@ -148,7 +179,7 @@ const ProfilePage = () => {
         setSelected(myGroupsObj.owner);
         break;
       case "stone":
-        setSelected(myMilestones);
+        setSelected(myMilestones.filter((item) => item.public === true));
         break;
       default:
       // setSelected(myGroupsObj.participate);
@@ -169,8 +200,10 @@ const ProfilePage = () => {
             <p>{currentUser?.introduce || "我還在想😜"}</p>
             <IconSet>
               <Icon src={ig} />
-              <Icon src={linkedin} />
               <Icon src={facebookTag} />
+              <Icon src={linkedin} />
+
+              <Icon src={github} />
               <Icon src={email} />
               <Icon src={web} />
             </IconSet>
@@ -195,6 +228,9 @@ const ProfilePage = () => {
           <div>
             <p>Follow me on popular social media sites.</p>
           </div>
+          {isOwner.current && (
+            <SettingBtn to={`/profile/${userID}/edit`}>個人頁面設定</SettingBtn>
+          )}
         </div>
       </SideCard>
       <hr />
@@ -224,10 +260,6 @@ const ProfilePage = () => {
                 return <ContentCards item={item} key={uuidv4()} />;
               })}
         </ContentCtn>
-
-        {/* <GroupWrapper>
-          <div></div>
-        </GroupWrapper> */}
       </ContentWrapper>
     </Wrapper>
   );

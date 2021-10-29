@@ -16,6 +16,8 @@ const HeaderContainer = styled.div`
   display: flex;
   align-items: center;
   background-color: rgb(255 234 182);
+  /* background-color: rgb(246 246 246); */
+  box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
 `;
 
 const LogoContainer = styled(Link)`
@@ -79,6 +81,7 @@ const Input = styled.input`
 const Header = () => {
   const userData = useSelector((state) => state.userData);
   const [showLogin, setShowLogin] = useState(false);
+
   const userAvatar =
     userData?.photoURL ||
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
@@ -109,7 +112,7 @@ const Header = () => {
         <ListStyled to="/milestones">我們的里程碑</ListStyled>
         {userData && (
           <>
-            <ListStyled to="/mygroups">我的社群</ListStyled>
+            {/* <ListStyled to="/mygroups">我們的社群</ListStyled> */}
             <ListStyled to="/groups/post">發起社群</ListStyled>
             <ListStyled to="/messages/ ">
               <ImgCtn src={chat} />
