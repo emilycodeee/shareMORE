@@ -4,6 +4,8 @@ import { useState } from "react";
 import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
 import { BlockLoading } from "react-loadingg";
+import { useDispatch, useSelector } from "react-redux";
+import { getUsersList } from "../redux/actions";
 import {
   EmbedSignIn,
   AuthButton,
@@ -22,10 +24,26 @@ const Signin = () => {
   const [name, setName] = useState("");
   const [showSignUp, setShowSignUp] = useState(false);
   const [message, setMessage] = useState("");
-
+  const d = useDispatch();
   const handleOnLogin = (provider) => {
     setMessage("");
-    firebase.socialMediaAuth(provider, setMessage);
+    firebase.socialMediaAuth(provider, setMessage).then(() => {
+      firebase
+        .getTotalDocList("users")
+        .then((res) => d(getUsersList(res)))
+        .catch((err) => console.log(err));
+    });
+  };
+
+  const handleRegister = () => {
+    setMessage("");
+    setIsLoading(true);
+    firebase.register(name, email, password, setMessage).then(() => {
+      firebase
+        .getTotalDocList("users")
+        .then((res) => d(getUsersList(res)))
+        .catch((err) => console.log(err));
+    });
   };
   // console.log("😍😍", message);
   return (
@@ -110,16 +128,7 @@ const Signin = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <AuthButton
-            onClick={() => {
-              setMessage("");
-              setIsLoading(true);
-              firebase.register(name, email, password, setMessage);
-              // message && alert(message);
-            }}
-          >
-            註冊
-          </AuthButton>
+          <AuthButton onClick={handleRegister}>註冊</AuthButton>
           <ShowSignUp
             onClick={() => {
               setShowSignUp(!showSignUp);

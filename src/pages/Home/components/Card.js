@@ -48,7 +48,7 @@ const Card = ({ item }) => {
   let currentCreator, currentGroup;
   let url = `/group/${item.groupID}`;
   if (item.milestoneID) {
-    currentCreator = usersList.find((data) => data.userID === item.creatorID);
+    currentCreator = usersList.find((data) => data.uid === item.creatorID);
     currentGroup = groupsList.find((data) => data.groupID === item.groupID);
     url = `/milestone/${item.milestoneID}`;
   }

@@ -39,15 +39,15 @@ const Button = styled.button`
 const ApplicationList = ({ groupData, applicationData, applicant }) => {
   const usersList = useSelector((state) => state.usersList);
   const currentUser = usersList.find(
-    (each) => each.userID === applicant.applicantID
+    (each) => each.uid === applicant.applicantID
   );
 
   const handleConfirm = () => {
     const data = {
-      memberID: currentUser.userID,
+      memberID: currentUser.uid,
       applicationContent: applicant.content,
       joinTime: new Date(),
-      membersDocID: currentUser.userID,
+      membersDocID: currentUser.uid,
     };
 
     firebase

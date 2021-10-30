@@ -142,8 +142,8 @@ const ProfilePage = () => {
   console.log(userID);
   const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
-  const currentUser = usersList?.find((item) => item.userID === userID);
-
+  const currentUser = usersList?.find((item) => item.uid === userID);
+  console.log("介紹葉", currentUser);
   const [myGroupsObj, setMyGroupsObj] = useState({});
   const [myMilestones, setMyMilestones] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -199,24 +199,49 @@ const ProfilePage = () => {
             <h1>{currentUser?.displayName} </h1>
             <p>{currentUser?.introduce || "我還在想😜"}</p>
             <IconSet>
-              <Icon src={ig} />
-              <Icon src={facebookTag} />
-              <Icon src={linkedin} />
+              {/* {currentUser?.introduce} */}
 
-              <Icon src={github} />
-              <Icon src={email} />
-              <Icon src={web} />
+              {currentUser?.instagram && (
+                <a href={currentUser?.instagram} target="_blank">
+                  <Icon src={ig} />
+                </a>
+              )}
+              {currentUser?.facebook && (
+                <a href={currentUser?.facebook} target="_blank">
+                  <Icon src={facebookTag} />
+                </a>
+              )}
+              {currentUser?.linkedin && (
+                <a href={currentUser?.linkedin} target="_blank">
+                  <Icon src={linkedin} />
+                </a>
+              )}
+              {currentUser?.github && (
+                <a href={currentUser?.github} target="_blank">
+                  <Icon src={github} />
+                </a>
+              )}
+              {currentUser?.secondEmail && (
+                <a href={`mailto:${currentUser?.secondEmail}`}>
+                  <Icon src={email} />
+                </a>
+              )}
+              {currentUser?.webUrl && (
+                <a href={currentUser?.webUrl} target="_blank">
+                  <Icon src={web} />
+                </a>
+              )}
             </IconSet>
           </UserInfo>
           <TagWrapper>
             <TagSet>
-              <div>發起</div>
-              <div>{myGroupsObj.owner?.length}</div>
+              <div>參加</div>
+              <div>{myGroupsObj.participate?.length}</div>
               <div>社群</div>
             </TagSet>
             <TagSet>
-              <div>參加</div>
-              <div>{myGroupsObj.participate?.length}</div>
+              <div>發起</div>
+              <div>{myGroupsObj.owner?.length}</div>
               <div>社群</div>
             </TagSet>
             <TagSet>

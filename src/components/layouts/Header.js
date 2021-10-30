@@ -64,6 +64,7 @@ const LoginPage = styled.div`
 `;
 
 const ImgCtn = styled.img`
+  width: 2rem;
   height: 2rem;
   border-radius: 50%;
 `;
@@ -80,10 +81,15 @@ const Input = styled.input`
 
 const Header = () => {
   const userData = useSelector((state) => state.userData);
+  const usersList = useSelector((state) => state.usersList);
   const [showLogin, setShowLogin] = useState(false);
 
+  const currentUser = usersList.find((item) => item.uid === userData?.uid);
+
+  console.log("dddddddddddddd", currentUser);
+
   const userAvatar =
-    userData?.photoURL ||
+    currentUser?.avatar ||
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
 
   const showLoginPage = () => {
@@ -117,7 +123,7 @@ const Header = () => {
             <ListStyled to="/messages/ ">
               <ImgCtn src={chat} />
             </ListStyled>
-            <ListStyled to="/myProfile">
+            <ListStyled to={`/profile/${userData?.uid}`}>
               <ImgCtn src={userAvatar} />
             </ListStyled>
           </>

@@ -54,27 +54,22 @@ export const googleProvider = new GoogleAuthProvider();
 export const socialMediaAuth = async (provider, setFunction) => {
   try {
     const result = await signInWithPopup(auth, provider);
-    const q = query(collection(db, "users"));
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("uid", "==", result.user.uid));
     const querySnapshot = await getDocs(q);
-
     let data;
-
-    if (querySnapshot.docs) {
-      querySnapshot.forEach((doc) => {
-        if (doc.id !== result.user.uid) {
-          data = {
-            creationTime: result.user.metadata.creationTime,
-            displayName: result.user.displayName || "",
-            avatar:
-              result.user.photoURL ||
-              "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
-            email: result.user.email,
-            userID: result.user.uid,
-          };
-        }
-      });
+    if (querySnapshot.docs.length === 0) {
+      data = {
+        creationTime: result.user.metadata.creationTime,
+        displayName: result.user.displayName || "",
+        avatar:
+          result.user.photoURL ||
+          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
+        email: result.user.email,
+        uid: result.user.uid,
+      };
     }
-    await setDoc(doc(db, "users", result.user.uid), data);
+    await setDoc(doc(db, "users", result.user.uid), data, { merge: true });
   } catch (error) {
     switch (error.code) {
       case "auth/user-not-found":
@@ -101,9 +96,9 @@ export const register = async (name, email, password, setFunction) => {
       avatar:
         "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
       email: result.user.email,
-      userID: result.user.uid,
+      uid: result.user.uid,
     };
-    await setDoc(doc(db, "users", result.user.uid), data);
+    await setDoc(doc(db, "users", result.user.uid), data, { merge: true });
   } catch (error) {
     console.log("🎆", error.code);
     switch (error.code) {
@@ -657,3 +652,34 @@ export const getMessagesData = async (me, you, setFunction) => {
     return data;
   });
 };
+
+export const UpdateProfile = async (userID, data, file) => {
+  let finalData = data;
+
+  if (file) {
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + uuidv4());
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    const imgURL = await getDownloadURL(uploadTask.ref);
+    finalData.avatar = imgURL;
+  }
+
+  const userProfileRef = doc(db, "users", userID);
+  await updateDoc(userProfileRef, finalData);
+};
+
+// if (file) {
+//   const storageRef = ref(storage);
+//   const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+//   const metadata = { contenType: file.type };
+//   const uploadTask = await uploadBytes(imagesRef, file, metadata);
+//   imgURL = await getDownloadURL(uploadTask.ref);
+// }
+
+// const finalData = {
+//   ...data,
+//   groupID: docRefId,
+//   coverImage: imgURL,
+// };
+// const response = await setDoc(doc(db, "groups", docRefId), finalData);

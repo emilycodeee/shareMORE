@@ -35,7 +35,7 @@ const Wrapper = styled.div`
 const LeaveMessage = ({ itemData }) => {
   const usersList = useSelector((state) => state.usersList);
 
-  const sender = usersList.find((each) => each.userID === itemData.creatorID);
+  const sender = usersList.find((each) => each.uid === itemData.creatorID);
 
   return (
     <Wrapper>

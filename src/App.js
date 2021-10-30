@@ -30,7 +30,7 @@ function App() {
   const userData = useSelector((state) => state.userData);
 
   useEffect(() => {
-    // if (userData) return;
+    if (userData) return;
     firebase
       .getOptionsName("categories")
       .then((res) => {

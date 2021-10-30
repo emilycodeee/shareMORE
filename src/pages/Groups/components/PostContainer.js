@@ -156,7 +156,7 @@ const PostContainet = ({ item, content }) => {
   const [showDots, setShowDots] = useState(false);
   const [renderPost, setRenderPost] = useState([]);
   const [textValue, setTextValue] = useState("");
-  const postSender = usersList.find((each) => each.userID === item.creatorID);
+  const postSender = usersList.find((each) => each.uid === item.creatorID);
 
   useEffect(() => {
     firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);

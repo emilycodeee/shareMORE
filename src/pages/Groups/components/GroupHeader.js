@@ -6,7 +6,8 @@ import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
 const AvatarImg = styled.img`
-  max-height: 3rem;
+  height: 3rem;
+  width: 3rem;
   border-radius: 50%;
   box-shadow: 0px 2px 6px grey;
 `;
@@ -127,7 +128,7 @@ const GroupHeader = ({ content, stationHead }) => {
     <Wrapper>
       <NameLogo>{content.name}</NameLogo>
       <UlStyled>
-        <LinkAvatar to={`/profile/${stationHead?.userID}`}>
+        <LinkAvatar to={`/profile/${stationHead?.uid}`}>
           <AvatarImg src={stationHead?.avatar} />
         </LinkAvatar>
         <LiStyled

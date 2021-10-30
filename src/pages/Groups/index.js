@@ -123,9 +123,7 @@ const GroupPage = () => {
     setShowBtn(false);
     setTextValue("");
   };
-  const stationHead = usersList.find(
-    (item) => item.userID === content.creatorID
-  );
+  const stationHead = usersList.find((item) => item.uid === content.creatorID);
 
   const dateText = ` 預計實踐日：${content.goalDate}，還有
             ${dateCounter(content.goalDate)}天`;
