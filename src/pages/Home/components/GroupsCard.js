@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 const CardContainer = styled(Link)`
   text-decoration: none;
+  color: black;
   box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
   transition: transform 0.28s ease-in-out 0s;
   border-radius: 10px;
@@ -38,6 +39,21 @@ const TextContainer = styled.div`
   text-overflow: ellipsis;
 `;
 
+const CategoryContainer = styled.div`
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 550;
+`;
+
+const TitleContainer = styled.div`
+  font-weight: 550;
+  margin-bottom: 10px;
+  color: rgb(255 182 0);
+  &:hover {
+    color: rgb(255 217 121);
+  }
+`;
+
 // style={{ textDecoration: "none" }}
 const GroupsCard = ({ item }) => {
   // console.log(item);
@@ -48,10 +64,10 @@ const GroupsCard = ({ item }) => {
       </CoverContainer>
       <ContentContainer>
         <TagContainer>
-          <TextContainer>{item.category}</TextContainer>
-          <TextContainer>{item.subClass}</TextContainer>
+          <CategoryContainer>{item.category}</CategoryContainer>
+          <CategoryContainer>{item.subClass}</CategoryContainer>
         </TagContainer>
-        <TextContainer>{item.name}</TextContainer>
+        <TitleContainer>{item.name}</TitleContainer>
         <TextContainer>{item.introduce}</TextContainer>
       </ContentContainer>
     </CardContainer>

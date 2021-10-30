@@ -83,7 +83,11 @@ const modules = {
         { indent: "+1" },
       ],
       [{ color: [] }, { background: [] }],
-      [{ align: [] }],
+      [
+        {
+          align: ["", "center", "right", "justify"],
+        },
+      ],
       // ["link"],
       ["link", "video", "image"],
       ["clean"],

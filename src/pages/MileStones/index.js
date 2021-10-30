@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
+// import "react-quill/dist/quill.snow.css";
+import "../../../node_modules/react-quill/dist/quill.snow.css";
 // import PostContainer from "./components/PostContainer";
 // import GroupHeader from "./components/GroupHeader";
 
@@ -63,7 +65,7 @@ const MilestonePage = () => {
 
         <div>{content.title}</div>
         <div>里程碑內容</div>
-        <div>{HtmlParser(content.content)}</div>
+        <div className="ql-editor">{HtmlParser(content.content)}</div>
       </Wrapper>
       <SideSetting>
         <div>作者</div>

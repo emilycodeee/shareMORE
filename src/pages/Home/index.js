@@ -8,6 +8,7 @@ import Signin from "../../components/Signin";
 import { TopCover, ViderCover, Shield } from "./index.styled";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import GroupsCard from "./components/GroupsCard";
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
@@ -44,8 +45,9 @@ const Wrapper = styled.div`
   padding: 1em;
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 1em;
-  border: 1px solid red;
+  grid-column-gap: 1.3em;
+  grid-row-gap: 1.3em;
+  /* border: 1px solid red; */
 
   @media only screen and (max-width: 800px) {
     grid-template-columns: 1fr 1fr;
@@ -56,8 +58,9 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 20px;
   width: 100%;
+  margin-bottom: 10px;
   /* background-color: rgb(255 243 213); */
 `;
 
@@ -115,7 +118,7 @@ const HomePage = ({ userList, groupList }) => {
         <Slogan>看看最近大家在學些什麼</Slogan>
         <Wrapper>
           {groupsIntro.map((item) => {
-            return <Card item={item} key={item.groupID} />;
+            return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>
         <LinkStyled to="/groups">查看更多</LinkStyled>

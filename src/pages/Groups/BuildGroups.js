@@ -95,7 +95,6 @@ const BuildGroups = () => {
   const userData = useSelector((state) => state.userData);
 
   const [file, setFile] = useState(null);
-
   const [subClassesName, setSubClassesName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubClass, setSelectedSubClass] = useState(null);
@@ -118,6 +117,16 @@ const BuildGroups = () => {
     : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
 
   const handleSubmit = () => {
+    if (goal.length === 0 || name.length === 0 || goalDate.length === 0) {
+      alert("請填寫完整資訊");
+      return;
+    }
+
+    if (selectedCategory === null || selectedSubClass === null) {
+      alert("請填選社群類別");
+      return;
+    }
+
     const data = {
       name,
       goal,
