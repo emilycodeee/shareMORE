@@ -1,34 +1,38 @@
 import React from "react";
 import { useParams } from "react-router";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
+import save from "../../sources/save.png";
+import saved from "../../sources/saved.png";
+import clap from "../../sources/clap.png";
+import claped from "../../sources/claped.png";
+import comment from "../../sources/comment.png";
+import PostContainer from "../Groups/components/PostContainer";
 // import "react-quill/dist/quill.snow.css";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
 // import PostContainer from "./components/PostContainer";
 // import GroupHeader from "./components/GroupHeader";
 
-const SectionStyled = styled.section`
+const Container = styled.div`
+  max-width: 800px;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-`;
-
-const memberContainer = styled.div`
-  display: flex;
-  flex-wrap: nowrap;
-`;
-
-const memberCard = styled.div`
-  border-radius: 50%;
+  margin: 0 auto;
+  justify-content: center;
+  /* align-items: center; */
 `;
 
 const TopCover = styled.div`
-  opacity: 0.8;
+  /* opacity: 0.8; */
   height: 300px;
   border: 1px solid red;
   background-size: cover;
   background-position: center;
+  margin: 1.5rem 0;
 `;
 
 const Wrapper = styled.div`
@@ -39,16 +43,102 @@ const Wrapper = styled.div`
 `;
 
 const SideSetting = styled.div`
+  width: 15%;
   padding: 10px;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  margin-top: 30px;
+  height: 100vh;
+  border: 1px solid #d1cbcb;
+`;
+
+const Icon = styled.img`
+  height: 2rem;
+  margin: 0 auto;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  /* position: relative; */
+`;
+
+const CountWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+`;
+
+const Count = styled.div`
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  font-size: 14px;
+`;
+
+const Avatar = styled.img`
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  margin-bottom: 10px;
+`;
+
+const TinyAvatar = styled.img`
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  margin-right: 1rem;
+`;
+
+const HeadDetail = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const P = styled.p`
+  margin-bottom: 1rem;
+  /* margin-bottom: 10px; */
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const LinkStyle = styled(Link)`
+  text-decoration: none;
+  color: rgb(255 182 0);
+  font-weight: 550;
+  &:hover {
+    color: rgb(255 217 121);
+  }
+`;
+
+const TopPTag = styled.p`
+  font-weight: 500;
+  font-size: 13px;
 `;
 
 const MilestonePage = () => {
   const { milestoneID } = useParams();
   const [content, setContent] = useState({});
+  const usersList = useSelector((state) => state.usersList);
+  const groupsList = useSelector((state) => state.groupsList);
+  const userData = useSelector((state) => state.userData);
 
+  // const
+
+  // console.log(content);
+
+  const authorData = usersList.find((item) => item.uid === content?.creatorID);
+  const groupData = groupsList.find(
+    (item) => item.groupID === content?.groupID
+  );
+
+  const time = new Date(groupData?.creationTime.toDate()).toLocaleString(
+    "zh-TW"
+  );
+
+  // console.log(authorData);
   useEffect(() => {
     firebase
       .getTopLevelContent("articles", milestoneID)
@@ -58,19 +148,45 @@ const MilestonePage = () => {
   }, []);
 
   return (
-    <div>
+    <Container>
       <Wrapper>
+        <h1>{content.title}</h1>
+        <HeadDetail>
+          <Link to={`/profile/${authorData?.uid}`}>
+            <TinyAvatar src={authorData?.avatar} />
+          </Link>
+          <div>
+            <TopPTag>作者：{authorData?.displayName}</TopPTag>
+            <TopPTag>
+              啟發自：
+              <LinkStyle to={`/group/${content.groupID}`}>
+                {groupData?.name}
+              </LinkStyle>
+            </TopPTag>
+            <TopPTag>發布日期：{time}</TopPTag>
+          </div>
+        </HeadDetail>
         <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
-        <div>里程碑標題</div>
 
-        <div>{content.title}</div>
-        <div>里程碑內容</div>
         <div className="ql-editor">{HtmlParser(content.content)}</div>
       </Wrapper>
       <SideSetting>
-        <div>作者</div>
+        <Link to={`/profile/${authorData?.uid}`}>
+          <Avatar src={authorData?.avatar} />
+        </Link>
+        <h3>{authorData?.displayName}</h3>
+        <P>{authorData?.introduce}</P>
+        <Icon src={save} />
+        <CountWrapper>
+          <Icon src={claped} />
+          <Count>1</Count>
+        </CountWrapper>
+        <CountWrapper>
+          <Icon src={comment} />
+          <Count>1</Count>
+        </CountWrapper>
       </SideSetting>
-    </div>
+    </Container>
   );
 };
 

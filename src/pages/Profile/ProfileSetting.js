@@ -191,6 +191,11 @@ const LinkNone = styled(Link)`
   }
 `;
 
+const PreviewTag = styled.div`
+  color: rgb(255 182 0);
+  font-weight: 600;
+`;
+
 const ProfileSetting = () => {
   const d = useDispatch();
   const { userID } = useParams();
@@ -268,11 +273,11 @@ const ProfileSetting = () => {
             </IconSet>
           </UserInfo>
         </div>
-        <div>
+        {/* <div>
           <p>Follow me on popular social media sites.</p>
-        </div>
+        </div> */}
         <TagWrapper>
-          <div>預覽中，更改後記得儲存送出喔！</div>
+          <PreviewTag>預覽中，更改後記得儲存送出喔！</PreviewTag>
         </TagWrapper>
       </SideCard>
       <hr />

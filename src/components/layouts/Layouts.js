@@ -10,7 +10,7 @@ const Main = styled.div`
   /* margin-top: 140px; */
   margin: 0 auto;
   /* max-width: 1000px; */
-
+  /* position: relative; */
   /* min-height: calc(100vh - 255px);
   */
   @media only screen and (max-width: 1280px) {
@@ -25,7 +25,7 @@ const Layouts = (props) => {
     <Wrapper>
       <Header user={props.user} />
       <Main>{props.children}</Main>
-      <Footer />
+      {/* <Footer /> */}
     </Wrapper>
   );
 };

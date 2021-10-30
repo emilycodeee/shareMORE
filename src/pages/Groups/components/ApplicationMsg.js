@@ -30,6 +30,9 @@ const Button = styled.button`
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
+  border: none;
+  outline: none;
+  color: black;
 `;
 
 const ContentStyled = styled.div`

@@ -5,8 +5,9 @@ import { Link } from "react-router-dom";
 const CardContainer = styled(Link)`
   text-decoration: none;
   color: black;
-  box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
-  transition: transform 0.28s ease-in-out 0s;
+  box-shadow: 0 2px 10px #a2a2a2;
+  /* box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
+  transition: transform 0.28s ease-in-out 0s; */
   border-radius: 10px;
   margin-bottom: 10px;
 `;

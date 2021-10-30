@@ -54,7 +54,11 @@ const ApplicationPopup = ({ groupData, applicationData, appliedData }) => {
     <Container>
       <Sider>
         <h2>一起 走得更遠</h2>
-        <h4>Sign in to continue to your account.</h4>
+        <h4>
+          What I wamt is you to try, and the result will follow.If not today
+          ,then some other day.
+          <br />─ Jonas
+        </h4>
       </Sider>
       <MainCtn>
         <ApplicationMsg

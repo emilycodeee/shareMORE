@@ -5,7 +5,7 @@ const CommentWrapper = styled.div`
   background-color: #f5f5f5;
   width: 80%;
   border-radius: 10px;
-  padding: 5px 10px;
+  padding: 10px 10px;
   margin-bottom: 10px;
 `;
 
@@ -30,6 +30,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: end;
+  /* padding: 10px 0; */
 `;
 
 const LeaveMessage = ({ itemData }) => {

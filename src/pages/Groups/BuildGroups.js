@@ -94,6 +94,15 @@ const BuildGroups = () => {
   const categoryList = useSelector((state) => state.categoryList);
   const userData = useSelector((state) => state.userData);
 
+  const CategoryOpt = categoryList.map((item) => {
+    return { value: item.name, label: item.name };
+  });
+  console.log(categoryList);
+  // arr.push({ value: doc.data().name, label: doc.data().name });
+
+  // const subCategoryObj = categoryList.find((item) => item.name === "商業管理");
+  // console.log(subCategoryObj);
+
   const [file, setFile] = useState(null);
   const [subClassesName, setSubClassesName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -106,10 +115,20 @@ const BuildGroups = () => {
   const [introduce, setIntroduce] = useState("");
 
   useEffect(() => {
-    firebase
-      .getQueryFilter("categories", "name", selectedCategory)
-      .then((res) => setSubClassesName(res))
-      .catch((err) => console.log(err));
+    const subCategoryObj = categoryList.find(
+      (item) => item.name === selectedCategory
+    );
+    // console.log(subCategoryObj);
+    const subCategoryOpt = subCategoryObj?.subClasses.map((item) => {
+      return { value: item, label: item };
+    });
+    setSubClassesName(subCategoryOpt);
+    // subClasses;
+    //  console.log();
+    // firebase
+    //   .getQueryFilter("categories", "name", selectedCategory)
+    //   .then((res) => setSubClassesName(res))
+    //   .catch((err) => console.log(err));
   }, [selectedCategory]);
 
   const previewImg = file
@@ -161,7 +180,7 @@ const BuildGroups = () => {
                 console.log(e);
                 setSelectedCategory(e.value);
               }}
-              options={categoryList}
+              options={CategoryOpt}
             />
           </LabelWrapper>
           <LabelWrapper>

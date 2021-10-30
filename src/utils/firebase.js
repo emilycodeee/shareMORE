@@ -245,7 +245,9 @@ export const getOptionsName = async (optionName) => {
   const querySnapshot = await getDocs(q);
   const arr = [];
   querySnapshot.forEach((doc) => {
-    arr.push({ value: doc.data().name, label: doc.data().name });
+    // console.log(doc.data());
+    // arr.push({ value: doc.data().name, label: doc.data().name });
+    arr.push(doc.data());
   });
   return arr;
 };

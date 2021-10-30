@@ -48,6 +48,7 @@ const Pstyled = styled.div`
 const IconWrapper = styled.div`
   display: grid;
   grid-template-columns: 50% 50%;
+  margin-top: 10px;
 `;
 
 const HeadIcon = styled.img`
@@ -62,6 +63,7 @@ const IconDiv = styled.div`
   justify-content: center;
   cursor: pointer;
   border-radius: 10px;
+  padding: 5px;
   /* background-color: lightblue; */
   &:hover {
     background-color: white;
@@ -145,9 +147,13 @@ const ButtonStyled = styled.button`
   margin-left: 10px;
   display: flex;
   justify-content: end;
+  /* border-radius: 10px; */
+  border: none;
+  border-radius: 10px;
+  outline: none;
 `;
 
-const PostContainet = ({ item, content }) => {
+const PostContainer = ({ item, content }) => {
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
   const { groupID } = useParams();
@@ -286,4 +292,4 @@ const PostContainet = ({ item, content }) => {
   );
 };
 
-export default PostContainet;
+export default PostContainer;

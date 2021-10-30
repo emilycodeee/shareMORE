@@ -105,8 +105,11 @@ const HomePage = ({ userList, groupList }) => {
           {categoryList.map((item, i) => {
             return (
               <ListCtn key={i}>
-                <Link to="/groups/" style={{ textDecoration: "none" }}>
-                  {item.value}
+                <Link
+                  to={`/groups/${item.name}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  {item.name}
                 </Link>
               </ListCtn>
             );

@@ -100,16 +100,20 @@ const ListCtn = styled.ul`
 `;
 
 const ListItem = styled.li`
+  /* ${(props) => console.log("liiiiii", props)} */
+  /* ${(props) => console.log("liiiiii", props.active)} */
   cursor: pointer;
   margin-left: 1rem;
   border-radius: 30px;
   list-style: none;
-  background-color: #f5f5f5;
+  background-color: ${(props) =>
+    props.active === props.children ? "#dfdfdf" : "#f5f5f5"};
+
   padding: 0.5rem 1rem;
   box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
-  &:last-child {
+  /* &:last-child {
     background-color: #dfdfdf;
-  }
+  } */
 `;
 
 const LinkStyle = styled(Link)`
@@ -148,6 +152,7 @@ const ProfilePage = () => {
   const [myMilestones, setMyMilestones] = useState([]);
   const [selected, setSelected] = useState([]);
   const [showSetting, setShowSetting] = useState(false);
+  const [active, setActive] = useState("我參加的社團");
   // const [isOwner, setIsOwner] = useState(false);
   const isOwner = useRef(false);
   const defaultRender = useRef(true);
@@ -173,18 +178,25 @@ const ProfilePage = () => {
     defaultRender.current = false;
     switch (e.target.dataset.id) {
       case "part":
+        setActive("我參加的社團");
         setSelected(myGroupsObj.participate);
         break;
       case "own":
+        setActive("我創建的社團");
         setSelected(myGroupsObj.owner);
         break;
       case "stone":
+        setActive("我的里程碑");
         setSelected(myMilestones.filter((item) => item.public === true));
         break;
       default:
       // setSelected(myGroupsObj.participate);
     }
   };
+
+  const publicMilestone = myMilestones.filter(
+    (item) => item.public === true
+  ).length;
 
   return (
     <Wrapper>
@@ -246,13 +258,13 @@ const ProfilePage = () => {
             </TagSet>
             <TagSet>
               <div>創建</div>
-              <div>{myMilestones?.length}</div>
+              <div>{publicMilestone}</div>
               <div>里程碑</div>
             </TagSet>
           </TagWrapper>
-          <div>
+          {/* <div>
             <p>Follow me on popular social media sites.</p>
-          </div>
+          </div> */}
           {isOwner.current && (
             <SettingBtn to={`/profile/${userID}/edit`}>個人頁面設定</SettingBtn>
           )}
@@ -261,13 +273,13 @@ const ProfilePage = () => {
       <hr />
       <ContentWrapper>
         <ListCtn>
-          <ListItem data-id="part" onClick={handleChoose}>
+          <ListItem data-id="part" active={active} onClick={handleChoose}>
             我參加的社團
           </ListItem>
-          <ListItem data-id="own" onClick={handleChoose}>
+          <ListItem data-id="own" active={active} onClick={handleChoose}>
             我創建的社團
           </ListItem>
-          <ListItem data-id="stone" onClick={handleChoose}>
+          <ListItem data-id="stone" active={active} onClick={handleChoose}>
             我的里程碑
           </ListItem>
           <LinkStyle to={`/messages/${userID}`}>
