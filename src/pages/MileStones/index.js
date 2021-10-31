@@ -3,10 +3,12 @@ import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
 import save from "../../sources/save.png";
+import share from "../../sources/share.png";
 import saved from "../../sources/saved.png";
 import clap from "../../sources/clap.png";
 import claped from "../../sources/claped.png";
@@ -28,6 +30,7 @@ const Container = styled.div`
 
 const TopCover = styled.div`
   /* opacity: 0.8; */
+  width: 700px;
   height: 300px;
   border: 1px solid red;
   background-size: cover;
@@ -54,7 +57,7 @@ const SideSetting = styled.div`
 `;
 
 const Icon = styled.img`
-  height: 2rem;
+  height: 1.5rem;
   margin: 0 auto;
   cursor: pointer;
   margin-bottom: 1rem;
@@ -70,8 +73,8 @@ const CountWrapper = styled.div`
 
 const Count = styled.div`
   position: absolute;
-  top: -10px;
-  right: 10px;
+  top: -7px;
+  right: 15px;
   font-size: 14px;
 `;
 
@@ -92,6 +95,7 @@ const TinyAvatar = styled.img`
 const HeadDetail = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-between;
 `;
 
 const P = styled.p`
@@ -118,25 +122,35 @@ const TopPTag = styled.p`
   font-size: 13px;
 `;
 
+const EditBtn = styled.button`
+  border-radius: 8px;
+  padding: 5px 10px;
+  border: 1px solid #d1cbcb;
+  outline: none;
+  text-align: center;
+  text-align: end;
+  background-color: #ffffff;
+  cursor: pointer;
+  &:hover {
+    background-color: #d1cbcb;
+  }
+`;
+
+const AuthorDataCtn = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 const MilestonePage = () => {
   const { milestoneID } = useParams();
   const [content, setContent] = useState({});
+
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const userData = useSelector((state) => state.userData);
 
-  // const
-
-  // console.log(content);
-
-  const authorData = usersList.find((item) => item.uid === content?.creatorID);
-  const groupData = groupsList.find(
-    (item) => item.groupID === content?.groupID
-  );
-
-  const time = new Date(groupData?.creationTime.toDate()).toLocaleString(
-    "zh-TW"
-  );
+  const root = window.location.host;
+  const pathname = useLocation().pathname;
 
   // console.log(authorData);
   useEffect(() => {
@@ -144,31 +158,54 @@ const MilestonePage = () => {
       .getTopLevelContent("articles", milestoneID)
       .then((res) => setContent(res))
       .catch((err) => console.log(err));
+
     // firebase.postsListener(groupID, setRenderPost);
   }, []);
+  console.log("content", content);
 
+  const authorData = usersList.find((item) => item.uid === content?.creatorID);
+  const groupData = groupsList.find(
+    (item) => item.groupID === content?.groupID
+  );
+
+  console.log(authorData);
+  console.log(groupData);
+
+  // useEffect(() => {
+  //   setAuthorData(usersList.find((item) => item.uid === content?.creatorID));
+  //   setGroupData(groupsList.find((item) => item.groupID === content?.groupID));
+  // }, [content]);
+  // console.log("authsssssssorData", authorData);
+
+  // if (authorData)
   return (
     <Container>
       <Wrapper>
-        <h1>{content.title}</h1>
+        <h1>{content?.title}</h1>
         <HeadDetail>
-          <Link to={`/profile/${authorData?.uid}`}>
-            <TinyAvatar src={authorData?.avatar} />
-          </Link>
-          <div>
-            <TopPTag>作者：{authorData?.displayName}</TopPTag>
-            <TopPTag>
-              啟發自：
-              <LinkStyle to={`/group/${content.groupID}`}>
-                {groupData?.name}
-              </LinkStyle>
-            </TopPTag>
-            <TopPTag>發布日期：{time}</TopPTag>
-          </div>
+          <AuthorDataCtn>
+            <Link to={`/profile/${authorData?.uid}`}>
+              <TinyAvatar src={authorData?.avatar} />
+            </Link>
+            <div>
+              <TopPTag>作者：{authorData?.displayName}</TopPTag>
+              <TopPTag>
+                啟發自：
+                <LinkStyle to={`/group/${content?.groupID}`}>
+                  {groupData?.name}
+                </LinkStyle>
+              </TopPTag>
+              <TopPTag>發布日期：""</TopPTag>
+            </div>
+          </AuthorDataCtn>
+          {userData.uid === authorData?.uid && <EditBtn>編輯</EditBtn>}
         </HeadDetail>
-        <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
-
-        <div className="ql-editor">{HtmlParser(content.content)}</div>
+        <div>
+          <TopCover
+            style={{ backgroundImage: `url(${content?.coverImage})` }}
+          />
+        </div>
+        <div className="ql-editor">{HtmlParser(content?.content)}</div>
       </Wrapper>
       <SideSetting>
         <Link to={`/profile/${authorData?.uid}`}>
@@ -176,6 +213,13 @@ const MilestonePage = () => {
         </Link>
         <h3>{authorData?.displayName}</h3>
         <P>{authorData?.introduce}</P>
+        <Icon
+          src={share}
+          onClick={() => {
+            navigator.clipboard.writeText(root + pathname);
+            alert(`複製連結成功！`);
+          }}
+        />
         <Icon src={save} />
         <CountWrapper>
           <Icon src={claped} />

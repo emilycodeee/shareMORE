@@ -100,8 +100,9 @@ const GroupHeader = ({ content, stationHead }) => {
     }
   }, [applicationData]);
 
-  const root = "http://localhost:3000";
-  const location = useLocation();
+  const root = window.location.host;
+  const pathname = useLocation().pathname;
+
   const checkMember =
     (userData !== null && content?.membersList?.includes(userData.uid)) ||
     content?.creatorID === userData?.uid;
@@ -133,14 +134,14 @@ const GroupHeader = ({ content, stationHead }) => {
         </LinkAvatar>
         <LiStyled
           onClick={() => {
-            navigator.clipboard.writeText(root + location.pathname);
+            navigator.clipboard.writeText(root + pathname);
             alert(`複製連結成功！`);
           }}
         >
           分享連結
         </LiStyled>
         {checkMember && (
-          <LinkStyled to={`${location.pathname}/notes`}>社群筆記</LinkStyled>
+          <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
         )}
         {content.creatorID === userData?.uid ? (
           <LiStyled
