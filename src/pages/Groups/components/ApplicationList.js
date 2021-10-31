@@ -1,9 +1,17 @@
 import React from "react";
 import styled from "styled-components";
 import * as firebase from "../../../utils/firebase";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getGroupsList } from "../../../redux/actions";
+
 const RecApplication = styled.div`
   display: flex;
+  flex-direction: column;
+  /* background-color: red; */
+  padding: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid #d1cbcb;
+  border-radius: 25px;
 `;
 
 const Avatar = styled.img`
@@ -24,6 +32,8 @@ const UserWrapper = styled.div`
 
 const ButtonWrapper = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: end;
 `;
 
 const Button = styled.button`
@@ -36,7 +46,19 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Content = styled.div`
+  margin: 10px;
+  overflow: overflow-x;
+  /* color: red; */
+`;
+
 const ApplicationList = ({ groupData, applicationData, applicant }) => {
+  const d = useDispatch();
   const usersList = useSelector((state) => state.usersList);
   const currentUser = usersList.find(
     (each) => each.uid === applicant.applicantID
@@ -57,6 +79,10 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
         data
       )
       .then(() => {
+        firebase
+          .getTotalDocList("groups")
+          .then((res) => d(getGroupsList(res)))
+          .catch((err) => console.log(err));
         alert("確認完成");
         // window.location.reload();
       });
@@ -72,24 +98,21 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
 
   return (
     <RecApplication>
-      <div>
-        <Header>
-          <Avatar src={currentUser.avatar} />
-          <UserWrapper>
-            <div>{currentUser.displayName}</div>
-            <div>
-              {`申請日:${applicant.creationTime
-                .toDate()
-                .toLocaleString("zh-TW")}`}
-            </div>
-          </UserWrapper>
-        </Header>
-        <div>{applicant.content}</div>
-      </div>
-      <ButtonWrapper>
-        <Button onClick={handleConfirm}>確認</Button>
-        <Button onClick={handleReject}>拒絕</Button>
-      </ButtonWrapper>
+      <Header>
+        <Avatar src={currentUser.avatar} />
+        <UserWrapper>
+          <div>{currentUser.displayName}</div>
+          <div>{applicant.creationTime.toDate().toLocaleString("zh-TW")}</div>
+        </UserWrapper>
+      </Header>
+
+      <Body>
+        <Content>{applicant.content}</Content>
+        <ButtonWrapper>
+          <Button onClick={handleConfirm}>確認</Button>
+          <Button onClick={handleReject}>拒絕</Button>
+        </ButtonWrapper>
+      </Body>
     </RecApplication>
   );
 };

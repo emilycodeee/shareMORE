@@ -39,28 +39,30 @@ const TopCover = styled.div`
 `;
 
 const Wrapper = styled.div`
-  margin: 30px;
+  margin: 30px 10px;
   border-radius: 30px;
   padding: 30px;
   border: 1px solid #3e2914;
 `;
 
 const SideSetting = styled.div`
-  width: 15%;
-  padding: 10px;
+  width: 10%;
+  padding: 20px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   margin: 0 auto;
   margin-top: 30px;
   height: 100vh;
   border: 1px solid #d1cbcb;
+  border-radius: 25px;
 `;
 
 const Icon = styled.img`
   height: 1.5rem;
   margin: 0 auto;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
   /* position: relative; */
 `;
 
@@ -73,8 +75,8 @@ const CountWrapper = styled.div`
 
 const Count = styled.div`
   position: absolute;
-  top: -7px;
-  right: 15px;
+  top: -17px;
+  right: -5px;
   font-size: 14px;
 `;
 
@@ -82,7 +84,7 @@ const Avatar = styled.img`
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  margin-bottom: 10px;
+  margin: 20px 0;
 `;
 
 const TinyAvatar = styled.img`
@@ -119,7 +121,7 @@ const LinkStyle = styled(Link)`
 
 const TopPTag = styled.p`
   font-weight: 500;
-  font-size: 13px;
+  font-size: 14px;
 `;
 
 const AuthorBtn = styled.div``;

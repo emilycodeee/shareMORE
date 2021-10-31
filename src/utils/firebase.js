@@ -274,15 +274,9 @@ export const getMyGroupsName = async (userID) => {
   );
 
   const creatorQuerySnapshot = await getDocs(creatorQ);
-  // const arr = [];
   creatorQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     arr.push({ value: doc.data().groupID, label: doc.data().name });
-    // console.log(doc.id, " => ", doc.data());
   });
-
-  console.log("🍕🍕🍕🍕", arr);
   return arr;
 };
 //
@@ -295,10 +289,7 @@ export const getMyGroupsObj = async (userID) => {
   const memberQuerySnapshot = await getDocs(memberQ);
   const memberArr = [];
   memberQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     memberArr.push(doc.data());
-    // console.log(doc.id, " => ", doc.data());
   });
 
   const creatorQ = query(
@@ -309,13 +300,9 @@ export const getMyGroupsObj = async (userID) => {
   const creatorQuerySnapshot = await getDocs(creatorQ);
   const creatorArr = [];
   creatorQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     creatorArr.push(doc.data());
-    // console.log(doc.id, " => ", doc.data());
   });
 
-  // console.log("🍕🍕🍕🍕", arr);
   return { participate: memberArr, owner: creatorArr };
 };
 
@@ -615,3 +602,46 @@ export const UpdateProfile = async (userID, data, file) => {
   const userProfileRef = doc(db, "users", userID);
   await updateDoc(userProfileRef, finalData);
 };
+
+export const getGroupNotes = async (option, groupID, tagName) => {
+  const q = query(
+    collection(db, option, groupID, tagName),
+    orderBy("creationTime", "desc")
+  );
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  return arr;
+};
+
+export const getGroupsNoteContent = async (option, groupID, tagName, docID) => {
+  const docRef = doc(db, option, groupID, tagName, docID);
+  const docSnap = await getDoc(docRef);
+
+  return docSnap.data();
+  // if (docSnap.exists()) {
+
+  //   // console.log("Document data:", docSnap.data());
+  // } else {
+  //   // doc.data() will be undefined in this case
+  //   console.log("No such document!");
+  // }
+};
+
+// export const getGroupNotes = async (option,groupID,tagName) => {
+//   const q = query(
+//     collection(db, option, groupID, tagName),
+//     orderBy("joinTime", "desc")
+//   );
+//   const unsubscribe = onSnapshot(q, (querySnapshot) => {
+//     const data = [];
+//     querySnapshot.forEach((doc) => {
+//       data.push(doc.data());
+//     });
+//     console.log(data);
+//     setFunction(data);
+//   });
+// };

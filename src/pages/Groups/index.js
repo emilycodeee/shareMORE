@@ -129,7 +129,7 @@ const GroupPage = () => {
   };
   const stationHead = usersList.find((item) => item.uid === content.creatorID);
 
-  const dateText = ` 預計實踐日：${content.goalDate}，還有
+  const dateText = ` 預計完成日：${content.goalDate}，還有
             ${dateCounter(content.goalDate)} 天`;
 
   const checkMember =

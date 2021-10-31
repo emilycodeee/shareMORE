@@ -20,7 +20,7 @@ const Label = styled.label`
 `;
 
 const TextCtn = styled.textarea`
-  resize: none;
+  /* resize: none; */
   border-radius: 10px;
   margin: 10px 0;
   padding: 10px;
@@ -37,14 +37,17 @@ const Button = styled.button`
 
 const ContentStyled = styled.div`
   font-weight: 550;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 `;
 
 const ApplicationStyled = styled.div`
-  margin: 0 10px;
+  /* width: 100%; */
+  margin: 0 10px 0 0;
   background-color: #f2f2f2;
+  height: auto;
   padding: 10px;
   border-radius: 10px;
+  overflow: overflow-x;
 `;
 
 const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
@@ -75,7 +78,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
         <>
           <ContentStyled>加入申請已送出，請耐心等候</ContentStyled>
           <ContentStyled>
-            {`申請日：${appliedData.creationTime
+            {`申請時間：${appliedData.creationTime
               .toDate()
               .toLocaleString("zh-TW")}`}
           </ContentStyled>

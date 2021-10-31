@@ -8,13 +8,14 @@ import MilestoneEditor from "./pages/MileStones/MilestoneEditor";
 import BuildGroups from "./pages/Groups/BuildGroups";
 import MilestonesPage from "./pages/MileStones/MilestonesPage";
 import MilestonePage from "./pages/MileStones";
-import NotesPage from "./pages/Groups/NotesPage";
-import MyProfilePage from "./pages/Profile/MyProfile";
+import NotesPage from "./pages/Notes/NotesPage";
+// import MyProfilePage from "./pages/Profile/MyProfile";
 import ProfilePage from "./pages/Profile";
-import NotesEditorPage from "./pages/Groups/NotesEditorPage";
+import NotesEditorPage from "./pages/Notes/NotesEditorPage";
 import ChatRoom from "./pages/ChatRoom";
 import ProfileSetting from "./pages/Profile/ProfileSetting";
 import GroupsPage from "./pages/Groups/GroupsPage";
+import NotePage from "./pages/Notes";
 
 import { useEffect } from "react";
 import * as firebase from "./utils/firebase";
@@ -84,15 +85,16 @@ function App() {
         <Route path="/group/:groupID/notes/:postID/post" exact>
           <NotesEditorPage />
         </Route>
+        <Route path="/group/:groupID/notes/:postID">
+          <NotePage />
+        </Route>
         <Route path="/milestones" exact>
           <MilestonesPage />
         </Route>
         <Route path="/milestone/:milestoneID" exact>
           <MilestonePage />
         </Route>
-        <Route path="/myprofile" exact>
-          <MyProfilePage />
-        </Route>
+
         <Route path="/messages/:sendTo" exact>
           <ChatRoom />
         </Route>

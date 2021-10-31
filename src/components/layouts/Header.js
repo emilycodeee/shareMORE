@@ -115,6 +115,7 @@ const Input = styled.input`
 const Header = () => {
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
+
   const [showLogin, setShowLogin] = useState(false);
 
   const currentUser = usersList.find((item) => item.uid === userData?.uid);
