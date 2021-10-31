@@ -340,29 +340,13 @@ export const getMyMilestones = async (userID) => {
     where("creatorID", "==", userID)
     // where("public", "==", true)
   );
-
   const qSnapshot = await getDocs(q);
   const arr = [];
   qSnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     arr.push(doc.data());
-    // console.log(doc.id, " => ", doc.data());
   });
-
-  // console.log("🍕🍕🍕🍕", arr);
   return arr;
 };
-
-// let imgURL =
-//   "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
-// if (file) {
-//   const storageRef = ref(storage);
-//   const imagesRef = ref(storageRef, "cover-images/" + docRefId);
-//   const metadata = { contenType: file.type };
-//   const uploadTask = await uploadBytes(imagesRef, file, metadata);
-//   imgURL = await getDownloadURL(uploadTask.ref);
-// }
 
 export const createGroup = async (data, file) => {
   let imgURL =
@@ -386,6 +370,16 @@ export const createGroup = async (data, file) => {
 
 export const getContentsList = async (topic, setFonction) => {
   const q = query(collection(db, topic));
+  const querySnapshot = await getDocs(q);
+  let data = [];
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  setFonction(data);
+};
+
+export const getContentsListSort = async (topic, setFonction) => {
+  const q = query(collection(db, topic), orderBy("creationTime", "desc"));
   const querySnapshot = await getDocs(q);
   let data = [];
   querySnapshot.forEach((doc) => {
@@ -449,19 +443,14 @@ export const clapsForPost = async (groupID, docID, userID) => {
 
   if (docSnap.data().clapBy?.includes(userID)) {
     await updateDoc(docRef, {
-      // regions: arrayRemove("east_coast"),
       clapBy: arrayRemove(userID),
     });
-    // setFunction(false);
   } else {
     await updateDoc(docRef, {
       clapBy: arrayUnion(userID),
     });
-    // setFunction(true);
   }
 };
-
-// export const getClaps =
 
 export const postsListener = async (groupID, setRenderPost) => {
   const q = query(
@@ -563,22 +552,6 @@ export const confirmApplication = async (memberID, groupID, data) => {
   });
 
   await batch.commit();
-  // const response = await setDoc(
-  //   doc(collection(db, "groups", groupID, "members"), docRefId),
-  //   data
-  // );
-  // return response;
-
-  // 🥱🥱
-  // const applicationRef = doc(db, "groups", groupID, "applications", docRefId);
-  // await updateDoc(applicationRef, {
-  //   approve: true,
-  // });
-  // const response = await setDoc(
-  //   doc(collection(db, "groups", groupID, "members"), docRefId),
-  //   data
-  // );
-  // return response;
 };
 
 export const rejectApplication = async (groupID, docRefId) => {
@@ -589,61 +562,33 @@ export const deleteComment = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
 
-// export const sendMessage = async (data) => {
-//   const docRefId = doc(collection(db, "messages")).id;
-//   const d = { ...data, docID: docRefId };
-// await setDoc(doc(collection(db, "messages"), docRefId), d);
-// };
-
 export const sendMessage = async (data, meID, youID) => {
-  // const batch = writeBatch(db);
-
   const meChatRef = doc(db, "users", meID);
   await updateDoc(meChatRef, {
     chatWith: arrayUnion(youID),
   });
-  // batch.update(meChatRef, {
-  //   chatWith: arrayUnion(youID),
-  // });
 
   const youChatRef = doc(db, "users", youID);
-  // batch.update(youChatRef, {
-  //   chatWith: arrayUnion(meID),
-  // });
 
   await updateDoc(youChatRef, {
     chatWith: arrayUnion(meID),
   });
 
-  // await updateDoc(meChatRef, {
-  //   chatWith: arrayUnion(youID),
-  // });
-
   const docRefId = doc(collection(db, "messages")).id;
   const d = { ...data, docID: docRefId };
   await setDoc(doc(collection(db, "messages"), docRefId), d);
-  // batch.set(docRefId, d);
 };
 
+// chat
 export const getMessagesData = async (me, you, setFunction) => {
   const t = [you, me];
-  console.log("😍😍😎😍😍😍😍", [me, you]);
   const messagesRef = collection(db, "messages");
 
-  // const q = query(messagesRef);
-  // const q = query(collection(db, "cities"), where("state", "==", "CA"));
   const q = query(
     collection(db, "messages"),
     where("usersID", "in", [t]),
     orderBy("creationTime", "asc")
-    // where("usersID", "in", [t])
-    // orderBy("creationTime", "desc")
   );
-  console.log(q);
-  // const q = query(
-  //   citiesRef,
-  //   where("regions", "in", [["west_coast", "east_coast"]])
-  // );
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const data = [];
     querySnapshot.forEach((doc) => {
@@ -670,18 +615,3 @@ export const UpdateProfile = async (userID, data, file) => {
   const userProfileRef = doc(db, "users", userID);
   await updateDoc(userProfileRef, finalData);
 };
-
-// if (file) {
-//   const storageRef = ref(storage);
-//   const imagesRef = ref(storageRef, "cover-images/" + docRefId);
-//   const metadata = { contenType: file.type };
-//   const uploadTask = await uploadBytes(imagesRef, file, metadata);
-//   imgURL = await getDownloadURL(uploadTask.ref);
-// }
-
-// const finalData = {
-//   ...data,
-//   groupID: docRefId,
-//   coverImage: imgURL,
-// };
-// const response = await setDoc(doc(db, "groups", docRefId), finalData);

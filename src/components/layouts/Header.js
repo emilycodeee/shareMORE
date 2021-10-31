@@ -147,15 +147,16 @@ const Header = () => {
         <LogoCtn src={logo} />
       </LogoContainer>
       <ListContainer>
-        <Input placeholder="搜尋" type="text" />
+        <Input placeholder="搜尋  " type="text" />
         <ListStyled to="/milestones">我們的里程碑</ListStyled>
         {userData && (
           <>
             <ListStyled to="/groups">所有社群</ListStyled>
             <ListStyled to="/groups/post">發起社群</ListStyled>
-            <ListStyled to="/messages/ ">
+            <ListStyled to="/milestones/post">發表里程碑</ListStyled>
+            {/* <ListStyled to="/messages/ ">
               <ImgCtn src={chat} />
-            </ListStyled>
+            </ListStyled> */}
             <ListStyled to={`/profile/${userData?.uid}`}>
               <ImgCtn src={userAvatar} />
             </ListStyled>

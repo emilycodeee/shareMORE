@@ -32,7 +32,7 @@ const TopCover = styled.div`
   /* opacity: 0.8; */
   width: 700px;
   height: 300px;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   background-size: cover;
   background-position: center;
   margin: 1.5rem 0;
@@ -122,7 +122,10 @@ const TopPTag = styled.p`
   font-size: 13px;
 `;
 
+const AuthorBtn = styled.div``;
+
 const EditBtn = styled.button`
+  margin-left: 10px;
   border-radius: 8px;
   padding: 5px 10px;
   border: 1px solid #d1cbcb;
@@ -168,16 +171,7 @@ const MilestonePage = () => {
     (item) => item.groupID === content?.groupID
   );
 
-  console.log(authorData);
-  console.log(groupData);
-
-  // useEffect(() => {
-  //   setAuthorData(usersList.find((item) => item.uid === content?.creatorID));
-  //   setGroupData(groupsList.find((item) => item.groupID === content?.groupID));
-  // }, [content]);
-  // console.log("authsssssssorData", authorData);
-
-  // if (authorData)
+  const time = new Date(content.creationTime?.toDate()).toLocaleString("zh-TW");
   return (
     <Container>
       <Wrapper>
@@ -195,10 +189,16 @@ const MilestonePage = () => {
                   {groupData?.name}
                 </LinkStyle>
               </TopPTag>
-              <TopPTag>發布日期：""</TopPTag>
+              <TopPTag>發布日期：{time}</TopPTag>
             </div>
           </AuthorDataCtn>
-          {userData.uid === authorData?.uid && <EditBtn>編輯</EditBtn>}
+          {userData?.uid === authorData?.uid && (
+            <AuthorBtn>
+              <EditBtn>編輯</EditBtn>
+              <EditBtn>刪除</EditBtn>
+              <EditBtn>設為非公開</EditBtn>
+            </AuthorBtn>
+          )}
         </HeadDetail>
         <div>
           <TopCover

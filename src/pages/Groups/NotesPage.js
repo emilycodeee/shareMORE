@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 
 const NotesPage = () => {
   const { groupID } = useParams();
-
+  console.log(groupID);
   return (
     <Wrapper>
       <div>{groupID}</div>

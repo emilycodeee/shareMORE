@@ -94,9 +94,7 @@ const Card = ({ item }) => {
         <Author>{`by${currentCreator?.displayName} `}</Author>
         {/* </TagContainer> */}
         <SubTitle>{`啟發自：${currentGroup?.name}`}</SubTitle>
-        <TextContainer>
-          {item.introduce || "建立於加入社團的第33天"}
-        </TextContainer>
+        <TextContainer>{item.introduce}</TextContainer>
       </ContentContainer>
     </CardContainer>
   );

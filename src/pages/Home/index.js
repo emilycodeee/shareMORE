@@ -86,8 +86,8 @@ const HomePage = ({ userList, groupList }) => {
   const [milestonesIntro, setMilestonesIntro] = useState([]);
 
   useEffect(() => {
-    firebase.getContentsList("groups", setGroupsIntro);
-    firebase.getContentsList("articles", setMilestonesIntro);
+    firebase.getContentsListSort("groups", setGroupsIntro);
+    firebase.getContentsListSort("articles", setMilestonesIntro);
   }, []);
 
   return (

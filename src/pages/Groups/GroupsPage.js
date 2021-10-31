@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import GroupsCard from "../Home/components/GroupsCard";
 import { useState, useEffect } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 const MainCtn = styled.div`
   max-width: 1000px;
   margin: 0 auto;
@@ -51,10 +51,11 @@ const ContentCtn = styled.div`
 
 const Search = styled.input`
   width: 70%;
+  height: 1.8rem;
   border-radius: 25px;
   box-shadow: none;
   border: 1px solid rgb(204, 204, 204);
-  padding: 3px 0px 3px 50px;
+  padding: 4px 0px 4px 50px;
   font-size: 18px;
   margin: 2rem 0;
 `;
@@ -93,10 +94,6 @@ const GroupsPage = () => {
   const handleCategory = (e) => {
     const target = e.target.innerText;
     setSubClassesName(target);
-    // console.log(target);
-    // const choose = categoryList.find((item) => item.name === target);
-    // setSubClassesName(choose.subClasses);
-    // console.log(e.target.innerText);
   };
 
   return (
@@ -110,12 +107,12 @@ const GroupsPage = () => {
         <Slide>
           {categoryList.map((item, i) => (
             <>
-              <ListStyle key={i + item.name} onClick={handleCategory}>
+              <ListStyle key={uuidv4()} onClick={handleCategory}>
                 {item.name}
               </ListStyle>
               {item.subClasses.map((sitem, i) => (
                 <SubList
-                  key={i + sitem}
+                  key={uuidv4()}
                   category={item.name}
                   active={subClassesName}
                 >
