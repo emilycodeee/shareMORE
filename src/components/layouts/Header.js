@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import SigninPopup from "../SigninPopup";
 import logo from "../../sharemore.png";
 import chat from "../../sources/chat.png";
+import search from "../../sources/search.png";
 
 const LogoCtn = styled.img`
   max-width: 315px;
@@ -16,6 +17,8 @@ const HeaderContainer = styled.div`
   display: flex;
   align-items: center;
   background-color: rgb(255 234 182);
+  /* background-color: rgb(246 246 246); */
+  box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
 `;
 
 const LogoContainer = styled(Link)`
@@ -62,25 +65,65 @@ const LoginPage = styled.div`
 `;
 
 const ImgCtn = styled.img`
+  width: 2rem;
   height: 2rem;
   border-radius: 50%;
 `;
 
+// const Input = styled.input`
+//   width: 15%;
+//   border-radius: 25px;
+//   box-shadow: none;
+//   border: 1px solid rgb(204, 204, 204);
+//   padding: 4px 0px 4px 50px;
+//   font-size: 18px;
+//   background-color: #f5f5f5;
+//   /* float: left;
+//   width: 3rem;
+//   height: 2rem;
+//   padding: 0 15px;
+//   border: 1px solid var(--light);
+//   background-color: #eceff1;
+//   border-radius: 21px; */
+// `;
+
 const Input = styled.input`
-  float: left;
-  width: 3rem;
-  height: 2rem;
-  padding: 0 15px;
-  border: 1px solid var(--light);
-  background-color: #eceff1;
-  border-radius: 21px;
+  width: 50px;
+  height: 20px;
+  padding: 10px;
+  border: none;
+  border-radius: 25px;
+  outline: none;
+  font-size: 16px;
+  background-image: url(${search});
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-size: 32px;
+  cursor: pointer;
+  background-color: rgb(255 234 182);
+  /* position: absolute;
+  right: 5px; */
+
+  &:focus {
+    padding: 8px 48px 8px 20px;
+    border: solid 1px #979797;
+    left: 10px;
+    cursor: text;
+  }
 `;
 
 const Header = () => {
   const userData = useSelector((state) => state.userData);
+  const usersList = useSelector((state) => state.usersList);
+
   const [showLogin, setShowLogin] = useState(false);
+
+  const currentUser = usersList.find((item) => item.uid === userData?.uid);
+
+  console.log("dddddddddddddd", currentUser);
+
   const userAvatar =
-    userData?.photoURL ||
+    currentUser?.avatar ||
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
 
   const showLoginPage = () => {
@@ -105,16 +148,17 @@ const Header = () => {
         <LogoCtn src={logo} />
       </LogoContainer>
       <ListContainer>
-        <Input placeholder="搜尋" type="text" />
-        <ListStyled to="/milestones">我們的里程碑</ListStyled>
+        <Input placeholder="搜尋  " type="text" />
+        <ListStyled to="/milestones">所有里程碑</ListStyled>
         {userData && (
           <>
-            <ListStyled to="/mygroups">我的社群</ListStyled>
+            <ListStyled to="/groups">所有社群</ListStyled>
             <ListStyled to="/groups/post">發起社群</ListStyled>
-            <ListStyled to="/messages/ ">
+            <ListStyled to="/milestones/post">發表里程碑</ListStyled>
+            {/* <ListStyled to="/messages/ ">
               <ImgCtn src={chat} />
-            </ListStyled>
-            <ListStyled to="/myProfile">
+            </ListStyled> */}
+            <ListStyled to={`/profile/${userData?.uid}`}>
               <ImgCtn src={userAvatar} />
             </ListStyled>
           </>

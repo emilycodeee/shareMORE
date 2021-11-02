@@ -6,6 +6,7 @@ import ApplicationMsg from "./ApplicationMsg";
 import styled from "styled-components";
 
 const Container = styled.div`
+  width: 50%;
   display: flex;
   padding: 0px;
   position: relative;
@@ -13,37 +14,42 @@ const Container = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   margin-right: 120px;
-  width: 668px;
+  max-width: 80%;
   outline: none;
-`;
 
+  /* overflow-y: auto; */
+`;
+// 多欄會破版
 const MainCtn = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 300px;
-  min-height: 500px;
+  width: 70%;
+  height: 500px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   background-color: rgb(255, 255, 255);
+  /* background-color: red; */
   padding: 10px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 `;
 
 const Sider = styled.div`
+  max-width: 35%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
   background-color: rgb(255 234 182);
-
   padding: 10px;
 `;
 
-export const InputStyled = styled.input`
+const InputStyled = styled.input`
   margin-bottom: 10px;
   height: 38px;
-  padding: 0px 14px;
+  /* padding: 0px 14px; */
   border-radius: 4px;
   border: #dcdee1 1px solid;
   width: auto;
@@ -54,7 +60,11 @@ const ApplicationPopup = ({ groupData, applicationData, appliedData }) => {
     <Container>
       <Sider>
         <h2>一起 走得更遠</h2>
-        <h4>Sign in to continue to your account.</h4>
+        <h4>
+          What I wamt is you to try, and the result will follow.If not today
+          ,then some other day.
+          <br />─ Jonas
+        </h4>
       </Sider>
       <MainCtn>
         <ApplicationMsg

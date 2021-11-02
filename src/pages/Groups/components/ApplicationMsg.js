@@ -8,19 +8,12 @@ const SendApplication = styled.div`
   flex-direction: column;
 `;
 
-const Avatar = styled.img`
-  border-radius: 50%;
-  height: 50px;
-  width: 50px;
-  margin-right: 10px;
-`;
-
 const Label = styled.label`
   font-weight: 550;
 `;
 
 const TextCtn = styled.textarea`
-  resize: none;
+  /* resize: none; */
   border-radius: 10px;
   margin: 10px 0;
   padding: 10px;
@@ -30,24 +23,28 @@ const Button = styled.button`
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
+  border: none;
+  outline: none;
+  color: black;
 `;
 
 const ContentStyled = styled.div`
   font-weight: 550;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 `;
 
 const ApplicationStyled = styled.div`
-  margin: 0 10px;
+  margin: 0 10px 0 0;
   background-color: #f2f2f2;
+  height: auto;
   padding: 10px;
   border-radius: 10px;
+  overflow: overflow-x;
 `;
 
 const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
   const [value, setValue] = useState("");
   const userData = useSelector((state) => state.userData);
-  console.log(applicationData.data.length);
   const handleSubmit = () => {
     const data = {
       content: value,
@@ -72,7 +69,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
         <>
           <ContentStyled>加入申請已送出，請耐心等候</ContentStyled>
           <ContentStyled>
-            {`申請日：${appliedData.creationTime
+            {`申請時間：${appliedData.creationTime
               .toDate()
               .toLocaleString("zh-TW")}`}
           </ContentStyled>

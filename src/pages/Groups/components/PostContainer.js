@@ -12,24 +12,23 @@ import { useSelector } from "react-redux";
 
 const Wrapper = styled.div`
   margin: 0 auto;
-  /* width: 80%; */
+
   border-radius: 10px;
   background-color: #f5f5f5;
   margin: 1rem 0;
-  padding: 1rem 2rem;
-  /* border: 1px solid red; */
+  padding: 1rem 1rem;
   position: relative;
 `;
 
 const AvatarCtn = styled.img`
   border-radius: 50%;
   height: 2rem;
+  width: 2rem;
   margin-right: 10px;
 `;
 
 const UserWrapper = styled.div`
   display: flex;
-  /* justify-content: space-between; */
   margin-bottom: 10px;
 `;
 
@@ -47,6 +46,7 @@ const Pstyled = styled.div`
 const IconWrapper = styled.div`
   display: grid;
   grid-template-columns: 50% 50%;
+  margin-top: 10px;
 `;
 
 const HeadIcon = styled.img`
@@ -61,7 +61,7 @@ const IconDiv = styled.div`
   justify-content: center;
   cursor: pointer;
   border-radius: 10px;
-  /* background-color: lightblue; */
+  padding: 5px;
   &:hover {
     background-color: white;
   }
@@ -74,32 +74,27 @@ const Icon = styled.img`
 `;
 
 const CountWrapper = styled.div`
-  /* border: 2px solid red; */
   display: flex;
   position: relative;
 `;
 
 const DropDown = styled.div`
-  /* border: 1px solid red; */
   display: flex;
   flex-direction: column;
   align-items: center;
-
   position: absolute;
   top: 2.5rem;
   right: 0;
   z-index: 99;
-  /* transition: 0.3s; */
 `;
 
 const MoreBtn = styled.div`
   cursor: pointer;
-  width: 100%;
+  width: 6rem;
   text-align: center;
   background-color: #e5e5e5;
   font-weight: 550;
   padding: 0.5rem 0.2rem;
-
   &:hover {
     background-color: #eeeeee;
   }
@@ -144,9 +139,42 @@ const ButtonStyled = styled.button`
   margin-left: 10px;
   display: flex;
   justify-content: end;
+  border: none;
+  border-radius: 10px;
+  outline: none;
 `;
 
-const PostContainet = ({ item, content }) => {
+const ContentArea = styled.div`
+  line-height: 1.4rem;
+`;
+
+const EditContentArea = styled.textarea`
+  width: 100%;
+  padding: 2px 5px;
+  outline: none;
+  margin-left: 1rem;
+  resize: none;
+  height: auto;
+`;
+
+const EditAreaWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const EditSubmitBtn = styled.button`
+  cursor: pointer;
+  width: 60px;
+  height: 30px;
+  background-color: #eeeeee;
+  outline: none;
+  border: 1px solid rgb(203, 195, 194);
+  font-size: 10px;
+  margin-left: 0.5rem;
+`;
+
+const PostContainer = ({ item, content }) => {
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
   const { groupID } = useParams();
@@ -156,7 +184,10 @@ const PostContainet = ({ item, content }) => {
   const [showDots, setShowDots] = useState(false);
   const [renderPost, setRenderPost] = useState([]);
   const [textValue, setTextValue] = useState("");
-  const postSender = usersList.find((each) => each.userID === item.creatorID);
+  const postSender = usersList.find((each) => each.uid === item.creatorID);
+  const [editText, setEditText] = useState(item.content);
+
+  const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => {
     firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
@@ -174,12 +205,10 @@ const PostContainet = ({ item, content }) => {
   };
 
   const handleClap = () => {
-    console.log("ssss", item.postID);
     firebase.clapsForPost(item.groupID, item.postID, userData.uid);
   };
 
   const handleDelete = () => {
-    console.log("delete");
     setShowDots(!showDots);
     firebase.deleteComment(item.groupID, item.postID).then(() => {
       alert("刪除成功");
@@ -187,10 +216,21 @@ const PostContainet = ({ item, content }) => {
   };
 
   const handleEdit = () => {
-    console.log("edit");
-    setShowDots(!showDots);
+    firebase.editComment(item.groupID, item.postID, editText);
+    alert("編輯成功");
+    setShowEdit(false);
+    setShowDots(false);
   };
 
+  const handleCancelEdit = () => {
+    setShowEdit(false);
+    setShowDots(false);
+  };
+
+  // console.log(renderPost);
+  const checkPostSender = postSender?.uid === userData?.uid;
+
+  const checkGroupOwner = content?.creatorID === userData?.uid;
   return (
     <div>
       <Wrapper>
@@ -202,28 +242,46 @@ const PostContainet = ({ item, content }) => {
               {item.creationTime?.toDate().toLocaleString("zh-TW")}
             </Pstyled>
           </UserDetail>
-          {content.creatorID === userData.uid && (
-            <HeadIcon
-              src={dots}
-              onClick={() => setShowDots(!showDots)}
-              // onMouseOver={() => setShowDots(true)}
-              // onMouseLeave={() => setShowDots(false)}
-            />
+
+          {(checkPostSender || checkGroupOwner) && (
+            <HeadIcon src={dots} onClick={() => setShowDots(!showDots)} />
           )}
         </UserWrapper>
 
         {showDots && (
           <DropDown>
-            <MoreBtn onClick={handleEdit}>編輯</MoreBtn>
+            {checkPostSender && (
+              <MoreBtn
+                onClick={() => {
+                  setShowEdit(!showEdit);
+                  setShowDots(!showDots);
+                }}
+              >
+                編輯
+              </MoreBtn>
+            )}
             <MoreBtn onClick={handleDelete}>刪除</MoreBtn>
-            <MoreBtn>
-              <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
-                設為精選筆記
-              </LinkStyle>
-            </MoreBtn>
+            {checkGroupOwner && (
+              <MoreBtn>
+                <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
+                  設為精選筆記
+                </LinkStyle>
+              </MoreBtn>
+            )}
           </DropDown>
         )}
-        <div>{item.content}</div>
+        {showEdit && (
+          <EditAreaWrapper>
+            <EditContentArea
+              // onBlur={() => setShowEdit(false)}
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+            />
+
+            <EditSubmitBtn onClick={handleEdit}>送出</EditSubmitBtn>
+          </EditAreaWrapper>
+        )}
+        {!showEdit && <ContentArea>{item.content}</ContentArea>}
         <IconWrapper>
           <IconDiv
             onClick={() => {
@@ -231,7 +289,9 @@ const PostContainet = ({ item, content }) => {
             }}
           >
             <CountWrapper>
-              <Icon src={item.clapBy?.includes(userData.uid) ? claped : clap} />
+              <Icon
+                src={item.clapBy?.includes(userData?.uid) ? claped : clap}
+              />
               <Count>{item.clapBy?.length > 0 && item.clapBy.length}</Count>
             </CountWrapper>
           </IconDiv>
@@ -285,4 +345,4 @@ const PostContainet = ({ item, content }) => {
   );
 };
 
-export default PostContainet;
+export default PostContainer;

@@ -8,11 +8,14 @@ import MilestoneEditor from "./pages/MileStones/MilestoneEditor";
 import BuildGroups from "./pages/Groups/BuildGroups";
 import MilestonesPage from "./pages/MileStones/MilestonesPage";
 import MilestonePage from "./pages/MileStones";
-import NotesPage from "./pages/Groups/NotesPage";
-import MyProfilePage from "./pages/Profile/MyProfile";
+import NotesPage from "./pages/Notes/NotesPage";
+// import MyProfilePage from "./pages/Profile/MyProfile";
 import ProfilePage from "./pages/Profile";
-import NotesEditorPage from "./pages/Groups/NotesEditorPage";
+import NotesEditorPage from "./pages/Notes/NotesEditorPage";
 import ChatRoom from "./pages/ChatRoom";
+import ProfileSetting from "./pages/Profile/ProfileSetting";
+import GroupsPage from "./pages/Groups/GroupsPage";
+import NotePage from "./pages/Notes";
 
 import { useEffect } from "react";
 import * as firebase from "./utils/firebase";
@@ -29,7 +32,7 @@ function App() {
   const userData = useSelector((state) => state.userData);
 
   useEffect(() => {
-    // if (userData) return;
+    if (userData) return;
     firebase
       .getOptionsName("categories")
       .then((res) => {
@@ -66,12 +69,21 @@ function App() {
         <Route path="/milestones/post" exact>
           <MilestoneEditor />
         </Route>
+        <Route path="/milestone/:milestoneID/edit" exact>
+          <MilestoneEditor />
+        </Route>
 
+        <Route path="/groups" exact>
+          <GroupsPage />
+        </Route>
         <Route path="/groups/post" exact>
           <BuildGroups />
         </Route>
         <Route path="/group/:groupID" exact>
           <GroupPage />
+        </Route>
+        <Route path="/group/:groupID/milestones" exact>
+          <NotesPage />
         </Route>
         <Route path="/group/:groupID/notes" exact>
           <NotesPage />
@@ -79,20 +91,24 @@ function App() {
         <Route path="/group/:groupID/notes/:postID/post" exact>
           <NotesEditorPage />
         </Route>
+        <Route path="/group/:groupID/notes/:postID">
+          <NotePage />
+        </Route>
         <Route path="/milestones" exact>
           <MilestonesPage />
         </Route>
         <Route path="/milestone/:milestoneID" exact>
           <MilestonePage />
         </Route>
-        <Route path="/myprofile" exact>
-          <MyProfilePage />
-        </Route>
-        <Route path="/messages/:sendTo" exact>
+
+        {/* <Route path="/messages/:sendTo" exact>
           <ChatRoom />
-        </Route>
+        </Route> */}
         <Route path="/profile/:userID" exact>
           <ProfilePage />
+        </Route>
+        <Route path="/profile/:userID/edit" exact>
+          <ProfileSetting />
         </Route>
       </Switch>
     </Layouts>

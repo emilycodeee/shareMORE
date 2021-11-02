@@ -29,6 +29,7 @@ import {
   arrayUnion,
   arrayRemove,
   writeBatch,
+  collectionGroup,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 require("dotenv").config();
@@ -54,27 +55,22 @@ export const googleProvider = new GoogleAuthProvider();
 export const socialMediaAuth = async (provider, setFunction) => {
   try {
     const result = await signInWithPopup(auth, provider);
-    const q = query(collection(db, "users"));
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("uid", "==", result.user.uid));
     const querySnapshot = await getDocs(q);
-
     let data;
-
-    if (querySnapshot.docs) {
-      querySnapshot.forEach((doc) => {
-        if (doc.id !== result.user.uid) {
-          data = {
-            creationTime: result.user.metadata.creationTime,
-            displayName: result.user.displayName || "",
-            avatar:
-              result.user.photoURL ||
-              "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
-            email: result.user.email,
-            userID: result.user.uid,
-          };
-        }
-      });
+    if (querySnapshot.docs.length === 0) {
+      data = {
+        creationTime: result.user.metadata.creationTime,
+        displayName: result.user.displayName || "",
+        avatar:
+          result.user.photoURL ||
+          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
+        email: result.user.email,
+        uid: result.user.uid,
+      };
     }
-    await setDoc(doc(db, "users", result.user.uid), data);
+    await setDoc(doc(db, "users", result.user.uid), data, { merge: true });
   } catch (error) {
     switch (error.code) {
       case "auth/user-not-found":
@@ -101,9 +97,9 @@ export const register = async (name, email, password, setFunction) => {
       avatar:
         "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
       email: result.user.email,
-      userID: result.user.uid,
+      uid: result.user.uid,
     };
-    await setDoc(doc(db, "users", result.user.uid), data);
+    await setDoc(doc(db, "users", result.user.uid), data, { merge: true });
   } catch (error) {
     console.log("🎆", error.code);
     switch (error.code) {
@@ -178,6 +174,60 @@ export const postArticles = async (data, file) => {
   const response = await setDoc(doc(db, "articles", docRefId), finalData);
 };
 
+export const editArticles = async (data, file, milestoneID, imgURL) => {
+  let updateImgURL = imgURL;
+  if (file) {
+    const imgID = uuidv4();
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + imgID);
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    updateImgURL = await getDownloadURL(uploadTask.ref);
+  }
+  const finalData = {
+    ...data,
+
+    coverImage: updateImgURL,
+  };
+
+  const response = await setDoc(doc(db, "articles", milestoneID), finalData, {
+    merge: true,
+  });
+};
+
+export const deleteMilestone = async (collectionName, docID) => {
+  await deleteDoc(doc(db, collectionName, docID));
+};
+
+export const deleteMilestoneComment = async (
+  collectionName,
+  milestoneID,
+  docID
+) => {
+  await deleteDoc(doc(db, collectionName, milestoneID, "posts", docID));
+};
+
+export const getTotalDocList = async (optionName) => {
+  const q = query(collection(db, optionName));
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  return arr;
+};
+
+// up3
+export const toggleMilestone = async (collectionName, docID, action) => {
+  // await deleteDoc(doc(db, collectionName, docID));
+  if (action === "private") {
+    await updateDoc(doc(db, collectionName, docID), {
+      public: false,
+    });
+  }
+};
+
 export const getRawGroupNotes = async (groupID, postID) => {
   const data = {};
   const docRef = doc(db, "groups", groupID, "posts", postID);
@@ -250,8 +300,10 @@ export const getOptionsName = async (optionName) => {
   const querySnapshot = await getDocs(q);
   const arr = [];
   querySnapshot.forEach((doc) => {
-    arr.push({ value: doc.data().name, label: doc.data().name });
+    arr.push(doc.data());
   });
+  // console.log("🧨🧨🧨🧨", arr);
+  // orderBy("name");
   return arr;
 };
 
@@ -265,10 +317,7 @@ export const getMyGroupsName = async (userID) => {
   const memberQuerySnapshot = await getDocs(memberQ);
   const arr = [];
   memberQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     arr.push({ value: doc.data().groupID, label: doc.data().name });
-    // console.log(doc.id, " => ", doc.data());
   });
 
   const creatorQ = query(
@@ -277,18 +326,12 @@ export const getMyGroupsName = async (userID) => {
   );
 
   const creatorQuerySnapshot = await getDocs(creatorQ);
-  // const arr = [];
   creatorQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     arr.push({ value: doc.data().groupID, label: doc.data().name });
-    // console.log(doc.id, " => ", doc.data());
   });
-
-  console.log("🍕🍕🍕🍕", arr);
   return arr;
 };
-//
+
 export const getMyGroupsObj = async (userID) => {
   const memberQ = query(
     collection(db, "groups"),
@@ -298,10 +341,7 @@ export const getMyGroupsObj = async (userID) => {
   const memberQuerySnapshot = await getDocs(memberQ);
   const memberArr = [];
   memberQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     memberArr.push(doc.data());
-    // console.log(doc.id, " => ", doc.data());
   });
 
   const creatorQ = query(
@@ -312,13 +352,9 @@ export const getMyGroupsObj = async (userID) => {
   const creatorQuerySnapshot = await getDocs(creatorQ);
   const creatorArr = [];
   creatorQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     creatorArr.push(doc.data());
-    // console.log(doc.id, " => ", doc.data());
   });
 
-  // console.log("🍕🍕🍕🍕", arr);
   return { participate: memberArr, owner: creatorArr };
 };
 
@@ -338,34 +374,14 @@ export const getQueryFilter = async (collectionName, fieldName, queryName) => {
 };
 
 export const getMyMilestones = async (userID) => {
-  const q = query(
-    collection(db, "articles"),
-    where("creatorID", "==", userID),
-    where("public", "==", true)
-  );
-
+  const q = query(collection(db, "articles"), where("creatorID", "==", userID));
   const qSnapshot = await getDocs(q);
   const arr = [];
   qSnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     arr.push(doc.data());
-    // console.log(doc.id, " => ", doc.data());
   });
-
-  // console.log("🍕🍕🍕🍕", arr);
   return arr;
 };
-
-// let imgURL =
-//   "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
-// if (file) {
-//   const storageRef = ref(storage);
-//   const imagesRef = ref(storageRef, "cover-images/" + docRefId);
-//   const metadata = { contenType: file.type };
-//   const uploadTask = await uploadBytes(imagesRef, file, metadata);
-//   imgURL = await getDownloadURL(uploadTask.ref);
-// }
 
 export const createGroup = async (data, file) => {
   let imgURL =
@@ -389,6 +405,25 @@ export const createGroup = async (data, file) => {
 
 export const getContentsList = async (topic, setFonction) => {
   const q = query(collection(db, topic));
+  const querySnapshot = await getDocs(q);
+  let data = [];
+  querySnapshot.forEach((doc) => {
+    data.push(doc.data());
+  });
+  setFonction(data);
+};
+
+export const getContentsListSort = async (topic, setFonction) => {
+  let q;
+  if (topic === "articles") {
+    q = query(
+      collection(db, topic),
+      where("public", "==", true),
+      orderBy("creationTime", "desc")
+    );
+  } else {
+    q = query(collection(db, topic), orderBy("creationTime", "desc"));
+  }
   const querySnapshot = await getDocs(q);
   let data = [];
   querySnapshot.forEach((doc) => {
@@ -444,27 +479,32 @@ export const sendGroupsPost = async (groupID, data) => {
   );
 };
 
+// milestonePost🎉🎈
+export const sendMilestoneComment = async (milestoneID, data) => {
+  const docRefId = doc(collection(db, "articles", milestoneID, "posts")).id;
+  const finalData = { ...data, postID: docRefId };
+
+  await setDoc(
+    doc(collection(db, "articles", milestoneID, "posts"), docRefId),
+    finalData
+  );
+};
+
 export const clapsForPost = async (groupID, docID, userID) => {
   console.log(docID, userID);
   const docRef = doc(db, "groups", groupID, "posts", docID);
   const docSnap = await getDoc(docRef);
-  console.log("sssssss", docSnap.data());
 
   if (docSnap.data().clapBy?.includes(userID)) {
     await updateDoc(docRef, {
-      // regions: arrayRemove("east_coast"),
       clapBy: arrayRemove(userID),
     });
-    // setFunction(false);
   } else {
     await updateDoc(docRef, {
       clapBy: arrayUnion(userID),
     });
-    // setFunction(true);
   }
 };
-
-// export const getClaps =
 
 export const postsListener = async (groupID, setRenderPost) => {
   const q = query(
@@ -480,16 +520,87 @@ export const postsListener = async (groupID, setRenderPost) => {
   });
 };
 
-export const getTotalDocList = async (optionName) => {
-  const q = query(collection(db, optionName));
-  const querySnapshot = await getDocs(q);
-  const arr = [];
-  querySnapshot.forEach((doc) => {
-    arr.push(doc.data());
-  });
+//milestone🎐🎏
+export const clapsForMilestone = async (milestoneID, userID, action) => {
+  console.log(milestoneID, userID);
+  const docRef = doc(db, "articles", milestoneID);
+  const docSnap = await getDoc(docRef);
 
-  return arr;
+  if (action === "saveBy") {
+    if (docSnap.data().saveBy?.includes(userID)) {
+      await updateDoc(docRef, {
+        saveBy: arrayRemove(userID),
+      });
+    } else {
+      await updateDoc(docRef, {
+        saveBy: arrayUnion(userID),
+      });
+    }
+  } else if (action === "clapBy") {
+    if (docSnap.data().clapBy?.includes(userID)) {
+      await updateDoc(docRef, {
+        clapBy: arrayRemove(userID),
+      });
+    } else {
+      await updateDoc(docRef, {
+        clapBy: arrayUnion(userID),
+      });
+    }
+  }
 };
+
+export const saveForMilestone = async (groupID, docID, userID) => {
+  console.log(docID, userID);
+  const docRef = doc(db, "groups", groupID, "posts", docID);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.data().clapBy?.includes(userID)) {
+    await updateDoc(docRef, {
+      clapBy: arrayRemove(userID),
+    });
+  } else {
+    await updateDoc(docRef, {
+      clapBy: arrayUnion(userID),
+    });
+  }
+};
+
+export const milestoneListener = async (
+  targetName,
+  milestoneID,
+  setFunction
+) => {
+  const unsub = onSnapshot(doc(db, targetName, milestoneID), (doc) => {
+    setFunction(doc.data());
+  });
+};
+
+export const getMilestone = async (targetName, milestoneID) => {
+  const docRef = doc(db, targetName, milestoneID);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data();
+};
+
+export const postMilestoneListener = async (
+  targetName,
+  milestoneID,
+  setFunction
+) => {
+  const q = query(
+    collection(db, targetName, milestoneID, "posts"),
+    orderBy("creationTime", "asc")
+  );
+
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const data = [];
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+    setFunction(data);
+  });
+};
+
+//📢MilestoneDelete
 
 export const sendPostComment = async (groupID, postID, data) => {
   const docRefId = doc(
@@ -566,94 +677,125 @@ export const confirmApplication = async (memberID, groupID, data) => {
   });
 
   await batch.commit();
-  // const response = await setDoc(
-  //   doc(collection(db, "groups", groupID, "members"), docRefId),
-  //   data
-  // );
-  // return response;
-
-  // 🥱🥱
-  // const applicationRef = doc(db, "groups", groupID, "applications", docRefId);
-  // await updateDoc(applicationRef, {
-  //   approve: true,
-  // });
-  // const response = await setDoc(
-  //   doc(collection(db, "groups", groupID, "members"), docRefId),
-  //   data
-  // );
-  // return response;
 };
 
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
 };
+//postContainer.js🎈
+export const editComment = async (groupID, docRefId, textData) => {
+  const postDocRef = doc(collection(db, "groups", groupID, "posts"), docRefId);
+  await updateDoc(postDocRef, {
+    content: textData,
+  });
+};
 
+// const applicationRef = doc(
+//   collection(db, "groups", groupID, "applications"),
+//   memberID
+// );
+// batch.update(applicationRef, {
+//   approve: true,
+// });
+
+//postContainer.js
 export const deleteComment = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
 
-// export const sendMessage = async (data) => {
-//   const docRefId = doc(collection(db, "messages")).id;
-//   const d = { ...data, docID: docRefId };
-// await setDoc(doc(collection(db, "messages"), docRefId), d);
-// };
-
 export const sendMessage = async (data, meID, youID) => {
-  // const batch = writeBatch(db);
-
   const meChatRef = doc(db, "users", meID);
   await updateDoc(meChatRef, {
     chatWith: arrayUnion(youID),
   });
-  // batch.update(meChatRef, {
-  //   chatWith: arrayUnion(youID),
-  // });
 
   const youChatRef = doc(db, "users", youID);
-  // batch.update(youChatRef, {
-  //   chatWith: arrayUnion(meID),
-  // });
 
   await updateDoc(youChatRef, {
     chatWith: arrayUnion(meID),
   });
 
-  // await updateDoc(meChatRef, {
-  //   chatWith: arrayUnion(youID),
-  // });
-
   const docRefId = doc(collection(db, "messages")).id;
   const d = { ...data, docID: docRefId };
   await setDoc(doc(collection(db, "messages"), docRefId), d);
-  // batch.set(docRefId, d);
 };
 
+// chat
 export const getMessagesData = async (me, you, setFunction) => {
   const t = [you, me];
-  console.log("😍😍😎😍😍😍😍", [me, you]);
   const messagesRef = collection(db, "messages");
 
-  // const q = query(messagesRef);
-  // const q = query(collection(db, "cities"), where("state", "==", "CA"));
   const q = query(
     collection(db, "messages"),
     where("usersID", "in", [t]),
     orderBy("creationTime", "asc")
-    // where("usersID", "in", [t])
-    // orderBy("creationTime", "desc")
   );
-  console.log(q);
-  // const q = query(
-  //   citiesRef,
-  //   where("regions", "in", [["west_coast", "east_coast"]])
-  // );
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const data = [];
     querySnapshot.forEach((doc) => {
       data.push(doc.data());
     });
     setFunction(data);
-    console.log("😍😍😎", data);
+
     return data;
   });
 };
+
+export const UpdateProfile = async (userID, data, file) => {
+  let finalData = data;
+
+  if (file) {
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + uuidv4());
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    const imgURL = await getDownloadURL(uploadTask.ref);
+    finalData.avatar = imgURL;
+  }
+
+  const userProfileRef = doc(db, "users", userID);
+  await updateDoc(userProfileRef, finalData);
+};
+
+export const getGroupNotes = async (option, groupID, tagName) => {
+  const q = query(
+    collection(db, option, groupID, tagName),
+    orderBy("creationTime", "desc")
+  );
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  return arr;
+};
+
+export const getGroupsNoteContent = async (option, groupID, tagName, docID) => {
+  const docRef = doc(db, option, groupID, tagName, docID);
+  const docSnap = await getDoc(docRef);
+
+  return docSnap.data();
+  // if (docSnap.exists()) {
+
+  //   // console.log("Document data:", docSnap.data());
+  // } else {
+  //   // doc.data() will be undefined in this case
+  //   console.log("No such document!");
+  // }
+};
+
+// export const getGroupNotes = async (option,groupID,tagName) => {
+//   const q = query(
+//     collection(db, option, groupID, tagName),
+//     orderBy("joinTime", "desc")
+//   );
+//   const unsubscribe = onSnapshot(q, (querySnapshot) => {
+//     const data = [];
+//     querySnapshot.forEach((doc) => {
+//       data.push(doc.data());
+//     });
+//     console.log(data);
+//     setFunction(data);
+//   });
+// };

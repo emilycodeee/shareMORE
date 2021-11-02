@@ -41,7 +41,7 @@ const ChatRoom = ({ user, userList }) => {
   const [text, setText] = useState("");
   const [messagesData, setMessagesData] = useState([]);
   console.log(sendTo.trim().length);
-  const senderData = userList?.find((item) => item.userID === user?.uid);
+  const senderData = userList?.find((item) => item.uid === user?.uid);
   console.log(senderData);
 
   useEffect(() => {
@@ -100,8 +100,7 @@ const ChatRoom = ({ user, userList }) => {
                   <div>
                     {
                       // console.log(item)
-                      userList.find((p) => item.receiver === p.userID)
-                        ?.displayName
+                      userList.find((p) => item.receiver === p.uid)?.displayName
                     }
                     說:
                   </div>

@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 
 const CardContainer = styled(Link)`
   text-decoration: none;
-  box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
-  transition: transform 0.28s ease-in-out 0s;
+  color: black;
+  box-shadow: 0 2px 10px #a2a2a2;
   border-radius: 10px;
   margin-bottom: 10px;
 `;
@@ -14,14 +14,12 @@ const CoverContainer = styled.div`
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   height: 150px;
-  /* overflow: hidden; */
-  /* position: absolute; */
   background-size: cover;
   background-position: center;
 `;
 
 const ContentContainer = styled.div`
-  padding: 10px 3px;
+  padding: 1rem;
 `;
 
 const TagContainer = styled.div`
@@ -38,6 +36,21 @@ const TextContainer = styled.div`
   text-overflow: ellipsis;
 `;
 
+const CategoryContainer = styled.div`
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 550;
+`;
+
+const TitleContainer = styled.div`
+  font-weight: 550;
+  margin-bottom: 10px;
+  color: rgb(255 182 0);
+  &:hover {
+    color: rgb(255 217 121);
+  }
+`;
+
 // style={{ textDecoration: "none" }}
 const GroupsCard = ({ item }) => {
   // console.log(item);
@@ -48,10 +61,10 @@ const GroupsCard = ({ item }) => {
       </CoverContainer>
       <ContentContainer>
         <TagContainer>
-          <TextContainer>{item.category}</TextContainer>
-          <TextContainer>{item.subClass}</TextContainer>
+          <CategoryContainer>{item.category}</CategoryContainer>
+          <CategoryContainer>{item.subClass}</CategoryContainer>
         </TagContainer>
-        <TextContainer>{item.name}</TextContainer>
+        <TitleContainer>{item.name}</TitleContainer>
         <TextContainer>{item.introduce}</TextContainer>
       </ContentContainer>
     </CardContainer>

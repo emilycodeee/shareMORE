@@ -5,7 +5,7 @@ import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
 import styled from "styled-components";
 
-export const Container = styled.div`
+const Container = styled.div`
   display: flex;
   padding: 0px;
   position: relative;
@@ -132,7 +132,6 @@ const SigninPopup = () => {
         <h2>一起 走得更遠</h2>
         <h4>Sign in to continue to your account.</h4>
       </Sider>
-
       <AuthCtn>
         {!showMore && (
           <>

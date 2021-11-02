@@ -6,7 +6,8 @@ import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
 const AvatarImg = styled.img`
-  max-height: 3rem;
+  height: 3rem;
+  width: 3rem;
   border-radius: 50%;
   box-shadow: 0px 2px 6px grey;
 `;
@@ -76,7 +77,7 @@ const Shield = styled.div`
 const GroupHeader = ({ content, stationHead }) => {
   const userData = useSelector((state) => state.userData);
   // const usersList = useSelector((state) => state.usersList);
-
+  const groupsList = useSelector((state) => state.groupsList);
   const [showApplication, setShowApplication] = useState(false);
 
   const [applicationData, setApplicationData] = useState({});
@@ -93,17 +94,28 @@ const GroupHeader = ({ content, stationHead }) => {
     const data = applicationData.data?.find(
       (each) => each.applicantID === userData?.uid
     );
-
     if (data) {
       setAppliedData(data);
     }
   }, [applicationData]);
 
-  const root = "http://localhost:3000";
-  const location = useLocation();
+  const root = window.location.host;
+  const pathname = useLocation().pathname;
+
+  const handleApplicationBtn = () => {
+    if (userData === null) {
+      alert("請先登入或加入會員");
+      return;
+    }
+    setShowApplication(!showApplication);
+  };
+
   const checkMember =
-    (userData !== null && content?.membersList?.includes(userData.uid)) ||
+    (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
+
+  // const alreadyM =
+  //   userData !== null && content?.membersList?.includes(userData.uid);
 
   if (showApplication) {
     return (
@@ -123,50 +135,69 @@ const GroupHeader = ({ content, stationHead }) => {
     );
   }
 
-  return (
-    <Wrapper>
-      <NameLogo>{content.name}</NameLogo>
-      <UlStyled>
-        <LinkAvatar to={`/profile/${stationHead?.userID}`}>
-          <AvatarImg src={stationHead?.avatar} />
-        </LinkAvatar>
-        <LiStyled
-          onClick={() => {
-            navigator.clipboard.writeText(root + location.pathname);
-            alert(`複製連結成功！`);
-          }}
-        >
-          分享連結
-        </LiStyled>
-        {checkMember && (
-          <LinkStyled to={`${location.pathname}/notes`}>社群筆記</LinkStyled>
-        )}
-        {content.creatorID === userData?.uid ? (
-          <LiStyled
-            setShowApplication={setShowApplication}
-            onClick={() => {
-              setShowApplication(!showApplication);
-            }}
-          >
-            待審申請
-            <span>{applicationData?.count}</span>
-          </LiStyled>
-        ) : (
+  if (content?.membersList?.includes(userData?.uid)) {
+    return (
+      <Wrapper>
+        <NameLogo>{content.name}</NameLogo>
+        <UlStyled>
+          <LinkAvatar to={`/profile/${stationHead?.uid}`}>
+            <AvatarImg src={stationHead?.avatar} />
+          </LinkAvatar>
           <LiStyled
             onClick={() => {
-              if (userData === null) {
-                alert("請先登入或加入會員");
-                return;
-              }
-              setShowApplication(!showApplication);
+              navigator.clipboard.writeText(root + pathname);
+              alert(`複製連結成功！`);
             }}
           >
-            {appliedData ? "等候審核" : "申請加入"}
+            分享連結
           </LiStyled>
-        )}
-      </UlStyled>
-    </Wrapper>
-  );
+          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
+          {checkMember && (
+            <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
+          )}
+        </UlStyled>
+      </Wrapper>
+    );
+  } else {
+    return (
+      <Wrapper>
+        <NameLogo>{content.name}</NameLogo>
+        <UlStyled>
+          <LinkAvatar to={`/profile/${stationHead?.uid}`}>
+            <AvatarImg src={stationHead?.avatar} />
+          </LinkAvatar>
+          <LiStyled
+            onClick={() => {
+              navigator.clipboard.writeText(root + pathname);
+              alert(`複製連結成功！`);
+            }}
+          >
+            分享連結
+          </LiStyled>
+          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
+          {checkMember && (
+            <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
+          )}
+
+          {content.creatorID === userData?.uid ? (
+            <LiStyled
+              setShowApplication={setShowApplication}
+              onClick={() => {
+                setShowApplication(!showApplication);
+              }}
+            >
+              待審申請
+              <span>{applicationData?.count}</span>
+            </LiStyled>
+          ) : (
+            <LiStyled onClick={handleApplicationBtn}>
+              {appliedData ? "等候審核" : "申請加入"}
+            </LiStyled>
+          )}
+        </UlStyled>
+      </Wrapper>
+    );
+  }
 };
 
 export default GroupHeader;

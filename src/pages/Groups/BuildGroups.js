@@ -6,7 +6,8 @@ import styled from "styled-components";
 import * as firebase from "../../utils/firebase";
 import { useHistory } from "react-router-dom";
 import { initText } from "../../utils/commonText";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getGroupsList } from "../../redux/actions";
 const MainContainer = styled.div`
   border-radius: 20px;
   border: 1px solid #3e2914;
@@ -88,12 +89,16 @@ const SubmitBtn = styled.button`
 `;
 
 const BuildGroups = () => {
+  const d = useDispatch();
   const history = useHistory();
   const categoryList = useSelector((state) => state.categoryList);
   const userData = useSelector((state) => state.userData);
 
-  const [file, setFile] = useState(null);
+  const CategoryOpt = categoryList.map((item) => {
+    return { value: item.name, label: item.name };
+  });
 
+  const [file, setFile] = useState(null);
   const [subClassesName, setSubClassesName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubClass, setSelectedSubClass] = useState(null);
@@ -105,10 +110,14 @@ const BuildGroups = () => {
   const [introduce, setIntroduce] = useState("");
 
   useEffect(() => {
-    firebase
-      .getQueryFilter("categories", "name", selectedCategory)
-      .then((res) => setSubClassesName(res))
-      .catch((err) => console.log(err));
+    const subCategoryObj = categoryList.find(
+      (item) => item.name === selectedCategory
+    );
+    // console.log(subCategoryObj);
+    const subCategoryOpt = subCategoryObj?.subClasses.map((item) => {
+      return { value: item, label: item };
+    });
+    setSubClassesName(subCategoryOpt);
   }, [selectedCategory]);
 
   const previewImg = file
@@ -116,6 +125,16 @@ const BuildGroups = () => {
     : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
 
   const handleSubmit = () => {
+    if (goal.length === 0 || name.length === 0 || goalDate.length === 0) {
+      alert("請填寫完整資訊");
+      return;
+    }
+
+    if (selectedCategory === null || selectedSubClass === null) {
+      alert("請填選社群類別");
+      return;
+    }
+
     const data = {
       name,
       goal,
@@ -127,9 +146,14 @@ const BuildGroups = () => {
       creatorID: userData.uid,
       public: true,
     };
-    firebase.createGroup(data, file);
-    alert("新社團建立成功");
-    history.push("/");
+    firebase.createGroup(data, file).then(() => {
+      firebase
+        .getTotalDocList("groups")
+        .then((res) => d(getGroupsList(res)))
+        .catch((err) => console.log(err));
+      alert("新社團建立成功");
+      history.push("/");
+    });
   };
 
   return (
@@ -145,7 +169,7 @@ const BuildGroups = () => {
                 console.log(e);
                 setSelectedCategory(e.value);
               }}
-              options={categoryList}
+              options={CategoryOpt}
             />
           </LabelWrapper>
           <LabelWrapper>

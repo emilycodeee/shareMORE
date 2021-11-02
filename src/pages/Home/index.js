@@ -8,6 +8,7 @@ import Signin from "../../components/Signin";
 import { TopCover, ViderCover, Shield } from "./index.styled";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import GroupsCard from "./components/GroupsCard";
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
@@ -22,7 +23,6 @@ const ListWrapper = styled.ul`
 `;
 
 const ListCtn = styled.li`
-  /* background-color: red; */
   padding: 6px 6px;
   border-radius: 20px;
   border: 1px solid rgb(70 69 65);
@@ -44,8 +44,8 @@ const Wrapper = styled.div`
   padding: 1em;
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 1em;
-  border: 1px solid red;
+  grid-column-gap: 1.3em;
+  grid-row-gap: 1.3em;
 
   @media only screen and (max-width: 800px) {
     grid-template-columns: 1fr 1fr;
@@ -56,9 +56,9 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 20px;
   width: 100%;
-  /* background-color: rgb(255 243 213); */
+  margin-bottom: 10px;
 `;
 
 const LinkStyled = styled(Link)`
@@ -83,8 +83,8 @@ const HomePage = ({ userList, groupList }) => {
   const [milestonesIntro, setMilestonesIntro] = useState([]);
 
   useEffect(() => {
-    firebase.getContentsList("groups", setGroupsIntro);
-    firebase.getContentsList("articles", setMilestonesIntro);
+    firebase.getContentsListSort("groups", setGroupsIntro);
+    firebase.getContentsListSort("articles", setMilestonesIntro);
   }, []);
 
   return (
@@ -102,8 +102,11 @@ const HomePage = ({ userList, groupList }) => {
           {categoryList.map((item, i) => {
             return (
               <ListCtn key={i}>
-                <Link to="/groups/" style={{ textDecoration: "none" }}>
-                  {item.value}
+                <Link
+                  to={`/groups/${item.name}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  {item.name}
                 </Link>
               </ListCtn>
             );
@@ -115,7 +118,7 @@ const HomePage = ({ userList, groupList }) => {
         <Slogan>看看最近大家在學些什麼</Slogan>
         <Wrapper>
           {groupsIntro.map((item) => {
-            return <Card item={item} key={item.groupID} />;
+            return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>
         <LinkStyled to="/groups">查看更多</LinkStyled>

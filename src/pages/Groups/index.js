@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
@@ -56,7 +56,9 @@ const ContentStyled = styled.div`
 `;
 
 const Wrapper = styled.div`
-  margin: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  margin-top: 30px;
   border-radius: 30px;
   padding: 30px;
   border: 1px solid #3e2914;
@@ -82,6 +84,9 @@ const PostBtn = styled.button`
   height: 2rem;
   cursor: pointer;
   border-radius: 10px;
+  border: none;
+  border-radius: 10px;
+  outline: none;
 `;
 
 const GoalDate = styled.div`
@@ -106,7 +111,6 @@ const GroupPage = () => {
       .then((res) => setContent(res))
       .catch((err) => console.log(err));
     firebase.postsListener(groupID, setRenderPost);
-
     firebase.getMembersList(groupID, setRenderMember);
   }, []);
 
@@ -124,14 +128,14 @@ const GroupPage = () => {
     setTextValue("");
   };
   const stationHead = usersList.find(
-    (item) => item.userID === content.creatorID
+    (item) => item?.uid === content?.creatorID
   );
 
-  const dateText = ` 預計實踐日：${content.goalDate}，還有
-            ${dateCounter(content.goalDate)}天`;
+  const dateText = ` 預計完成日：${content?.goalDate}，還有
+            ${dateCounter(content?.goalDate)} 天`;
 
   const checkMember =
-    (userData !== null && content?.membersList?.includes(userData.uid)) ||
+    (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
   return (
     <Wrapper>
@@ -165,7 +169,7 @@ const GroupPage = () => {
         <SectionStyled>
           <PostArea
             value={textValue}
-            placeholder="說點什麼吧..."
+            placeholder="想討論什麼嗎..."
             onFocus={() => {
               setShowBtn(true);
             }}

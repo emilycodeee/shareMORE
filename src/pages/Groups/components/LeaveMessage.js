@@ -5,7 +5,7 @@ const CommentWrapper = styled.div`
   background-color: #f5f5f5;
   width: 80%;
   border-radius: 10px;
-  padding: 5px 10px;
+  padding: 1rem 1rem;
   margin-bottom: 10px;
 `;
 
@@ -17,6 +17,7 @@ const AvatorStyled = styled.img`
 
 const UserDetail = styled.div`
   display: flex;
+  flex-direction: column;
   margin-right: 30px;
   flex-grow: 1;
 `;
@@ -30,12 +31,17 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: end;
+  padding-bottom: 0.5rem;
+`;
+
+const UserText = styled.div`
+  font-size: 14px;
 `;
 
 const LeaveMessage = ({ itemData }) => {
   const usersList = useSelector((state) => state.usersList);
 
-  const sender = usersList.find((each) => each.userID === itemData.creatorID);
+  const sender = usersList.find((each) => each.uid === itemData.creatorID);
 
   return (
     <Wrapper>
@@ -43,8 +49,10 @@ const LeaveMessage = ({ itemData }) => {
       <CommentWrapper>
         <UserWrapper>
           <UserDetail>
-            <div>{sender.displayName}</div>
-            <div>{itemData.creationTime?.toDate().toLocaleString("zh-TW")}</div>
+            <UserText>{sender.displayName}</UserText>
+            <UserText>
+              {itemData.creationTime?.toDate().toLocaleString("zh-TW")}
+            </UserText>
           </UserDetail>
         </UserWrapper>
         <div>{itemData.content}</div>
