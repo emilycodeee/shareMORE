@@ -23,7 +23,6 @@ const ListWrapper = styled.ul`
 `;
 
 const ListCtn = styled.li`
-  /* background-color: red; */
   padding: 6px 6px;
   border-radius: 20px;
   border: 1px solid rgb(70 69 65);
@@ -47,7 +46,6 @@ const Wrapper = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-column-gap: 1.3em;
   grid-row-gap: 1.3em;
-  /* border: 1px solid red; */
 
   @media only screen and (max-width: 800px) {
     grid-template-columns: 1fr 1fr;
@@ -61,7 +59,6 @@ const Section = styled.div`
   padding: 20px;
   width: 100%;
   margin-bottom: 10px;
-  /* background-color: rgb(255 243 213); */
 `;
 
 const LinkStyled = styled(Link)`

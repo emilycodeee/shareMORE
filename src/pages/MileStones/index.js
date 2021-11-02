@@ -285,7 +285,7 @@ const MilestonePage = () => {
     });
   };
 
-  const handleDlete = () => {
+  const handleDelete = () => {
     const check = window.confirm("刪除將不可恢復，請再次確認是否刪除");
     if (check) {
       firebase.deleteMilestone("articles", milestoneID).then(() => {
@@ -294,6 +294,12 @@ const MilestonePage = () => {
       });
     }
     console.log(check);
+  };
+
+  const handlePrivate = () => {
+    firebase.toggleMilestone("articles", milestoneID, "private").then(() => {
+      history.push("/");
+    });
   };
 
   useEffect(() => {
@@ -306,6 +312,14 @@ const MilestonePage = () => {
   const groupData = groupsList.find(
     (item) => item.groupID === content?.groupID
   );
+
+  // export const toggleMilestone = async (collectionName, docID, action) => {
+  //   // await deleteDoc(doc(db, collectionName, docID));
+  //   if (action === "private")
+  //     await updateDoc(doc(db, collectionName, docID), {
+  //       public: false,
+  //     });
+  // };
 
   return (
     <Container>
@@ -333,8 +347,8 @@ const MilestonePage = () => {
           {userData?.uid === authorData?.uid && (
             <div>
               <EditLink to={`/milestone/${milestoneID}/edit`}>編輯</EditLink>
-              <EditBtn onClick={handleDlete}>刪除</EditBtn>
-              <EditBtn>設為非公開</EditBtn>
+              <EditBtn onClick={handleDelete}>刪除</EditBtn>
+              <EditBtn onClick={handlePrivate}>設為非公開</EditBtn>
             </div>
           )}
         </HeadDetail>

@@ -53,9 +53,9 @@ const MilestonesCarf = ({ item, userList, groupList }) => {
   return (
     <CardContainer to={url}>
       <div>
-        <CoverContainer style={{ backgroundImage: `url(${item.coverImage})` }}>
-          {/* <ImgStyled src={item.coverImage} /> */}
-        </CoverContainer>
+        <CoverContainer
+          style={{ backgroundImage: `url(${item.coverImage})` }}
+        ></CoverContainer>
         <ContentContainer>
           <TagContainer>
             <TextContainer>{item.category || item.title}</TextContainer>

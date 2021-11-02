@@ -82,6 +82,9 @@ function App() {
         <Route path="/group/:groupID" exact>
           <GroupPage />
         </Route>
+        <Route path="/group/:groupID/milestones" exact>
+          <NotesPage />
+        </Route>
         <Route path="/group/:groupID/notes" exact>
           <NotesPage />
         </Route>

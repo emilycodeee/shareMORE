@@ -101,9 +101,7 @@ const SettingBtn = styled.button`
   flex-direction: row;
   border-radius: 10px;
   border: 1px solid rgb(219, 216, 214);
-  /* -webkit-box-align: center; */
   align-items: center;
-  /* -webkit-box-pack: center; */
   justify-content: center;
 `;
 

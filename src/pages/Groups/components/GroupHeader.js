@@ -151,7 +151,7 @@ const GroupHeader = ({ content, stationHead }) => {
           >
             分享連結
           </LiStyled>
-          <LiStyled to={`${pathname}/milestones`}>我們的里程碑</LiStyled>
+          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
           {checkMember && (
             <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
           )}
@@ -174,7 +174,7 @@ const GroupHeader = ({ content, stationHead }) => {
           >
             分享連結
           </LiStyled>
-          <LiStyled to={`${pathname}/milestones`}>我們的里程碑</LiStyled>
+          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
           {checkMember && (
             <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
           )}

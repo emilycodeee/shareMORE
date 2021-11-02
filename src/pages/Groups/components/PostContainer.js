@@ -12,12 +12,11 @@ import { useSelector } from "react-redux";
 
 const Wrapper = styled.div`
   margin: 0 auto;
-  /* width: 80%; */
+
   border-radius: 10px;
   background-color: #f5f5f5;
   margin: 1rem 0;
-  padding: 1rem 2rem;
-  /* border: 1px solid red; */
+  padding: 1rem 1rem;
   position: relative;
 `;
 
@@ -30,7 +29,6 @@ const AvatarCtn = styled.img`
 
 const UserWrapper = styled.div`
   display: flex;
-  /* justify-content: space-between; */
   margin-bottom: 10px;
 `;
 
@@ -64,7 +62,6 @@ const IconDiv = styled.div`
   cursor: pointer;
   border-radius: 10px;
   padding: 5px;
-  /* background-color: lightblue; */
   &:hover {
     background-color: white;
   }
@@ -77,22 +74,18 @@ const Icon = styled.img`
 `;
 
 const CountWrapper = styled.div`
-  /* border: 2px solid red; */
   display: flex;
   position: relative;
 `;
 
 const DropDown = styled.div`
-  /* border: 1px solid red; */
   display: flex;
   flex-direction: column;
   align-items: center;
-
   position: absolute;
   top: 2.5rem;
   right: 0;
   z-index: 99;
-  /* transition: 0.3s; */
 `;
 
 const MoreBtn = styled.div`
@@ -102,7 +95,6 @@ const MoreBtn = styled.div`
   background-color: #e5e5e5;
   font-weight: 550;
   padding: 0.5rem 0.2rem;
-
   &:hover {
     background-color: #eeeeee;
   }
@@ -152,47 +144,34 @@ const ButtonStyled = styled.button`
   outline: none;
 `;
 
-const Container = styled.div`
-  display: flex;
-  padding: 0px;
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin-right: 120px;
-  width: 50%;
-  height: 40%;
-  outline: none;
-  background-color: white;
-  z-index: 99;
-  border-radius: 25px;
-  justify-content: center;
-  align-items: baseline;
-`;
-
-const EditWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const PageShield = styled.div`
-  width: 100vw;
-  height: 100vh;
-  top: 0px;
-  left: 0px;
-  position: fixed;
-  z-index: 99;
-  background-color: rgba(0, 0, 0, 0.8);
-  /* cursor: zoom-out; */
-`;
-
 const ContentArea = styled.div`
   line-height: 1.4rem;
-  /* letter-spacing: 2px; */
 `;
 
-const EditUser = styled.div`
+const EditContentArea = styled.textarea`
+  width: 100%;
+  padding: 2px 5px;
+  outline: none;
+  margin-left: 1rem;
+  resize: none;
+  height: auto;
+`;
+
+const EditAreaWrapper = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const EditSubmitBtn = styled.button`
+  cursor: pointer;
+  width: 60px;
+  height: 30px;
+  background-color: #eeeeee;
+  outline: none;
+  border: 1px solid rgb(203, 195, 194);
+  font-size: 10px;
+  margin-left: 0.5rem;
 `;
 
 const PostContainer = ({ item, content }) => {
@@ -208,7 +187,7 @@ const PostContainer = ({ item, content }) => {
   const postSender = usersList.find((each) => each.uid === item.creatorID);
   const [editText, setEditText] = useState(item.content);
 
-  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => {
     firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
@@ -239,48 +218,19 @@ const PostContainer = ({ item, content }) => {
   const handleEdit = () => {
     firebase.editComment(item.groupID, item.postID, editText);
     alert("編輯成功");
-    setShowEditPopup(!showEditPopup);
-    setShowDots(!showDots);
+    setShowEdit(false);
+    setShowDots(false);
   };
+
+  const handleCancelEdit = () => {
+    setShowEdit(false);
+    setShowDots(false);
+  };
+
   // console.log(renderPost);
   const checkPostSender = postSender?.uid === userData?.uid;
 
   const checkGroupOwner = content?.creatorID === userData?.uid;
-
-  if (showEditPopup) {
-    return (
-      <PageShield
-        data-target="shield"
-        onClick={(e) => {
-          e.target.dataset.target === "shield" &&
-            setShowEditPopup(!showEditPopup);
-        }}
-      >
-        <Container>
-          <EditWrapper>
-            <div>編輯留言</div>
-            <EditUser>
-              <AvatarCtn src={postSender?.avatar} />
-              <UserDetail>
-                <Pstyled>{postSender?.displayName}</Pstyled>
-                <Pstyled>
-                  {item.creationTime?.toDate().toLocaleString("zh-TW")}
-                </Pstyled>
-              </UserDetail>
-            </EditUser>
-            <textarea
-              value={editText}
-              onChange={(e) => {
-                setEditText(e.target.value);
-              }}
-            ></textarea>
-            <button onClick={handleEdit}>確定送出</button>
-          </EditWrapper>
-        </Container>
-      </PageShield>
-    );
-  }
-
   return (
     <div>
       <Wrapper>
@@ -303,7 +253,8 @@ const PostContainer = ({ item, content }) => {
             {checkPostSender && (
               <MoreBtn
                 onClick={() => {
-                  setShowEditPopup(!showEditPopup);
+                  setShowEdit(!showEdit);
+                  setShowDots(!showDots);
                 }}
               >
                 編輯
@@ -319,7 +270,18 @@ const PostContainer = ({ item, content }) => {
             )}
           </DropDown>
         )}
-        <ContentArea>{item.content}</ContentArea>
+        {showEdit && (
+          <EditAreaWrapper>
+            <EditContentArea
+              // onBlur={() => setShowEdit(false)}
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+            />
+
+            <EditSubmitBtn onClick={handleEdit}>送出</EditSubmitBtn>
+          </EditAreaWrapper>
+        )}
+        {!showEdit && <ContentArea>{item.content}</ContentArea>}
         <IconWrapper>
           <IconDiv
             onClick={() => {

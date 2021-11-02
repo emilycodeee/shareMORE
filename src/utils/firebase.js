@@ -195,6 +195,39 @@ export const editArticles = async (data, file, milestoneID, imgURL) => {
   });
 };
 
+export const deleteMilestone = async (collectionName, docID) => {
+  await deleteDoc(doc(db, collectionName, docID));
+};
+
+export const deleteMilestoneComment = async (
+  collectionName,
+  milestoneID,
+  docID
+) => {
+  await deleteDoc(doc(db, collectionName, milestoneID, "posts", docID));
+};
+
+export const getTotalDocList = async (optionName) => {
+  const q = query(collection(db, optionName));
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  return arr;
+};
+
+// up3
+export const toggleMilestone = async (collectionName, docID, action) => {
+  // await deleteDoc(doc(db, collectionName, docID));
+  if (action === "private") {
+    await updateDoc(doc(db, collectionName, docID), {
+      public: false,
+    });
+  }
+};
+
 export const getRawGroupNotes = async (groupID, postID) => {
   const data = {};
   const docRef = doc(db, "groups", groupID, "posts", postID);
@@ -381,7 +414,16 @@ export const getContentsList = async (topic, setFonction) => {
 };
 
 export const getContentsListSort = async (topic, setFonction) => {
-  const q = query(collection(db, topic), orderBy("creationTime", "desc"));
+  let q;
+  if (topic === "articles") {
+    q = query(
+      collection(db, topic),
+      where("public", "==", true),
+      orderBy("creationTime", "desc")
+    );
+  } else {
+    q = query(collection(db, topic), orderBy("creationTime", "desc"));
+  }
   const querySnapshot = await getDocs(q);
   let data = [];
   querySnapshot.forEach((doc) => {
@@ -559,29 +601,6 @@ export const postMilestoneListener = async (
 };
 
 //📢MilestoneDelete
-
-export const deleteMilestone = async (collectionName, docID) => {
-  await deleteDoc(doc(db, collectionName, docID));
-};
-
-export const deleteMilestoneComment = async (
-  collectionName,
-  milestoneID,
-  docID
-) => {
-  await deleteDoc(doc(db, collectionName, milestoneID, "posts", docID));
-};
-
-export const getTotalDocList = async (optionName) => {
-  const q = query(collection(db, optionName));
-  const querySnapshot = await getDocs(q);
-  const arr = [];
-  querySnapshot.forEach((doc) => {
-    arr.push(doc.data());
-  });
-
-  return arr;
-};
 
 export const sendPostComment = async (groupID, postID, data) => {
   const docRefId = doc(
