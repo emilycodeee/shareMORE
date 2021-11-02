@@ -1,14 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import RichTextEditor from "../../components/RichTextEditor";
 import * as firebase from "../../utils/firebase";
 import Select from "react-select";
 import Switch from "../../components/Switch";
 import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-
-// import * as firebase from "../../utils/firebase";
 const ContainerStyled = styled.div`
   border-radius: 20px;
   border: 1px solid #3e2914;
@@ -93,21 +91,14 @@ const Introduce = styled.textarea`
   border: none;
   background-color: #f5f5f5;
   padding: 10px;
-  /* resize: none; */
+  resize: none;
   margin: 10px;
-`;
-
-const OriginLabel = styled.label`
-  font-weight: 550;
-  text-align: center;
-  color: rgb(255 182 0);
 `;
 
 const MilestoneEditor = () => {
   const history = useHistory();
-  const groupsList = useSelector((state) => state.groupsList);
   const { milestoneID } = useParams();
-  const [originContent, setOriginContent] = useState(null);
+
   const [title, setTitle] = useState("");
   const [introduce, setIntroduce] = useState("");
   const [value, setValue] = useState("");
@@ -115,49 +106,13 @@ const MilestoneEditor = () => {
   const [groupsName, setgroupsName] = useState("");
   const [selected, setSelected] = useState(null);
   const [check, setCheck] = useState(true);
-  const [originLabel, setOriginLabel] = useState("");
-  const [previewUrl, setPreviewUrl] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage.png?alt=media&token=7b4118c2-46f8-41e9-a5de-de954c4aeb48"
-  );
-  // init
-  const editMode = useRef(false);
-  useEffect(() => {
-    if (!userData) {
-      history.push("/");
-    }
-    if (userData) {
-      firebase.getMyGroupsName(userData?.uid).then((res) => {
-        setgroupsName(res);
-
-        if (res.length === 0) {
-          alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
-          history.push("/");
-        }
-      });
-    }
-  }, []);
 
   useEffect(() => {
     if (milestoneID) {
-      firebase.getMilestone("articles", milestoneID).then((res) => {
-        setTitle(res.title);
-        setIntroduce(res.introduce);
-        setOriginLabel(
-          groupsList.find((item) => item.groupID === res.groupID)?.name
-        );
-        setSelected(res.groupID);
-        setValue(res.content);
-        setCheck(res.public);
-        setOriginContent(res);
-        console.log(res.coverImage);
-        setPreviewUrl(res.coverImage);
-        editMode.current = true;
-      });
+      firebase.milestoneListener("articles", milestoneID, setContent);
     }
   }, []);
 
-  // if (groupsName)
-  console.log("editModeeditModeeditModel", editMode);
   const userData = useSelector((state) => state.userData);
 
   const editorHandler = (e) => {
@@ -175,41 +130,41 @@ const MilestoneEditor = () => {
       return;
     }
 
-    if (editMode.current) {
-      const data = {
-        coverImage: originContent.coverImage,
-        content: value,
-        groupID: selected,
-        public: check,
-        title,
-        introduce,
-      };
+    const data = {
+      creatorID: userData.uid,
+      content: value,
+      groupID: selected,
+      public: check,
+      creationTime: new Date(),
+      title,
+      introduce,
+    };
 
-      firebase
-        .editArticles(data, file, milestoneID, originContent.coverImage)
-        .then(() => {
-          alert("編輯成功");
-          history.push(`/milestone/${milestoneID}`);
-        });
-    } else {
-      const data = {
-        creatorID: userData.uid,
-        content: value,
-        groupID: selected,
-        public: check,
-        creationTime: new Date(),
-        title,
-        introduce,
-      };
-
-      firebase.postArticles(data, file).then(() => {
-        alert("建立成功");
-        history.push("/");
-      });
-    }
+    firebase.postArticles(data, file).then(() => {
+      alert("建立成功");
+      history.push("/");
+    });
   };
 
-  const previewImg = file ? URL.createObjectURL(file) : previewUrl;
+  useEffect(() => {
+    if (!userData) {
+      history.push("/");
+    }
+    if (userData) {
+      firebase.getMyGroupsName(userData?.uid).then((res) => {
+        setgroupsName(res);
+
+        if (res.length === 0) {
+          alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
+          history.push("/");
+        }
+      });
+    }
+  }, []);
+
+  const previewImg = file
+    ? URL.createObjectURL(file)
+    : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
 
   return (
     <ContainerStyled>
@@ -231,9 +186,6 @@ const MilestoneEditor = () => {
             <div>設為公開</div>
             <Switch check={check} setCheck={setCheck} />
           </SwitchCtn>
-          {editMode.current && (
-            <OriginLabel>原社團設定為：{originLabel}</OriginLabel>
-          )}
           <Select
             defaultValue={selected}
             onChange={(e) => {

@@ -29,6 +29,7 @@ import {
   arrayUnion,
   arrayRemove,
   writeBatch,
+  collectionGroup,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 require("dotenv").config();
@@ -171,6 +172,27 @@ export const postArticles = async (data, file) => {
   };
 
   const response = await setDoc(doc(db, "articles", docRefId), finalData);
+};
+
+export const editArticles = async (data, file, milestoneID, imgURL) => {
+  let updateImgURL = imgURL;
+  if (file) {
+    const imgID = uuidv4();
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + imgID);
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    updateImgURL = await getDownloadURL(uploadTask.ref);
+  }
+  const finalData = {
+    ...data,
+
+    coverImage: updateImgURL,
+  };
+
+  const response = await setDoc(doc(db, "articles", milestoneID), finalData, {
+    merge: true,
+  });
 };
 
 export const getRawGroupNotes = async (groupID, postID) => {
@@ -511,6 +533,12 @@ export const milestoneListener = async (
   });
 };
 
+export const getMilestone = async (targetName, milestoneID) => {
+  const docRef = doc(db, targetName, milestoneID);
+  const docSnap = await getDoc(docRef);
+  return docSnap.data();
+};
+
 export const postMilestoneListener = async (
   targetName,
   milestoneID,
@@ -518,7 +546,7 @@ export const postMilestoneListener = async (
 ) => {
   const q = query(
     collection(db, targetName, milestoneID, "posts"),
-    orderBy("creationTime", "desc")
+    orderBy("creationTime", "asc")
   );
 
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -530,25 +558,19 @@ export const postMilestoneListener = async (
   });
 };
 
-//📢MilestoneListener
-// export const commentPostMilestoneListener = async (
-//   targetName,
-//   milestoneID,
-//   setFunction
-// ) => {
-//   const q = query(
-//     collection(db, targetName, milestoneID, "posts", postID, "comments"),
-//     orderBy("creationTime", "asc")
-//   );
+//📢MilestoneDelete
 
-//   const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//     const data = [];
-//     querySnapshot.forEach((doc) => {
-//       data.push(doc.data());
-//     });
-//     setFunction(data);
-//   });
-// };
+export const deleteMilestone = async (collectionName, docID) => {
+  await deleteDoc(doc(db, collectionName, docID));
+};
+
+export const deleteMilestoneComment = async (
+  collectionName,
+  milestoneID,
+  docID
+) => {
+  await deleteDoc(doc(db, collectionName, milestoneID, "posts", docID));
+};
 
 export const getTotalDocList = async (optionName) => {
   const q = query(collection(db, optionName));

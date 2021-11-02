@@ -92,9 +92,6 @@ const NotesEditorPage = () => {
   useEffect(() => {
     firebase.getRawGroupNotes(groupID, postID).then((res) => {
       const { mainPost, comments } = res;
-      // console.log(res);
-      // console.log(mainPost);
-      // console.log(comments);
       const html = generateText(mainPost, comments);
       setValue(html);
     });

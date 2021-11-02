@@ -69,6 +69,9 @@ function App() {
         <Route path="/milestones/post" exact>
           <MilestoneEditor />
         </Route>
+        <Route path="/milestone/:milestoneID/edit" exact>
+          <MilestoneEditor />
+        </Route>
 
         <Route path="/groups" exact>
           <GroupsPage />
@@ -95,9 +98,9 @@ function App() {
           <MilestonePage />
         </Route>
 
-        <Route path="/messages/:sendTo" exact>
+        {/* <Route path="/messages/:sendTo" exact>
           <ChatRoom />
-        </Route>
+        </Route> */}
         <Route path="/profile/:userID" exact>
           <ProfilePage />
         </Route>

@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useLocation } from "react-router";
+import { useLocation, useHistory } from "react-router";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
@@ -140,6 +140,23 @@ const EditBtn = styled.button`
   }
 `;
 
+const EditLink = styled(Link)`
+  color: black;
+  text-decoration: none;
+  margin-left: 10px;
+  border-radius: 8px;
+  padding: 5px 10px;
+  border: 1px solid #d1cbcb;
+  outline: none;
+  text-align: center;
+  text-align: end;
+  background-color: #ffffff;
+  cursor: pointer;
+  &:hover {
+    background-color: #d1cbcb;
+  }
+`;
+
 const PageShield = styled.div`
   width: 100vw;
   height: 100vh;
@@ -182,7 +199,7 @@ const MainPost = styled.div`
   /* width: 100%; */
   display: flex;
   /* flex-direction: column; */
-  padding: 1rem;
+  padding: 1rem 1rem 0.5rem 1rem;
   margin: 0px;
   justify-content: center;
   align-items: flex-start;
@@ -235,6 +252,7 @@ const PostBtn = styled.button`
 
 const MilestonePage = () => {
   const { milestoneID } = useParams();
+  const history = useHistory();
   const [content, setContent] = useState({});
   const [showCmt, setShowCmt] = useState(false);
   const [cmtValue, setCmtValue] = useState("");
@@ -264,8 +282,18 @@ const MilestonePage = () => {
 
     firebase.sendMilestoneComment(milestoneID, data).then(() => {
       setCmtValue("");
-      // setShowCmt(false);
     });
+  };
+
+  const handleDlete = () => {
+    const check = window.confirm("刪除將不可恢復，請再次確認是否刪除");
+    if (check) {
+      firebase.deleteMilestone("articles", milestoneID).then(() => {
+        history.push("/");
+        // alert("文章已經刪除囉！");
+      });
+    }
+    console.log(check);
   };
 
   useEffect(() => {
@@ -273,15 +301,12 @@ const MilestonePage = () => {
     firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
   }, []);
 
-  // console.log("newwwww", content);
   console.log("newwwww", renderPost);
   const authorData = usersList.find((item) => item.uid === content?.creatorID);
   const groupData = groupsList.find(
     (item) => item.groupID === content?.groupID
   );
 
-  // const time = new Date(content.creationTime?.toDate()).toLocaleString("zh-TW");
-  // console.log(currentUser);
   return (
     <Container>
       <Wrapper>
@@ -307,8 +332,8 @@ const MilestonePage = () => {
           </AuthorDataCtn>
           {userData?.uid === authorData?.uid && (
             <div>
-              <EditBtn>編輯</EditBtn>
-              <EditBtn>刪除</EditBtn>
+              <EditLink to={`/milestone/${milestoneID}/edit`}>編輯</EditLink>
+              <EditBtn onClick={handleDlete}>刪除</EditBtn>
               <EditBtn>設為非公開</EditBtn>
             </div>
           )}
@@ -370,7 +395,7 @@ const MilestonePage = () => {
               </TextPost>
             </MainPost>
             {renderPost.map((item) => (
-              <CommentReply key={item.postID} item={item} />
+              <CommentReply key={item.postID} item={item} author={authorData} />
             ))}
           </CommentCtn>
         </PageShield>
