@@ -3,6 +3,7 @@ import styled from "styled-components";
 import * as firebase from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { getGroupsList } from "../../../redux/actions";
+import { Link } from "react-router-dom";
 
 const RecApplication = styled.div`
   display: flex;
@@ -54,7 +55,6 @@ const Body = styled.div`
 const Content = styled.div`
   margin: 10px;
   overflow: overflow-x;
-  /* color: red; */
 `;
 
 const ApplicationList = ({ groupData, applicationData, applicant }) => {
@@ -84,7 +84,6 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
           .then((res) => d(getGroupsList(res)))
           .catch((err) => console.log(err));
         alert("確認完成");
-        // window.location.reload();
       });
   };
 
@@ -99,10 +98,12 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
   return (
     <RecApplication>
       <Header>
-        <Avatar src={currentUser.avatar} />
+        <Link to={`/profile/${currentUser?.uid}`}>
+          <Avatar src={currentUser?.avatar} />
+        </Link>
         <UserWrapper>
-          <div>{currentUser.displayName}</div>
-          <div>{applicant.creationTime.toDate().toLocaleString("zh-TW")}</div>
+          <div>{currentUser?.displayName}</div>
+          <div>{applicant?.creationTime.toDate().toLocaleString("zh-TW")}</div>
         </UserWrapper>
       </Header>
 

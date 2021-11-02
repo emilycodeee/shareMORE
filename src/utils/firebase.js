@@ -245,10 +245,10 @@ export const getOptionsName = async (optionName) => {
   const querySnapshot = await getDocs(q);
   const arr = [];
   querySnapshot.forEach((doc) => {
-    // console.log(doc.data());
-    // arr.push({ value: doc.data().name, label: doc.data().name });
     arr.push(doc.data());
   });
+  // console.log("🧨🧨🧨🧨", arr);
+  // orderBy("name");
   return arr;
 };
 
@@ -262,10 +262,7 @@ export const getMyGroupsName = async (userID) => {
   const memberQuerySnapshot = await getDocs(memberQ);
   const arr = [];
   memberQuerySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-
     arr.push({ value: doc.data().groupID, label: doc.data().name });
-    // console.log(doc.id, " => ", doc.data());
   });
 
   const creatorQ = query(
@@ -279,7 +276,7 @@ export const getMyGroupsName = async (userID) => {
   });
   return arr;
 };
-//
+
 export const getMyGroupsObj = async (userID) => {
   const memberQ = query(
     collection(db, "groups"),
@@ -322,11 +319,7 @@ export const getQueryFilter = async (collectionName, fieldName, queryName) => {
 };
 
 export const getMyMilestones = async (userID) => {
-  const q = query(
-    collection(db, "articles"),
-    where("creatorID", "==", userID)
-    // where("public", "==", true)
-  );
+  const q = query(collection(db, "articles"), where("creatorID", "==", userID));
   const qSnapshot = await getDocs(q);
   const arr = [];
   qSnapshot.forEach((doc) => {
@@ -422,11 +415,21 @@ export const sendGroupsPost = async (groupID, data) => {
   );
 };
 
+// milestonePost🎉🎈
+export const sendMilestoneComment = async (milestoneID, data) => {
+  const docRefId = doc(collection(db, "articles", milestoneID, "posts")).id;
+  const finalData = { ...data, postID: docRefId };
+
+  await setDoc(
+    doc(collection(db, "articles", milestoneID, "posts"), docRefId),
+    finalData
+  );
+};
+
 export const clapsForPost = async (groupID, docID, userID) => {
   console.log(docID, userID);
   const docRef = doc(db, "groups", groupID, "posts", docID);
   const docSnap = await getDoc(docRef);
-  console.log("sssssss", docSnap.data());
 
   if (docSnap.data().clapBy?.includes(userID)) {
     await updateDoc(docRef, {
@@ -452,6 +455,100 @@ export const postsListener = async (groupID, setRenderPost) => {
     setRenderPost(data);
   });
 };
+
+//milestone🎐🎏
+export const clapsForMilestone = async (milestoneID, userID, action) => {
+  console.log(milestoneID, userID);
+  const docRef = doc(db, "articles", milestoneID);
+  const docSnap = await getDoc(docRef);
+
+  if (action === "saveBy") {
+    if (docSnap.data().saveBy?.includes(userID)) {
+      await updateDoc(docRef, {
+        saveBy: arrayRemove(userID),
+      });
+    } else {
+      await updateDoc(docRef, {
+        saveBy: arrayUnion(userID),
+      });
+    }
+  } else if (action === "clapBy") {
+    if (docSnap.data().clapBy?.includes(userID)) {
+      await updateDoc(docRef, {
+        clapBy: arrayRemove(userID),
+      });
+    } else {
+      await updateDoc(docRef, {
+        clapBy: arrayUnion(userID),
+      });
+    }
+  }
+};
+
+export const saveForMilestone = async (groupID, docID, userID) => {
+  console.log(docID, userID);
+  const docRef = doc(db, "groups", groupID, "posts", docID);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.data().clapBy?.includes(userID)) {
+    await updateDoc(docRef, {
+      clapBy: arrayRemove(userID),
+    });
+  } else {
+    await updateDoc(docRef, {
+      clapBy: arrayUnion(userID),
+    });
+  }
+};
+
+export const milestoneListener = async (
+  targetName,
+  milestoneID,
+  setFunction
+) => {
+  const unsub = onSnapshot(doc(db, targetName, milestoneID), (doc) => {
+    setFunction(doc.data());
+  });
+};
+
+export const postMilestoneListener = async (
+  targetName,
+  milestoneID,
+  setFunction
+) => {
+  const q = query(
+    collection(db, targetName, milestoneID, "posts"),
+    orderBy("creationTime", "desc")
+  );
+
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const data = [];
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+    setFunction(data);
+  });
+};
+
+//📢MilestoneListener
+// export const commentPostMilestoneListener = async (
+//   targetName,
+//   milestoneID,
+//   setFunction
+// ) => {
+//   const q = query(
+//     collection(db, targetName, milestoneID, "posts", postID, "comments"),
+//     orderBy("creationTime", "asc")
+//   );
+
+//   const unsubscribe = onSnapshot(q, (querySnapshot) => {
+//     const data = [];
+//     querySnapshot.forEach((doc) => {
+//       data.push(doc.data());
+//     });
+//     setFunction(data);
+//   });
+// };
 
 export const getTotalDocList = async (optionName) => {
   const q = query(collection(db, optionName));
@@ -544,7 +641,23 @@ export const confirmApplication = async (memberID, groupID, data) => {
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
 };
+//postContainer.js🎈
+export const editComment = async (groupID, docRefId, textData) => {
+  const postDocRef = doc(collection(db, "groups", groupID, "posts"), docRefId);
+  await updateDoc(postDocRef, {
+    content: textData,
+  });
+};
 
+// const applicationRef = doc(
+//   collection(db, "groups", groupID, "applications"),
+//   memberID
+// );
+// batch.update(applicationRef, {
+//   approve: true,
+// });
+
+//postContainer.js
 export const deleteComment = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
@@ -582,7 +695,7 @@ export const getMessagesData = async (me, you, setFunction) => {
       data.push(doc.data());
     });
     setFunction(data);
-    console.log("😍😍😎", data);
+
     return data;
   });
 };

@@ -106,10 +106,8 @@ const GroupsPage = () => {
       <ContentCtn>
         <Slide>
           {categoryList.map((item, i) => (
-            <>
-              <ListStyle key={uuidv4()} onClick={handleCategory}>
-                {item.name}
-              </ListStyle>
+            <div key={uuidv4()}>
+              <ListStyle onClick={handleCategory}>{item.name}</ListStyle>
               {item.subClasses.map((sitem, i) => (
                 <SubList
                   key={uuidv4()}
@@ -119,7 +117,7 @@ const GroupsPage = () => {
                   {sitem}
                 </SubList>
               ))}
-            </>
+            </div>
           ))}
         </Slide>
         <Wrapper>

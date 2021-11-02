@@ -149,7 +149,7 @@ const Header = () => {
       </LogoContainer>
       <ListContainer>
         <Input placeholder="搜尋  " type="text" />
-        <ListStyled to="/milestones">我們的里程碑</ListStyled>
+        <ListStyled to="/milestones">所有里程碑</ListStyled>
         {userData && (
           <>
             <ListStyled to="/groups">所有社群</ListStyled>

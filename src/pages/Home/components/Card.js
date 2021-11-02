@@ -6,13 +6,11 @@ import { useSelector } from "react-redux";
 const CardContainer = styled(Link)`
   text-decoration: none;
   color: black;
-  /* box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px; */
   box-shadow: 0 2px 10px #a2a2a2;
   border-radius: 10px;
   margin-bottom: 10px;
   height: 280px;
   overflow: hidden;
-  /* padding: 5px 10px; */
 `;
 
 const CoverContainer = styled.div`
@@ -25,12 +23,7 @@ const CoverContainer = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  padding: 8px 5px;
-`;
-
-const TagContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
+  padding: 1rem;
 `;
 
 const TitleContainer = styled.div`
@@ -50,7 +43,6 @@ const Author = styled.div`
 
 const TextContainer = styled.div`
   margin-bottom: 10px;
-  /* font-size: 14px; */
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -58,13 +50,12 @@ const TextContainer = styled.div`
   text-overflow: ellipsis;
 `;
 
-// color: rgb(255 182 0);
 const SubTitle = styled.div`
   font-weight: 550;
   color: rgb(255 182 0);
   margin-bottom: 10px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -89,10 +80,8 @@ const Card = ({ item }) => {
     <CardContainer to={url}>
       <CoverContainer item={item}></CoverContainer>
       <ContentContainer>
-        {/* <TagContainer> */}
         <TitleContainer>{item.title}</TitleContainer>
         <Author>{`by${currentCreator?.displayName} `}</Author>
-        {/* </TagContainer> */}
         <SubTitle>{`啟發自：${currentGroup?.name}`}</SubTitle>
         <TextContainer>{item.introduce}</TextContainer>
       </ContentContainer>

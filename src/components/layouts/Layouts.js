@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const Wrapper = styled.main`
   /* margin: 0 auto; */
+  /* box-sizing: border-box; */
 `;
 
 const Main = styled.div`

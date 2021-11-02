@@ -223,15 +223,21 @@ const MilestonesPage = () => {
           <ArticleList>
             <LastLabel>Latest 5</LastLabel>
             {milestonesList.slice(0, 5).map((item, i) => {
+              console.log(item);
               return (
-                <LinkStyle to={`/milestone/${item.milestoneID}`}>
+                <LinkStyle
+                  to={`/milestone/${item.milestoneID}`}
+                  key={item.milestoneID}
+                >
                   <Number>{i + 1}.</Number>
                   <div>
                     <TitleStyle>{item.title}</TitleStyle>
                     <PStyle>啟發自：{findGroup(item)}</PStyle>
                     <Author>
                       <Ptag>作者：{findAuthor(item)}</Ptag>
-                      <Ptag>{getTime(item)}</Ptag>
+                      <Ptag>
+                        {item.creationTime?.toDate().toLocaleString("zh-TW")}
+                      </Ptag>
                     </Author>
                   </div>
                 </LinkStyle>
@@ -248,7 +254,6 @@ const MilestonesPage = () => {
       <div>
         <Wrapper>
           {milestonesList.map((item) => {
-            console.log(item);
             return <Card item={item} key={item.milestoneID} />;
           })}
         </Wrapper>

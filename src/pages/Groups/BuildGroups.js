@@ -97,11 +97,6 @@ const BuildGroups = () => {
   const CategoryOpt = categoryList.map((item) => {
     return { value: item.name, label: item.name };
   });
-  console.log(categoryList);
-  // arr.push({ value: doc.data().name, label: doc.data().name });
-
-  // const subCategoryObj = categoryList.find((item) => item.name === "商業管理");
-  // console.log(subCategoryObj);
 
   const [file, setFile] = useState(null);
   const [subClassesName, setSubClassesName] = useState("");
@@ -123,12 +118,6 @@ const BuildGroups = () => {
       return { value: item, label: item };
     });
     setSubClassesName(subCategoryOpt);
-    // subClasses;
-    //  console.log();
-    // firebase
-    //   .getQueryFilter("categories", "name", selectedCategory)
-    //   .then((res) => setSubClassesName(res))
-    //   .catch((err) => console.log(err));
   }, [selectedCategory]);
 
   const previewImg = file

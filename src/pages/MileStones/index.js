@@ -13,11 +13,9 @@ import saved from "../../sources/saved.png";
 import clap from "../../sources/clap.png";
 import claped from "../../sources/claped.png";
 import comment from "../../sources/comment.png";
-import PostContainer from "../Groups/components/PostContainer";
-// import "react-quill/dist/quill.snow.css";
+import CommentReply from "./components/CommentReply";
+
 import "../../../node_modules/react-quill/dist/quill.snow.css";
-// import PostContainer from "./components/PostContainer";
-// import GroupHeader from "./components/GroupHeader";
 
 const Container = styled.div`
   max-width: 800px;
@@ -53,9 +51,12 @@ const SideSetting = styled.div`
   align-items: center;
   margin: 0 auto;
   margin-top: 30px;
-  height: 100vh;
+  height: 600px;
   border: 1px solid #d1cbcb;
   border-radius: 25px;
+  position: sticky;
+  top: 20px;
+  left: 0;
 `;
 
 const Icon = styled.img`
@@ -124,8 +125,6 @@ const TopPTag = styled.p`
   font-size: 14px;
 `;
 
-const AuthorBtn = styled.div``;
-
 const EditBtn = styled.button`
   margin-left: 10px;
   border-radius: 8px;
@@ -141,39 +140,148 @@ const EditBtn = styled.button`
   }
 `;
 
+const PageShield = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* cursor: zoom-out; */
+`;
+
 const AuthorDataCtn = styled.div`
   display: flex;
   align-items: center;
 `;
 
+const CommentCtn = styled.div`
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-right: 120px;
+  max-width: 70%;
+  outline: none;
+  background-color: white;
+  z-index: 99;
+  border-radius: 3px;
+  /* 卷軸 */
+  min-height: 150px;
+  padding: 0px 0px 20px;
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+`;
+
+const MainPost = styled.div`
+  /* width: 100%; */
+  display: flex;
+  /* flex-direction: column; */
+  padding: 1rem;
+  margin: 0px;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const PostAvatar = styled.img`
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+  margin-right: 1rem;
+`;
+
+const TextPost = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* align-items: ; */
+`;
+
+const TagCtn = styled.div`
+  font-weight: 550;
+  width: 100%;
+  padding: 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #dee2e6;
+`;
+
+const TextAreaStyle = styled.textarea`
+  resize: none;
+  border: 1px solid rgb(203, 195, 194);
+  border-radius: 3px;
+  height: 3rem;
+  padding: 0.5rem;
+`;
+
+const PostBtn = styled.button`
+  margin-top: 1rem;
+  color: rgb(255 182 0);
+  background-color: transparent;
+  font-size: 12px;
+  border: 1px solid rgb(255 182 0);
+  border-radius: 2px;
+  min-width: 80px;
+  padding: 4px;
+  cursor: pointer;
+  align-self: flex-end;
+`;
+
 const MilestonePage = () => {
   const { milestoneID } = useParams();
   const [content, setContent] = useState({});
-
+  const [showCmt, setShowCmt] = useState(false);
+  const [cmtValue, setCmtValue] = useState("");
+  const [renderPost, setRenderPost] = useState([]);
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const userData = useSelector((state) => state.userData);
-
+  const currentUser = usersList.find((item) => item.uid === userData.uid);
   const root = window.location.host;
   const pathname = useLocation().pathname;
 
-  // console.log(authorData);
+  const handleSave = () => {
+    firebase.clapsForMilestone(milestoneID, userData.uid, "saveBy");
+  };
+
+  const handleClap = () => {
+    firebase.clapsForMilestone(milestoneID, userData.uid, "clapBy");
+  };
+
+  const handleSendComment = () => {
+    const data = {
+      content: cmtValue,
+      creationTime: new Date(),
+      creatorID: userData.uid,
+      milestoneID: milestoneID,
+    };
+
+    firebase.sendMilestoneComment(milestoneID, data).then(() => {
+      setCmtValue("");
+      // setShowCmt(false);
+    });
+  };
+
   useEffect(() => {
-    firebase
-      .getTopLevelContent("articles", milestoneID)
-      .then((res) => setContent(res))
-      .catch((err) => console.log(err));
-
-    // firebase.postsListener(groupID, setRenderPost);
+    firebase.milestoneListener("articles", milestoneID, setContent);
+    firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
   }, []);
-  console.log("content", content);
 
+  // console.log("newwwww", content);
+  console.log("newwwww", renderPost);
   const authorData = usersList.find((item) => item.uid === content?.creatorID);
   const groupData = groupsList.find(
     (item) => item.groupID === content?.groupID
   );
 
-  const time = new Date(content.creationTime?.toDate()).toLocaleString("zh-TW");
+  // const time = new Date(content.creationTime?.toDate()).toLocaleString("zh-TW");
+  // console.log(currentUser);
   return (
     <Container>
       <Wrapper>
@@ -191,15 +299,18 @@ const MilestonePage = () => {
                   {groupData?.name}
                 </LinkStyle>
               </TopPTag>
-              <TopPTag>發布日期：{time}</TopPTag>
+              <TopPTag>
+                發布日期：
+                {content?.creationTime?.toDate().toLocaleString("zh-TW")}
+              </TopPTag>
             </div>
           </AuthorDataCtn>
           {userData?.uid === authorData?.uid && (
-            <AuthorBtn>
+            <div>
               <EditBtn>編輯</EditBtn>
               <EditBtn>刪除</EditBtn>
               <EditBtn>設為非公開</EditBtn>
-            </AuthorBtn>
+            </div>
           )}
         </HeadDetail>
         <div>
@@ -222,16 +333,48 @@ const MilestonePage = () => {
             alert(`複製連結成功！`);
           }}
         />
-        <Icon src={save} />
-        <CountWrapper>
-          <Icon src={claped} />
-          <Count>1</Count>
+        <Icon
+          onClick={handleSave}
+          src={content?.saveBy?.includes(userData?.uid) ? saved : save}
+        />
+        <CountWrapper onClick={handleClap}>
+          <Icon
+            // src={claped}
+            src={content?.clapBy?.includes(userData?.uid) ? claped : clap}
+          />
+          <Count>{content?.clapBy?.length > 0 && content?.clapBy.length}</Count>
         </CountWrapper>
-        <CountWrapper>
+        <CountWrapper onClick={() => setShowCmt(!showCmt)}>
           <Icon src={comment} />
-          <Count>1</Count>
+          <Count>{renderPost.length > 0 && renderPost.length}</Count>
         </CountWrapper>
       </SideSetting>
+      {showCmt && (
+        <PageShield
+          data-target="shield"
+          onClick={(e) => {
+            e.target.dataset.target === "shield" && setShowCmt(!showCmt);
+          }}
+        >
+          <CommentCtn>
+            <TagCtn>發表回應</TagCtn>
+            <MainPost>
+              <PostAvatar src={currentUser?.avatar} />
+              <TextPost>
+                <TextAreaStyle
+                  placeholder="想說點什麼嗎？"
+                  value={cmtValue}
+                  onChange={(e) => setCmtValue(e.target.value)}
+                />
+                <PostBtn onClick={handleSendComment}>送出留言</PostBtn>
+              </TextPost>
+            </MainPost>
+            {renderPost.map((item) => (
+              <CommentReply key={item.postID} item={item} />
+            ))}
+          </CommentCtn>
+        </PageShield>
+      )}
     </Container>
   );
 };

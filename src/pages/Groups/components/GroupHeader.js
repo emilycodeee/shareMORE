@@ -111,7 +111,7 @@ const GroupHeader = ({ content, stationHead }) => {
   };
 
   const checkMember =
-    (userData !== null && content?.membersList?.includes(userData.uid)) ||
+    (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
 
   // const alreadyM =
@@ -135,7 +135,7 @@ const GroupHeader = ({ content, stationHead }) => {
     );
   }
 
-  if (content?.membersList?.includes(userData.uid)) {
+  if (content?.membersList?.includes(userData?.uid)) {
     return (
       <Wrapper>
         <NameLogo>{content.name}</NameLogo>
@@ -151,6 +151,7 @@ const GroupHeader = ({ content, stationHead }) => {
           >
             分享連結
           </LiStyled>
+          <LiStyled to={`${pathname}/milestones`}>我們的里程碑</LiStyled>
           {checkMember && (
             <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
           )}
@@ -173,6 +174,7 @@ const GroupHeader = ({ content, stationHead }) => {
           >
             分享連結
           </LiStyled>
+          <LiStyled to={`${pathname}/milestones`}>我們的里程碑</LiStyled>
           {checkMember && (
             <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
           )}

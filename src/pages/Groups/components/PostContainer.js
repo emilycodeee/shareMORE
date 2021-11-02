@@ -97,7 +97,7 @@ const DropDown = styled.div`
 
 const MoreBtn = styled.div`
   cursor: pointer;
-  width: 100%;
+  width: 6rem;
   text-align: center;
   background-color: #e5e5e5;
   font-weight: 550;
@@ -147,10 +147,52 @@ const ButtonStyled = styled.button`
   margin-left: 10px;
   display: flex;
   justify-content: end;
-  /* border-radius: 10px; */
   border: none;
   border-radius: 10px;
   outline: none;
+`;
+
+const Container = styled.div`
+  display: flex;
+  padding: 0px;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-right: 120px;
+  width: 50%;
+  height: 40%;
+  outline: none;
+  background-color: white;
+  z-index: 99;
+  border-radius: 25px;
+  justify-content: center;
+  align-items: baseline;
+`;
+
+const EditWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const PageShield = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.8);
+  /* cursor: zoom-out; */
+`;
+
+const ContentArea = styled.div`
+  line-height: 1.4rem;
+  /* letter-spacing: 2px; */
+`;
+
+const EditUser = styled.div`
+  display: flex;
 `;
 
 const PostContainer = ({ item, content }) => {
@@ -164,6 +206,9 @@ const PostContainer = ({ item, content }) => {
   const [renderPost, setRenderPost] = useState([]);
   const [textValue, setTextValue] = useState("");
   const postSender = usersList.find((each) => each.uid === item.creatorID);
+  const [editText, setEditText] = useState(item.content);
+
+  const [showEditPopup, setShowEditPopup] = useState(false);
 
   useEffect(() => {
     firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
@@ -181,12 +226,10 @@ const PostContainer = ({ item, content }) => {
   };
 
   const handleClap = () => {
-    console.log("ssss", item.postID);
     firebase.clapsForPost(item.groupID, item.postID, userData.uid);
   };
 
   const handleDelete = () => {
-    console.log("delete");
     setShowDots(!showDots);
     firebase.deleteComment(item.groupID, item.postID).then(() => {
       alert("刪除成功");
@@ -194,9 +237,49 @@ const PostContainer = ({ item, content }) => {
   };
 
   const handleEdit = () => {
-    console.log("edit");
+    firebase.editComment(item.groupID, item.postID, editText);
+    alert("編輯成功");
+    setShowEditPopup(!showEditPopup);
     setShowDots(!showDots);
   };
+  // console.log(renderPost);
+  const checkPostSender = postSender?.uid === userData?.uid;
+
+  const checkGroupOwner = content?.creatorID === userData?.uid;
+
+  if (showEditPopup) {
+    return (
+      <PageShield
+        data-target="shield"
+        onClick={(e) => {
+          e.target.dataset.target === "shield" &&
+            setShowEditPopup(!showEditPopup);
+        }}
+      >
+        <Container>
+          <EditWrapper>
+            <div>編輯留言</div>
+            <EditUser>
+              <AvatarCtn src={postSender?.avatar} />
+              <UserDetail>
+                <Pstyled>{postSender?.displayName}</Pstyled>
+                <Pstyled>
+                  {item.creationTime?.toDate().toLocaleString("zh-TW")}
+                </Pstyled>
+              </UserDetail>
+            </EditUser>
+            <textarea
+              value={editText}
+              onChange={(e) => {
+                setEditText(e.target.value);
+              }}
+            ></textarea>
+            <button onClick={handleEdit}>確定送出</button>
+          </EditWrapper>
+        </Container>
+      </PageShield>
+    );
+  }
 
   return (
     <div>
@@ -209,28 +292,34 @@ const PostContainer = ({ item, content }) => {
               {item.creationTime?.toDate().toLocaleString("zh-TW")}
             </Pstyled>
           </UserDetail>
-          {content.creatorID === userData.uid && (
-            <HeadIcon
-              src={dots}
-              onClick={() => setShowDots(!showDots)}
-              // onMouseOver={() => setShowDots(true)}
-              // onMouseLeave={() => setShowDots(false)}
-            />
+
+          {(checkPostSender || checkGroupOwner) && (
+            <HeadIcon src={dots} onClick={() => setShowDots(!showDots)} />
           )}
         </UserWrapper>
 
         {showDots && (
           <DropDown>
-            <MoreBtn onClick={handleEdit}>編輯</MoreBtn>
+            {checkPostSender && (
+              <MoreBtn
+                onClick={() => {
+                  setShowEditPopup(!showEditPopup);
+                }}
+              >
+                編輯
+              </MoreBtn>
+            )}
             <MoreBtn onClick={handleDelete}>刪除</MoreBtn>
-            <MoreBtn>
-              <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
-                設為精選筆記
-              </LinkStyle>
-            </MoreBtn>
+            {checkGroupOwner && (
+              <MoreBtn>
+                <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
+                  設為精選筆記
+                </LinkStyle>
+              </MoreBtn>
+            )}
           </DropDown>
         )}
-        <div>{item.content}</div>
+        <ContentArea>{item.content}</ContentArea>
         <IconWrapper>
           <IconDiv
             onClick={() => {
@@ -238,7 +327,9 @@ const PostContainer = ({ item, content }) => {
             }}
           >
             <CountWrapper>
-              <Icon src={item.clapBy?.includes(userData.uid) ? claped : clap} />
+              <Icon
+                src={item.clapBy?.includes(userData?.uid) ? claped : clap}
+              />
               <Count>{item.clapBy?.length > 0 && item.clapBy.length}</Count>
             </CountWrapper>
           </IconDiv>

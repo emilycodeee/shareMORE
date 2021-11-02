@@ -8,13 +8,6 @@ const SendApplication = styled.div`
   flex-direction: column;
 `;
 
-const Avatar = styled.img`
-  border-radius: 50%;
-  height: 50px;
-  width: 50px;
-  margin-right: 10px;
-`;
-
 const Label = styled.label`
   font-weight: 550;
 `;
@@ -41,7 +34,6 @@ const ContentStyled = styled.div`
 `;
 
 const ApplicationStyled = styled.div`
-  /* width: 100%; */
   margin: 0 10px 0 0;
   background-color: #f2f2f2;
   height: auto;
@@ -53,7 +45,6 @@ const ApplicationStyled = styled.div`
 const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
   const [value, setValue] = useState("");
   const userData = useSelector((state) => state.userData);
-  console.log(applicationData.data.length);
   const handleSubmit = () => {
     const data = {
       content: value,

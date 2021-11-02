@@ -127,13 +127,15 @@ const GroupPage = () => {
     setShowBtn(false);
     setTextValue("");
   };
-  const stationHead = usersList.find((item) => item.uid === content.creatorID);
+  const stationHead = usersList.find(
+    (item) => item?.uid === content?.creatorID
+  );
 
-  const dateText = ` 預計完成日：${content.goalDate}，還有
-            ${dateCounter(content.goalDate)} 天`;
+  const dateText = ` 預計完成日：${content?.goalDate}，還有
+            ${dateCounter(content?.goalDate)} 天`;
 
   const checkMember =
-    (userData !== null && content?.membersList?.includes(userData.uid)) ||
+    (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
   return (
     <Wrapper>
