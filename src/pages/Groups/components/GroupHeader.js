@@ -5,6 +5,8 @@ import ApplicationPopup from "./ApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
+import { BsFillFolderFill } from "react-icons/bs";
+import { RiShareForwardFill } from "react-icons/ri";
 const AvatarImg = styled.img`
   height: 3rem;
   width: 3rem;
@@ -114,8 +116,10 @@ const GroupHeader = ({ content, stationHead }) => {
     (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
 
-  // const alreadyM =
-  //   userData !== null && content?.membersList?.includes(userData.uid);
+  const checkGeneralMember =
+    userData !== null && content?.membersList?.includes(userData?.uid);
+
+  const checkOwner = content.creatorID === userData?.uid;
 
   if (showApplication) {
     return (
@@ -135,69 +139,50 @@ const GroupHeader = ({ content, stationHead }) => {
     );
   }
 
-  if (content?.membersList?.includes(userData?.uid)) {
-    return (
-      <Wrapper>
-        <NameLogo>{content.name}</NameLogo>
-        <UlStyled>
-          <LinkAvatar to={`/profile/${stationHead?.uid}`}>
-            <AvatarImg src={stationHead?.avatar} />
-          </LinkAvatar>
-          <LiStyled
-            onClick={() => {
-              navigator.clipboard.writeText(root + pathname);
-              alert(`複製連結成功！`);
-            }}
-          >
-            分享連結
-          </LiStyled>
-          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
-          {checkMember && (
-            <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
-          )}
-        </UlStyled>
-      </Wrapper>
-    );
-  } else {
-    return (
-      <Wrapper>
-        <NameLogo>{content.name}</NameLogo>
-        <UlStyled>
-          <LinkAvatar to={`/profile/${stationHead?.uid}`}>
-            <AvatarImg src={stationHead?.avatar} />
-          </LinkAvatar>
-          <LiStyled
-            onClick={() => {
-              navigator.clipboard.writeText(root + pathname);
-              alert(`複製連結成功！`);
-            }}
-          >
-            分享連結
-          </LiStyled>
-          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
-          {checkMember && (
-            <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
-          )}
+  return (
+    <Wrapper>
+      <NameLogo>{content.name}</NameLogo>
+      <UlStyled>
+        <LinkAvatar to={`/profile/${stationHead?.uid}`}>
+          <AvatarImg src={stationHead?.avatar} />
+        </LinkAvatar>
+        <LiStyled
+          onClick={() => {
+            navigator.clipboard.writeText(root + pathname);
+            alert(`複製連結成功！`);
+          }}
+        >
+          <RiShareForwardFill />
+        </LiStyled>
+        {checkMember && (
+          <>
+            <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
+            <LinkStyled to={`${pathname}/notes`}>
+              <BsFillFolderFill />
+            </LinkStyled>
+          </>
+        )}
 
-          {content.creatorID === userData?.uid ? (
-            <LiStyled
-              setShowApplication={setShowApplication}
-              onClick={() => {
-                setShowApplication(!showApplication);
-              }}
-            >
-              待審申請
-              <span>{applicationData?.count}</span>
-            </LiStyled>
-          ) : (
-            <LiStyled onClick={handleApplicationBtn}>
-              {appliedData ? "等候審核" : "申請加入"}
-            </LiStyled>
-          )}
-        </UlStyled>
-      </Wrapper>
-    );
-  }
+        {content.creatorID === userData?.uid && (
+          <LiStyled
+            setShowApplication={setShowApplication}
+            onClick={() => {
+              setShowApplication(!showApplication);
+            }}
+          >
+            待審申請
+            <span>{applicationData?.count}</span>
+          </LiStyled>
+        )}
+        {!checkGeneralMember && !checkOwner && (
+          <LiStyled onClick={handleApplicationBtn}>
+            {appliedData ? "等候審核" : "申請加入"}
+          </LiStyled>
+        )}
+      </UlStyled>
+    </Wrapper>
+  );
 };
+// };
 
 export default GroupHeader;

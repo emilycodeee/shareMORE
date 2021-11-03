@@ -307,20 +307,10 @@ const MilestonePage = () => {
     firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
   }, []);
 
-  console.log("newwwww", renderPost);
   const authorData = usersList.find((item) => item.uid === content?.creatorID);
   const groupData = groupsList.find(
     (item) => item.groupID === content?.groupID
   );
-
-  // export const toggleMilestone = async (collectionName, docID, action) => {
-  //   // await deleteDoc(doc(db, collectionName, docID));
-  //   if (action === "private")
-  //     await updateDoc(doc(db, collectionName, docID), {
-  //       public: false,
-  //     });
-  // };
-
   return (
     <Container>
       <Wrapper>
@@ -378,7 +368,6 @@ const MilestonePage = () => {
         />
         <CountWrapper onClick={handleClap}>
           <Icon
-            // src={claped}
             src={content?.clapBy?.includes(userData?.uid) ? claped : clap}
           />
           <Count>{content?.clapBy?.length > 0 && content?.clapBy.length}</Count>

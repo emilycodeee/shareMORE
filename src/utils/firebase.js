@@ -199,6 +199,15 @@ export const deleteMilestone = async (collectionName, docID) => {
   await deleteDoc(doc(db, collectionName, docID));
 };
 
+export const deleteDocc = async (
+  collectionName,
+  groupID,
+  subCollection,
+  docID
+) => {
+  await deleteDoc(doc(db, collectionName, groupID, subCollection, docID));
+};
+
 export const deleteMilestoneComment = async (
   collectionName,
   milestoneID,
@@ -278,6 +287,57 @@ export const postGroupNotes = async (groupID, data, file) => {
   return response;
 };
 
+// 在這裡
+// export const editGroupNotes = async (data, file, groupID, postID, imgUrl) => {
+//   const docRefId = doc(collection(db, "groups", groupID, "notes")).id;
+
+//   let imgURL =
+//     "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+//   if (file) {
+//     const storageRef = ref(storage);
+//     const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+//     const metadata = { contenType: file.type };
+//     const uploadTask = await uploadBytes(imagesRef, file, metadata);
+//     imgURL = await getDownloadURL(uploadTask.ref);
+//   }
+//   const finalData = {
+//     ...data,
+//     noteID: docRefId,
+//     coverImage: imgURL,
+//   };
+
+//   const response = await setDoc(
+//     doc(db, "groups", groupID, "notes", docRefId),
+//     finalData
+//   );
+//   return response;
+// };
+
+export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {
+  let updateImgURL = imgURL;
+  if (file) {
+    const imgID = uuidv4();
+    const storageRef = ref(storage);
+    const imagesRef = ref(storageRef, "cover-images/" + imgID);
+    const metadata = { contenType: file.type };
+    const uploadTask = await uploadBytes(imagesRef, file, metadata);
+    updateImgURL = await getDownloadURL(uploadTask.ref);
+  }
+  const finalData = {
+    ...data,
+
+    coverImage: updateImgURL,
+  };
+
+  const response = await setDoc(
+    doc(db, "groups", groupID, "notes", postID),
+    finalData,
+    {
+      merge: true,
+    }
+  );
+};
+
 export const removeTopLevelPost = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
@@ -302,8 +362,6 @@ export const getOptionsName = async (optionName) => {
   querySnapshot.forEach((doc) => {
     arr.push(doc.data());
   });
-  // console.log("🧨🧨🧨🧨", arr);
-  // orderBy("name");
   return arr;
 };
 
@@ -375,6 +433,17 @@ export const getQueryFilter = async (collectionName, fieldName, queryName) => {
 
 export const getMyMilestones = async (userID) => {
   const q = query(collection(db, "articles"), where("creatorID", "==", userID));
+  const qSnapshot = await getDocs(q);
+  const arr = [];
+  qSnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+  return arr;
+};
+
+// group
+export const getGroupMilestones = async (grouprID) => {
+  const q = query(collection(db, "articles"), where("groupID", "==", grouprID));
   const qSnapshot = await getDocs(q);
   const arr = [];
   qSnapshot.forEach((doc) => {
@@ -774,15 +843,7 @@ export const getGroupNotes = async (option, groupID, tagName) => {
 export const getGroupsNoteContent = async (option, groupID, tagName, docID) => {
   const docRef = doc(db, option, groupID, tagName, docID);
   const docSnap = await getDoc(docRef);
-
   return docSnap.data();
-  // if (docSnap.exists()) {
-
-  //   // console.log("Document data:", docSnap.data());
-  // } else {
-  //   // doc.data() will be undefined in this case
-  //   console.log("No such document!");
-  // }
 };
 
 // export const getGroupNotes = async (option,groupID,tagName) => {

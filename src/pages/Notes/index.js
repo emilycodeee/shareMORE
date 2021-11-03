@@ -1,15 +1,17 @@
 import React from "react";
 import styled from "styled-components";
-import { useLocation, useParams } from "react-router";
+import { useLocation, useParams, useHistory } from "react-router";
 import { useState, useEffect } from "react";
 import * as firebase from "../../utils/firebase";
 import { useSelector } from "react-redux";
 import HtmlParser from "react-html-parser";
 import { convertTime } from "../../utils/commonText";
-
-// const Test = styled.figure`
-//   background-image: url("https://d30ytfzugopzcu.cloudfront.net/2018/11/6-useful-taiwanese-learning-resources.jpg");
-// `;
+import {
+  BsPencilSquare,
+  BsFillTrashFill,
+  BsFillHouseDoorFill,
+} from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 const TopCover = styled.div`
   /* opacity: 0.8; */
@@ -38,20 +40,60 @@ const ContentStyle = styled.div`
   padding: 1rem;
 `;
 
-const CoverImg = styled.img``;
+const TopArea = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const IconCtn = styled.button`
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  margin-left: 0.3rem;
+  cursor: pointer;
+`;
+
+const IconLink = styled(Link)`
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  margin-left: 0.3rem;
+  cursor: pointer;
+`;
+
+const IconsWrapper = styled.div`
+  display: flex;
+  margin-left: 1rem;
+`;
 
 const NotePage = () => {
   const { groupID, postID } = useParams();
+  const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const currentGroupData = groupsList.find((item) => item.groupID === groupID);
+  console.log(currentGroupData);
   const [noteContent, setNoteContent] = useState("");
-
+  const history = useHistory();
+  const checkGroupCreator = currentGroupData?.creatorID === userData.uid;
+  console.log(checkGroupCreator);
   useEffect(() => {
     firebase
       .getGroupsNoteContent("groups", groupID, "notes", postID)
       .then((res) => setNoteContent(res))
       .catch((err) => console.log(err));
   }, []);
+
+  // const handleEdit = () => {};
+
+  const handleDelete = () => {
+    const check = window.confirm("刪除後將不可恢復，確認要刪除嗎？");
+    if (check) {
+      firebase.deleteDocc("groups", groupID, "notes", postID).then(() => {
+        history.push(`/group/${groupID}/notes`);
+      });
+    }
+  };
 
   console.log(noteContent);
 
@@ -61,11 +103,31 @@ const NotePage = () => {
         style={{ backgroundImage: `url(${noteContent?.coverImage})` }}
       />
 
-      <h1>{noteContent.title}</h1>
+      <TopArea>
+        <h1>{noteContent.title}</h1>
+        <IconsWrapper>
+          {checkGroupCreator && (
+            <>
+              <IconLink to={`/group/${groupID}/notes/${postID}/edit`}>
+                <BsPencilSquare />
+              </IconLink>
+              <IconCtn>
+                <BsFillTrashFill onClick={handleDelete} />
+              </IconCtn>
+            </>
+          )}
+          <IconLink to={`/group/${groupID}`}>
+            <BsFillHouseDoorFill />
+          </IconLink>
+        </IconsWrapper>
+      </TopArea>
+
       <label>{convertTime(noteContent?.creationTime)}</label>
+
       <ContentStyle>
         <div className="ql-editor">{HtmlParser(noteContent?.content)}</div>
       </ContentStyle>
+      <hr />
     </Wrapper>
   );
 };
