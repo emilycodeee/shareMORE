@@ -91,6 +91,12 @@ function App() {
         <Route path="/group/:groupID/notes/:postID/post" exact>
           <NotesEditorPage />
         </Route>
+        <Route path="/group/:groupID/notes/:postID/edit" exact>
+          <NotesEditorPage />
+        </Route>
+        <Route path="/group/:groupID/notes/post" exact>
+          <NotesEditorPage />
+        </Route>
         <Route path="/group/:groupID/notes/:postID">
           <NotePage />
         </Route>

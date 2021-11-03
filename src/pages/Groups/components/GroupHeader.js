@@ -5,6 +5,9 @@ import ApplicationPopup from "./ApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
+import { BsFillFolderFill, BsPencilSquare, BsCheckLg } from "react-icons/bs";
+import { AiOutlineTrophy } from "react-icons/ai";
+import { RiShareForwardFill } from "react-icons/ri";
 const AvatarImg = styled.img`
   height: 3rem;
   width: 3rem;
@@ -12,11 +15,15 @@ const AvatarImg = styled.img`
   box-shadow: 0px 2px 6px grey;
 `;
 
-const NameLogo = styled.div`
-  align-self: center;
+const NameLogo = styled.input`
+  border: ${(props) => (props.actEdit ? "1px solid black" : " none")};
+  /* border: none; */
+  /* align-self: cent。 */
   font-weight: 550;
   font-size: 2rem;
-  flex-grow: 1;
+  outline: none;
+  width: auto;
+  /* flex-grow: 1; */
 `;
 
 const Wrapper = styled.div`
@@ -74,20 +81,44 @@ const Shield = styled.div`
   background-color: rgba(0, 0, 0, 0.8);
 `;
 
+const EditIcon = styled(BsPencilSquare)`
+  cursor: pointer;
+  margin-left: 1rem;
+  height: 1rem;
+  width: 1rem;
+`;
+
+const SubmitIcon = styled(BsCheckLg)`
+  cursor: pointer;
+  margin-left: 1rem;
+  height: 1rem;
+  width: 1rem;
+`;
+
+const TitleBar = styled.div`
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+`;
+
 const GroupHeader = ({ content, stationHead }) => {
   const userData = useSelector((state) => state.userData);
   // const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const [showApplication, setShowApplication] = useState(false);
-
   const [applicationData, setApplicationData] = useState({});
 
   const [appliedData, setAppliedData] = useState("");
-
+  const [titleValue, setTitleValue] = useState("");
+  const [actEdit, setActEdit] = useState(false);
+  // const checkGroupOwner = content.creatorID === userData?.uid;
   useEffect(() => {
     if (content.groupID) {
       firebase.getTotalApplicationList(content.groupID, setApplicationData);
     }
+    setTitleValue(content.name);
   }, [content]);
 
   useEffect(() => {
@@ -113,9 +144,17 @@ const GroupHeader = ({ content, stationHead }) => {
   const checkMember =
     (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
+  const checkOwner = content.creatorID === userData?.uid;
+  const checkGeneralMember =
+    userData !== null && content?.membersList?.includes(userData?.uid);
 
-  // const alreadyM =
-  //   userData !== null && content?.membersList?.includes(userData.uid);
+  const submitTitle = () => {
+    setActEdit(false);
+    const data = {
+      name: titleValue,
+    };
+    firebase.editGroupData(data, content.groupID);
+  };
 
   if (showApplication) {
     return (
@@ -135,69 +174,69 @@ const GroupHeader = ({ content, stationHead }) => {
     );
   }
 
-  if (content?.membersList?.includes(userData?.uid)) {
-    return (
-      <Wrapper>
-        <NameLogo>{content.name}</NameLogo>
-        <UlStyled>
-          <LinkAvatar to={`/profile/${stationHead?.uid}`}>
-            <AvatarImg src={stationHead?.avatar} />
-          </LinkAvatar>
-          <LiStyled
+  return (
+    <Wrapper>
+      <TitleBar>
+        <NameLogo
+          value={titleValue}
+          onChange={(e) => setTitleValue(e.target.value)}
+          readOnly={!actEdit}
+          actEdit={actEdit}
+          // placeholder={content.name}
+        />
+        {checkOwner && !actEdit && (
+          <EditIcon
             onClick={() => {
-              navigator.clipboard.writeText(root + pathname);
-              alert(`複製連結成功！`);
+              setActEdit(!actEdit);
             }}
-          >
-            分享連結
-          </LiStyled>
-          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
-          {checkMember && (
-            <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
-          )}
-        </UlStyled>
-      </Wrapper>
-    );
-  } else {
-    return (
-      <Wrapper>
-        <NameLogo>{content.name}</NameLogo>
-        <UlStyled>
-          <LinkAvatar to={`/profile/${stationHead?.uid}`}>
-            <AvatarImg src={stationHead?.avatar} />
-          </LinkAvatar>
-          <LiStyled
-            onClick={() => {
-              navigator.clipboard.writeText(root + pathname);
-              alert(`複製連結成功！`);
-            }}
-          >
-            分享連結
-          </LiStyled>
-          <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
-          {checkMember && (
-            <LinkStyled to={`${pathname}/notes`}>社群筆記</LinkStyled>
-          )}
+          />
+        )}
+        {checkOwner && actEdit && <SubmitIcon onClick={submitTitle} />}
+      </TitleBar>
+      {/* </NameLogo> */}
+      <UlStyled>
+        <LinkAvatar to={`/profile/${stationHead?.uid}`}>
+          <AvatarImg src={stationHead?.avatar} />
+        </LinkAvatar>
+        <LiStyled
+          onClick={() => {
+            navigator.clipboard.writeText(root + pathname);
+            alert(`複製連結成功！`);
+          }}
+        >
+          <RiShareForwardFill />
+        </LiStyled>
+        {checkMember && (
+          <>
+            <LinkStyled to={`${pathname}/milestones`}>
+              <AiOutlineTrophy />
+            </LinkStyled>
+            <LinkStyled to={`${pathname}/notes`}>
+              <BsFillFolderFill />
+            </LinkStyled>
+          </>
+        )}
 
-          {content.creatorID === userData?.uid ? (
-            <LiStyled
-              setShowApplication={setShowApplication}
-              onClick={() => {
-                setShowApplication(!showApplication);
-              }}
-            >
-              待審申請
-              <span>{applicationData?.count}</span>
-            </LiStyled>
-          ) : (
-            <LiStyled onClick={handleApplicationBtn}>
-              {appliedData ? "等候審核" : "申請加入"}
-            </LiStyled>
-          )}
-        </UlStyled>
-      </Wrapper>
-    );
-  }
+        {content.creatorID === userData?.uid && (
+          <LiStyled
+            setShowApplication={setShowApplication}
+            onClick={() => {
+              setShowApplication(!showApplication);
+            }}
+          >
+            待審申請
+            <span>{applicationData?.count}</span>
+          </LiStyled>
+        )}
+        {!checkGeneralMember && !checkOwner && (
+          <LiStyled onClick={handleApplicationBtn}>
+            {appliedData ? "等候審核" : "申請加入"}
+          </LiStyled>
+        )}
+      </UlStyled>
+    </Wrapper>
+  );
 };
+// };
 
 export default GroupHeader;

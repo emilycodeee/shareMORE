@@ -256,6 +256,7 @@ const MilestonePage = () => {
   const [content, setContent] = useState({});
   const [showCmt, setShowCmt] = useState(false);
   const [cmtValue, setCmtValue] = useState("");
+  const [publicStatus, setPublicStatus] = useState(null);
   const [renderPost, setRenderPost] = useState([]);
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
@@ -267,7 +268,7 @@ const MilestonePage = () => {
   const handleSave = () => {
     firebase.clapsForMilestone(milestoneID, userData.uid, "saveBy");
   };
-
+  console.log("contentcontent", content);
   const handleClap = () => {
     firebase.clapsForMilestone(milestoneID, userData.uid, "clapBy");
   };
@@ -297,30 +298,35 @@ const MilestonePage = () => {
   };
 
   const handlePrivate = () => {
-    firebase.toggleMilestone("articles", milestoneID, "private").then(() => {
-      history.push("/");
-    });
+    console.log(publicStatus);
+
+    firebase
+      .toggleMilestone("articles", milestoneID, !publicStatus)
+      .then(() => {
+        if (publicStatus) history.push("/");
+      });
   };
 
   useEffect(() => {
     firebase.milestoneListener("articles", milestoneID, setContent);
     firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
+    // console.log("contentcontent", content);
   }, []);
 
-  console.log("newwwww", renderPost);
+  useEffect(() => {
+    if (content.creatorID) {
+      setPublicStatus(content.public);
+
+      if (!content.public && userData?.uid !== content.creatorID) {
+        history.push("/");
+      }
+    }
+  }, [content]);
+
   const authorData = usersList.find((item) => item.uid === content?.creatorID);
   const groupData = groupsList.find(
     (item) => item.groupID === content?.groupID
   );
-
-  // export const toggleMilestone = async (collectionName, docID, action) => {
-  //   // await deleteDoc(doc(db, collectionName, docID));
-  //   if (action === "private")
-  //     await updateDoc(doc(db, collectionName, docID), {
-  //       public: false,
-  //     });
-  // };
-
   return (
     <Container>
       <Wrapper>
@@ -348,7 +354,9 @@ const MilestonePage = () => {
             <div>
               <EditLink to={`/milestone/${milestoneID}/edit`}>編輯</EditLink>
               <EditBtn onClick={handleDelete}>刪除</EditBtn>
-              <EditBtn onClick={handlePrivate}>設為非公開</EditBtn>
+              <EditBtn onClick={handlePrivate}>
+                設為{publicStatus ? "非公開" : "公開"}
+              </EditBtn>
             </div>
           )}
         </HeadDetail>
@@ -378,7 +386,6 @@ const MilestonePage = () => {
         />
         <CountWrapper onClick={handleClap}>
           <Icon
-            // src={claped}
             src={content?.clapBy?.includes(userData?.uid) ? claped : clap}
           />
           <Count>{content?.clapBy?.length > 0 && content?.clapBy.length}</Count>

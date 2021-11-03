@@ -1,11 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import { useParams, useHistory } from "react-router";
+import { useParams, useHistory, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import * as firebase from "../../utils/firebase";
-
+import { BsUpload } from "react-icons/bs";
+// BsFillFolderFill;
 const Wrapper = styled.div`
   max-width: 1000px;
   width: 100%;
@@ -92,19 +93,40 @@ const TextTag = styled.p`
 
 const NotesPage = () => {
   const { groupID } = useParams();
+  const endpoint = useLocation().pathname;
   const history = useHistory();
-  const [notesList, setNotesList] = useState([]);
+  const [contentsList, setContentsList] = useState([]);
   const groupsList = useSelector((state) => state.groupsList);
+  const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
-
   const currentGroupData = groupsList.find((item) => item.groupID === groupID);
+  let emptyText = "目前尚未建立社群筆記";
+  const checkGroupCreator = currentGroupData.creatorID === userData.uid;
+  console.log(currentGroupData);
 
   useEffect(() => {
-    firebase
-      .getGroupNotes("groups", groupID, "notes")
-      .then((res) => setNotesList(res))
-      .catch((err) => console.log(err));
+    if (endpoint.includes("notes")) {
+      console.log("你在筆記葉");
+      firebase
+        .getGroupNotes("groups", groupID, "notes")
+        .then((res) => setContentsList(res))
+        .catch((err) => console.log(err));
+    } else if (endpoint.includes("milestones")) {
+      firebase.getGroupMilestones(groupID).then((res) => {
+        const filterPublic = res.filter((item) => {
+          return item.public === true;
+        });
+        setContentsList(filterPublic);
+        emptyText = "目前尚未存在與社團相關的公開里程碑";
+      });
+    }
   }, []);
+
+  // <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
+  //   設為精選筆記
+  // </LinkStyle>;
+
+  // FaFileUpload;
 
   const getTime = (content) => {
     const time = new Date(content.creationTime?.toDate()).toLocaleString(
@@ -112,45 +134,40 @@ const NotesPage = () => {
     );
     return time;
   };
-
-  // console.log(notesList);
-  // console.log(
-  //   "check",
-  //   currentGroupData.membersList.includes(userData.uid) ||
-  //     currentGroupData.creatorID === userData.uid
-  // );
-  // if (currentGroupData) {
-  //   const checkStatus =
-  //     currentGroupData.membersList?.includes(userData.uid) ||
-  //     currentGroupData.creatorID === userData.uid;
-  //   if (!checkStatus) {
-  //     alert("僅有社員可以查看社群筆記，請先加入會員");
-  //     return;
-  //   }
-  // }
-
-  // if (notesList?.length === 0) {
-  //   alert("目前尚未建立社群筆記");
-  //   history.push(`/group/${groupID}`);
-  //   return;
-  // }
   return (
     <Wrapper>
       <TopCtn>
         <Search placeholder="請輸入標題名稱、內容..." />
         <TopBtn>最新發起</TopBtn>
-        <TopBtn>排序</TopBtn>
+        {endpoint.includes("milestones") && (
+          <TopBtn>
+            <Link to="/milestones/post">建立里程碑</Link>
+          </TopBtn>
+        )}
+        {checkGroupCreator && endpoint.includes("notes") && (
+          <TopBtn>
+            <Link to={`/group/${groupID}/notes/post`}>
+              <BsUpload />
+            </Link>
+          </TopBtn>
+        )}
       </TopCtn>
-      {notesList?.length === 0 && <div>目前尚未建立社群筆記</div>}
-      {notesList?.map((item) => {
+      {contentsList?.length === 0 && <div>{emptyText}</div>}
+      {contentsList?.map((item) => {
+        let url;
+        if (endpoint.includes("notes")) {
+          url = `/group/${groupID}/notes/${item?.noteID}`;
+        } else if (endpoint.includes("milestones")) {
+          url = `/milestone/${item.milestoneID}`;
+        }
         return (
-          <Notes
-            key={item?.noteID}
-            to={`/group/${groupID}/notes/${item?.noteID}`}
-          >
+          <Notes key={item?.noteID || item?.milestoneID} to={url}>
             <Cover src={item.coverImage} />
             <Content>
               <TitleStyle>{item.title}</TitleStyle>
+              <TimeTag>
+                {usersList.find((p) => p.uid === item.creatorID).displayName}
+              </TimeTag>
               <TimeTag>{getTime(item)}</TimeTag>
               <TextTag>{item.introduce}</TextTag>
             </Content>

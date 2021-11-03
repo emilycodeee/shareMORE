@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import RichTextEditor from "../../components/RichTextEditor";
 import * as firebase from "../../utils/firebase";
-import { useState } from "react";
-import { useParams, useHistory } from "react-router";
+import { useState, useEffect, useRef } from "react";
+import { useParams, useHistory, useLocation } from "react-router";
 import generateText from "../../utils/commonText";
 
 import { useSelector } from "react-redux";
@@ -77,7 +77,10 @@ const Introduce = styled.textarea`
 
 const NotesEditorPage = () => {
   const userData = useSelector((state) => state.userData);
+
   const { groupID, postID } = useParams();
+  const pathname = useLocation().pathname;
+  console.log("pathname", pathname.includes("edit"));
   const history = useHistory();
   console.log(groupID, postID);
 
@@ -85,16 +88,36 @@ const NotesEditorPage = () => {
   const [value, setValue] = useState("");
   const [file, setFile] = useState(null);
   const [introduce, setIntroduce] = useState("");
+  const [originContent, setOriginContent] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage.png?alt=media&token=7b4118c2-46f8-41e9-a5de-de954c4aeb48"
+  );
+  const editMode = useRef(false);
   const editorHandler = (e) => {
     setValue(e);
   };
   console.log(value);
   useEffect(() => {
-    firebase.getRawGroupNotes(groupID, postID).then((res) => {
-      const { mainPost, comments } = res;
-      const html = generateText(mainPost, comments);
-      setValue(html);
-    });
+    if (pathname.includes("edit")) {
+      firebase
+        .getGroupsNoteContent("groups", groupID, "notes", postID)
+        .then((res) => {
+          setTitle(res.title);
+          setValue(res.content);
+          setIntroduce(res.introduce);
+          setPreviewUrl(res.coverImage);
+          setOriginContent(res);
+          editMode.current = true;
+          console.log(res);
+        })
+        .catch((err) => console.log(err));
+    } else if (postID) {
+      firebase.getRawGroupNotes(groupID, postID).then((res) => {
+        const { mainPost, comments } = res;
+        const html = generateText(mainPost, comments);
+        setValue(html);
+      });
+    }
   }, []);
 
   const handleSubmit = () => {
@@ -105,27 +128,40 @@ const NotesEditorPage = () => {
       return;
     }
 
-    const data = {
-      creatorID: userData.uid,
-      content: value,
-      creationTime: new Date(),
-      title,
-      introduce,
-    };
+    if (editMode.current) {
+      const data = {
+        coverImage: originContent.coverImage,
+        content: value,
+        title,
+        introduce,
+      };
+      firebase
+        .editGroupNotes(data, file, groupID, postID, originContent.coverImage)
+        .then(() => {
+          alert("編輯成功");
+          history.push(`/group/${groupID}/notes/${postID}`);
+        });
+    } else {
+      const data = {
+        creatorID: userData.uid,
+        content: value,
+        creationTime: new Date(),
+        title,
+        introduce,
+      };
 
-    firebase
-      .postGroupNotes(groupID, data, file)
-      // .then(() => {
-      //   firebase.removeTopLevelPost(groupID, postID);
-      // })
-      .then(() => {
-        alert("建立成功");
-        history.push(`/group/${groupID}`);
-      });
+      firebase
+        .postGroupNotes(groupID, data, file)
+        // .then(() => {
+        //   firebase.removeTopLevelPost(groupID, postID);
+        // })
+        .then(() => {
+          alert("建立成功");
+          history.push(`/group/${groupID}`);
+        });
+    }
   };
-  const previewImg = file
-    ? URL.createObjectURL(file)
-    : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+  const previewImg = file ? URL.createObjectURL(file) : previewUrl;
 
   // const { groupID, postID } = useParams();
   // console.log(groupID, postID);
