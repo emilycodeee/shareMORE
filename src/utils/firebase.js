@@ -160,7 +160,10 @@ export const postArticles = async (data, file) => {
     "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
   if (file) {
     const storageRef = ref(storage);
-    const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+    const imagesRef = ref(
+      storageRef,
+      `articles/${docRefId}/cover-images/` + docRefId
+    );
     const metadata = { contenType: file.type };
     const uploadTask = await uploadBytes(imagesRef, file, metadata);
     imgURL = await getDownloadURL(uploadTask.ref);
@@ -179,7 +182,7 @@ export const editArticles = async (data, file, milestoneID, imgURL) => {
   if (file) {
     const imgID = uuidv4();
     const storageRef = ref(storage);
-    const imagesRef = ref(storageRef, "cover-images/" + imgID);
+    const imagesRef = ref(storageRef, `articles/${milestoneID}/` + imgID);
     const metadata = { contenType: file.type };
     const uploadTask = await uploadBytes(imagesRef, file, metadata);
     updateImgURL = await getDownloadURL(uploadTask.ref);
@@ -230,11 +233,10 @@ export const getTotalDocList = async (optionName) => {
 // up3
 export const toggleMilestone = async (collectionName, docID, action) => {
   // await deleteDoc(doc(db, collectionName, docID));
-  if (action === "private") {
-    await updateDoc(doc(db, collectionName, docID), {
-      public: false,
-    });
-  }
+
+  await updateDoc(doc(db, collectionName, docID), {
+    public: action,
+  });
 };
 
 export const getRawGroupNotes = async (groupID, postID) => {
@@ -269,7 +271,7 @@ export const postGroupNotes = async (groupID, data, file) => {
     "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
   if (file) {
     const storageRef = ref(storage);
-    const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+    const imagesRef = ref(storageRef, `groups/${groupID}/notes/` + docRefId);
     const metadata = { contenType: file.type };
     const uploadTask = await uploadBytes(imagesRef, file, metadata);
     imgURL = await getDownloadURL(uploadTask.ref);
@@ -318,7 +320,7 @@ export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {
   if (file) {
     const imgID = uuidv4();
     const storageRef = ref(storage);
-    const imagesRef = ref(storageRef, "cover-images/" + imgID);
+    const imagesRef = ref(storageRef, `groups/${groupID}/` + imgID);
     const metadata = { contenType: file.type };
     const uploadTask = await uploadBytes(imagesRef, file, metadata);
     updateImgURL = await getDownloadURL(uploadTask.ref);
@@ -337,6 +339,72 @@ export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {
     }
   );
 };
+
+// editGroupData👶
+// export const editGroupData = async (data, file, imgURL, groupID) => {
+//   let updateImgURL = imgURL;
+//   if (file) {
+//     const imgID = uuidv4();
+//     const storageRef = ref(storage);
+//     const imagesRef = ref(storageRef, "cover-images/" + imgID);
+//     const metadata = { contenType: file.type };
+//     const uploadTask = await uploadBytes(imagesRef, file, metadata);
+//     updateImgURL = await getDownloadURL(uploadTask.ref);
+//   }
+//   const finalData = {
+//     ...data,
+
+//     coverImage: updateImgURL,
+//   };
+
+//   const response = await setDoc(
+//     doc(db, "groups", groupID, "notes", postID),
+//     finalData,
+//     {
+//       merge: true,
+//     }
+//   );
+// };
+
+export const editGroupData = async (data, groupID) => {
+  await setDoc(doc(db, "groups", groupID), data, {
+    merge: true,
+  });
+};
+
+// 👸
+export const editGroupImage = async (file, groupID) => {
+  const imgID = uuidv4();
+  const storageRef = ref(storage);
+  const imagesRef = ref(storageRef, `groups/${groupID}/` + imgID);
+  const metadata = { contenType: file.type };
+  const uploadTask = await uploadBytes(imagesRef, file, metadata);
+  const imgURL = await getDownloadURL(uploadTask.ref);
+
+  const data = {
+    coverImage: imgURL,
+  };
+
+  await setDoc(doc(db, "groups", groupID), data, {
+    merge: true,
+  });
+};
+
+// export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {
+//   let updateImgURL = imgURL;
+//   if (file) {
+//     const imgID = uuidv4();
+//     const storageRef = ref(storage);
+//     const imagesRef = ref(storageRef, `groups/${groupID}/` + imgID);
+//     const metadata = { contenType: file.type };
+//     const uploadTask = await uploadBytes(imagesRef, file, metadata);
+//     updateImgURL = await getDownloadURL(uploadTask.ref);
+//   }
+//   const finalData = {
+//     ...data,
+
+//     coverImage: updateImgURL,
+//   };
 
 export const removeTopLevelPost = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
@@ -416,6 +484,32 @@ export const getMyGroupsObj = async (userID) => {
   return { participate: memberArr, owner: creatorArr };
 };
 
+export const getMySaveArticles = async (userID) => {
+  const articlesQ = query(
+    collection(db, "articles"),
+    where("saveBy", "array-contains", userID)
+  );
+
+  const articlesQuerySnapshot = await getDocs(articlesQ);
+  // const memberArr = [];
+  // memberQuerySnapshot.forEach((doc) => {
+  //   memberArr.push(doc.data());
+  // });
+
+  // const creatorQ = query(
+  //   collection(db, "groups"),
+  //   where("creatorID", "==", userID)
+  // );
+
+  // const creatorQuerySnapshot = await getDocs(creatorQ);
+  const saveArr = [];
+  articlesQuerySnapshot.forEach((doc) => {
+    saveArr.push(doc.data());
+  });
+
+  return saveArr;
+};
+
 export const getQueryFilter = async (collectionName, fieldName, queryName) => {
   const q = query(
     collection(db, collectionName),
@@ -458,7 +552,7 @@ export const createGroup = async (data, file) => {
   const docRefId = doc(collection(db, "groups")).id;
   if (file) {
     const storageRef = ref(storage);
-    const imagesRef = ref(storageRef, "cover-images/" + docRefId);
+    const imagesRef = ref(storageRef, `groups/${docRefId}/` + docRefId);
     const metadata = { contenType: file.type };
     const uploadTask = await uploadBytes(imagesRef, file, metadata);
     imgURL = await getDownloadURL(uploadTask.ref);
@@ -815,7 +909,7 @@ export const UpdateProfile = async (userID, data, file) => {
 
   if (file) {
     const storageRef = ref(storage);
-    const imagesRef = ref(storageRef, "cover-images/" + uuidv4());
+    const imagesRef = ref(storageRef, `users/${userID}/` + uuidv4());
     const metadata = { contenType: file.type };
     const uploadTask = await uploadBytes(imagesRef, file, metadata);
     const imgURL = await getDownloadURL(uploadTask.ref);
@@ -860,3 +954,5 @@ export const getGroupsNoteContent = async (option, groupID, tagName, docID) => {
 //     setFunction(data);
 //   });
 // };
+// AiFillTrophy;
+// AiOutlineTrophy;

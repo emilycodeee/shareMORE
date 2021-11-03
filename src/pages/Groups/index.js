@@ -7,11 +7,17 @@ import styled from "styled-components";
 import PostContainer from "./components/PostContainer";
 import GroupHeader from "./components/GroupHeader";
 import fish from "../../sources/fish.png";
-import moreIcon from "../../sources/three-dots.png";
 import MemberAvatar from "./components/MemberAvatar";
 import { dateCounter } from "../../utils/commonText";
+import {
+  BsPencilSquare,
+  BsCheckLg,
+  BsFillCameraFill,
+  BsFillCheckSquareFill,
+} from "react-icons/bs";
 
 import { useSelector } from "react-redux";
+import SimpleEditor from "../../components/SimpleEditor";
 
 const SectionStyled = styled.section`
   display: flex;
@@ -55,6 +61,16 @@ const ContentStyled = styled.div`
   padding: 1rem;
 `;
 
+const ContentCtn = styled.textarea`
+  line-height: 1.5rem;
+  box-shadow: 2px 2px 3px #d1cbcb;
+  border-radius: 20px;
+  outline: none;
+  padding: 1rem;
+  border: ${(props) =>
+    props.actEdit ? " 1px solid black" : " 1px solid #d1cbcb"};
+`;
+
 const Wrapper = styled.div`
   max-width: 900px;
   margin: 0 auto;
@@ -94,6 +110,43 @@ const GoalDate = styled.div`
   justify-content: space-between;
 `;
 
+const EditImage = styled(BsFillCameraFill)`
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  bottom: -20px;
+  right: 0;
+  cursor: pointer;
+
+  /* background-color: white; */
+`;
+
+const SaveImage = styled(BsFillCheckSquareFill)`
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  bottom: -20px;
+  right: 0;
+  cursor: pointer;
+
+  /* background-color: white; */
+`;
+
+const ImgWrapper = styled.div`
+  position: relative;
+`;
+
+const DivCtn = styled.div`
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid red;
+  position: absolute;
+  bottom: -20px;
+  right: 0;
+  /* background-color: red; */
+  /* position: relative; */
+`;
+
 const GroupPage = () => {
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
@@ -104,17 +157,33 @@ const GroupPage = () => {
   const [textValue, setTextValue] = useState("");
   const [renderPost, setRenderPost] = useState([]);
   const [renderMember, setRenderMember] = useState([]);
+  //edit
+  const [actEdit, setActEdit] = useState(false);
+  const [actEditGoal, setActEditGoal] = useState(false);
+  const [actEditDate, setActEditDate] = useState(false);
+  const [actEditImage, setActEditImage] = useState(false);
+  const [file, setFile] = useState(null);
+  const [aboutValue, setAboutValue] = useState("");
+  const [dateValue, setDateValue] = useState("");
+  const [goal, setGoal] = useState("");
+  const [imageCover, setImageCover] = useState("");
 
   useEffect(() => {
     firebase
       .getTopLevelContent("groups", groupID)
-      .then((res) => setContent(res))
+      .then((res) => {
+        setContent(res);
+        setAboutValue(res.introduce);
+        setDateValue(res.goalDate);
+        setGoal(res.goal);
+        setImageCover(res.coverImage);
+      })
       .catch((err) => console.log(err));
     firebase.postsListener(groupID, setRenderPost);
     firebase.getMembersList(groupID, setRenderMember);
   }, []);
 
-  dateCounter(content.goalDate);
+  // dateCounter(dateValue);
 
   const postHandler = () => {
     const data = {
@@ -131,15 +200,54 @@ const GroupPage = () => {
     (item) => item?.uid === content?.creatorID
   );
 
-  const dateText = ` 預計完成日：${content?.goalDate}，還有
-            ${dateCounter(content?.goalDate)} 天`;
+  const dateText = ` 預計完成日：${dateValue}，還有
+            ${dateCounter(dateValue)} 天`;
+
+  const handleSubmit = () => {
+    setActEdit(false);
+    setActEditGoal(false);
+    setActEditDate(false);
+    const data = {
+      introduce: aboutValue,
+      goal: goal,
+      goalDate: dateValue,
+    };
+    firebase.editGroupData(data, content.groupID);
+  };
+
+  const handleSubmitImg = () => {
+    setActEditImage(!actEditImage);
+    firebase
+      .editGroupImage(file, content.groupID)
+      .then(() => alert("修改成功"));
+  };
+
+  const previewImg = file ? URL.createObjectURL(file) : imageCover;
 
   const checkMember =
     (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
+  const checkOwner = content.creatorID === userData?.uid;
   return (
     <Wrapper>
-      <TopCover style={{ backgroundImage: `url(${content.coverImage})` }} />
+      <ImgWrapper>
+        <input
+          type="file"
+          id="uploadImg"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            setFile(e.target.files[0]);
+            setActEditImage(!actEditImage);
+          }}
+        />
+        <TopCover style={{ backgroundImage: `url(${previewImg})` }} />
+        {checkOwner && !actEditImage && (
+          <DivCtn as="label" htmlFor="uploadImg">
+            <EditImage />
+          </DivCtn>
+        )}
+        {checkOwner && actEditImage && <SaveImage onClick={handleSubmitImg} />}
+      </ImgWrapper>
       <GroupHeader content={content} stationHead={stationHead} />
       <SectionStyled>
         <LabelStyled>學習夥伴</LabelStyled>
@@ -147,22 +255,71 @@ const GroupPage = () => {
           {renderMember.length === 0 && (
             <Text>再等一下，夥伴們正在火速趕來中</Text>
           )}
-
+          {/* src={fish} */}
           {renderMember.map((item) => (
-            <MemberAvatar src={fish} key={item.memberID} data={item} />
+            <MemberAvatar key={item.memberID} data={item} />
           ))}
         </MemberContainer>
       </SectionStyled>
       <SectionStyled>
-        <LabelStyled>關於我們</LabelStyled>
-        <ContentStyled>{content.introduce}</ContentStyled>
+        <LabelStyled>
+          關於我們
+          {checkOwner && !actEdit && (
+            <BsPencilSquare
+              onClick={() => {
+                setActEdit(!actEdit);
+              }}
+            />
+          )}
+          {checkOwner && actEdit && <BsCheckLg onClick={handleSubmit} />}
+        </LabelStyled>
+        <ContentCtn
+          actEdit={actEdit}
+          readOnly={!actEdit}
+          value={aboutValue}
+          onChange={(e) => setAboutValue(e.target.value)}
+        />
       </SectionStyled>
       <SectionStyled>
         <GoalDate>
-          <LabelStyled>學習目標</LabelStyled>
-          <LabelStyled>{dateText}</LabelStyled>
+          <LabelStyled>
+            學習目標
+            {checkOwner && !actEditGoal && (
+              <BsPencilSquare
+                onClick={() => {
+                  setActEditGoal(!actEditGoal);
+                }}
+              />
+            )}
+            {checkOwner && actEditGoal && <BsCheckLg onClick={handleSubmit} />}
+          </LabelStyled>
+          <LabelStyled>
+            {dateText}
+
+            {checkOwner && !actEditDate && (
+              <BsPencilSquare
+                onClick={() => {
+                  setActEditDate(!actEditDate);
+                }}
+              />
+            )}
+          </LabelStyled>
+          {checkOwner && actEditDate && (
+            <div>
+              <input
+                type="date"
+                onChange={(e) => setDateValue(e.target.value)}
+              />
+              <BsCheckLg onClick={handleSubmit} />
+            </div>
+          )}
         </GoalDate>
-        <ContentStyled>{HtmlParser(content.goal)}</ContentStyled>
+        {!actEditGoal && (
+          <ContentStyled className="ql-editor">
+            {HtmlParser(goal)}
+          </ContentStyled>
+        )}
+        {actEditGoal && <SimpleEditor goal={goal} setGoal={setGoal} />}
       </SectionStyled>
       <hr />
       {checkMember && (

@@ -100,8 +100,6 @@ const ListCtn = styled.ul`
 `;
 
 const ListItem = styled.li`
-  /* ${(props) => console.log("liiiiii", props)} */
-  /* ${(props) => console.log("liiiiii", props.active)} */
   cursor: pointer;
   margin-left: 1rem;
   border-radius: 30px;
@@ -143,13 +141,14 @@ const SettingBtn = styled(Link)`
 
 const ProfilePage = () => {
   const { userID } = useParams();
-  console.log(userID);
+
   const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
   const currentUser = usersList?.find((item) => item.uid === userID);
-  console.log("介紹葉", currentUser);
+
   const [myGroupsObj, setMyGroupsObj] = useState({});
   const [myMilestones, setMyMilestones] = useState([]);
+  const [mySaveArticles, setMySaveArticles] = useState([]);
   const [selected, setSelected] = useState([]);
   const [showSetting, setShowSetting] = useState(false);
   const [active, setActive] = useState("我參加的社團");
@@ -165,6 +164,13 @@ const ProfilePage = () => {
     firebase
       .getMyMilestones(userID)
       .then((res) => setMyMilestones(res))
+      .catch((err) => console.error(err));
+    firebase
+      .getMySaveArticles(userID)
+      .then((res) => {
+        console.log("mySaveArticles👱‍♂️", res);
+        setMySaveArticles(res);
+      })
       .catch((err) => console.error(err));
   }, []);
 
@@ -188,6 +194,16 @@ const ProfilePage = () => {
       case "stone":
         setActive("我的里程碑");
         setSelected(myMilestones.filter((item) => item.public === true));
+        break;
+      case "save":
+        setActive("我的收藏");
+        // console.log("mySaveArticles", mySaveArticles);
+        setSelected(mySaveArticles);
+        break;
+      case "archive":
+        setActive("封存");
+        // console.log("mySaveArticles", mySaveArticles);
+        setSelected(myMilestones.filter((item) => item.public === false));
         break;
       default:
       // setSelected(myGroupsObj.participate);
@@ -282,9 +298,15 @@ const ProfilePage = () => {
           <ListItem data-id="stone" active={active} onClick={handleChoose}>
             我的里程碑
           </ListItem>
-          <LinkStyle to={`/messages/${userID}`}>
+          <ListItem data-id="save" active={active} onClick={handleChoose}>
+            我的收藏
+          </ListItem>
+          <ListItem data-id="archive" active={active} onClick={handleChoose}>
+            封存
+          </ListItem>
+          {/* <LinkStyle to={`/messages/${userID}`}>
             <ListItem>發訊息</ListItem>
-          </LinkStyle>
+          </LinkStyle> */}
         </ListCtn>
         <ContentCtn>
           {defaultRender.current

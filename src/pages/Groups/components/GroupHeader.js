@@ -5,7 +5,8 @@ import ApplicationPopup from "./ApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
-import { BsFillFolderFill } from "react-icons/bs";
+import { BsFillFolderFill, BsPencilSquare, BsCheckLg } from "react-icons/bs";
+import { AiOutlineTrophy } from "react-icons/ai";
 import { RiShareForwardFill } from "react-icons/ri";
 const AvatarImg = styled.img`
   height: 3rem;
@@ -14,11 +15,15 @@ const AvatarImg = styled.img`
   box-shadow: 0px 2px 6px grey;
 `;
 
-const NameLogo = styled.div`
-  align-self: center;
+const NameLogo = styled.input`
+  border: ${(props) => (props.actEdit ? "1px solid black" : " none")};
+  /* border: none; */
+  /* align-self: cent。 */
   font-weight: 550;
   font-size: 2rem;
-  flex-grow: 1;
+  outline: none;
+  width: auto;
+  /* flex-grow: 1; */
 `;
 
 const Wrapper = styled.div`
@@ -76,20 +81,44 @@ const Shield = styled.div`
   background-color: rgba(0, 0, 0, 0.8);
 `;
 
+const EditIcon = styled(BsPencilSquare)`
+  cursor: pointer;
+  margin-left: 1rem;
+  height: 1rem;
+  width: 1rem;
+`;
+
+const SubmitIcon = styled(BsCheckLg)`
+  cursor: pointer;
+  margin-left: 1rem;
+  height: 1rem;
+  width: 1rem;
+`;
+
+const TitleBar = styled.div`
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+`;
+
 const GroupHeader = ({ content, stationHead }) => {
   const userData = useSelector((state) => state.userData);
   // const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const [showApplication, setShowApplication] = useState(false);
-
   const [applicationData, setApplicationData] = useState({});
 
   const [appliedData, setAppliedData] = useState("");
-
+  const [titleValue, setTitleValue] = useState("");
+  const [actEdit, setActEdit] = useState(false);
+  // const checkGroupOwner = content.creatorID === userData?.uid;
   useEffect(() => {
     if (content.groupID) {
       firebase.getTotalApplicationList(content.groupID, setApplicationData);
     }
+    setTitleValue(content.name);
   }, [content]);
 
   useEffect(() => {
@@ -115,11 +144,17 @@ const GroupHeader = ({ content, stationHead }) => {
   const checkMember =
     (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
-
+  const checkOwner = content.creatorID === userData?.uid;
   const checkGeneralMember =
     userData !== null && content?.membersList?.includes(userData?.uid);
 
-  const checkOwner = content.creatorID === userData?.uid;
+  const submitTitle = () => {
+    setActEdit(false);
+    const data = {
+      name: titleValue,
+    };
+    firebase.editGroupData(data, content.groupID);
+  };
 
   if (showApplication) {
     return (
@@ -141,7 +176,24 @@ const GroupHeader = ({ content, stationHead }) => {
 
   return (
     <Wrapper>
-      <NameLogo>{content.name}</NameLogo>
+      <TitleBar>
+        <NameLogo
+          value={titleValue}
+          onChange={(e) => setTitleValue(e.target.value)}
+          readOnly={!actEdit}
+          actEdit={actEdit}
+          // placeholder={content.name}
+        />
+        {checkOwner && !actEdit && (
+          <EditIcon
+            onClick={() => {
+              setActEdit(!actEdit);
+            }}
+          />
+        )}
+        {checkOwner && actEdit && <SubmitIcon onClick={submitTitle} />}
+      </TitleBar>
+      {/* </NameLogo> */}
       <UlStyled>
         <LinkAvatar to={`/profile/${stationHead?.uid}`}>
           <AvatarImg src={stationHead?.avatar} />
@@ -156,7 +208,9 @@ const GroupHeader = ({ content, stationHead }) => {
         </LiStyled>
         {checkMember && (
           <>
-            <LinkStyled to={`${pathname}/milestones`}>我們的里程碑</LinkStyled>
+            <LinkStyled to={`${pathname}/milestones`}>
+              <AiOutlineTrophy />
+            </LinkStyled>
             <LinkStyled to={`${pathname}/notes`}>
               <BsFillFolderFill />
             </LinkStyled>
