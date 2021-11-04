@@ -7,6 +7,7 @@ import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
 import { BsFillFolderFill, BsPencilSquare, BsCheckLg } from "react-icons/bs";
 import { AiOutlineTrophy } from "react-icons/ai";
+import { GiBookshelf } from "react-icons/gi";
 import { RiShareForwardFill } from "react-icons/ri";
 const AvatarImg = styled.img`
   height: 3rem;
@@ -206,6 +207,9 @@ const GroupHeader = ({ content, stationHead }) => {
         >
           <RiShareForwardFill />
         </LiStyled>
+        <LinkStyled to={`${pathname}/bookshelf`}>
+          <GiBookshelf />
+        </LinkStyled>
         {checkMember && (
           <>
             <LinkStyled to={`${pathname}/milestones`}>

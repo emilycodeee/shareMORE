@@ -148,7 +148,7 @@ const Header = () => {
         <LogoCtn src={logo} />
       </LogoContainer>
       <ListContainer>
-        <Input placeholder="搜尋  " type="text" />
+        {/* <Input placeholder="搜尋  " type="text" /> */}
         <ListStyled to="/milestones">所有里程碑</ListStyled>
         {userData && (
           <>

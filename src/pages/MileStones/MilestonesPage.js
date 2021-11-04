@@ -5,6 +5,10 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Card from "../Home/components/Card";
 import * as firebase from "../../utils/firebase";
+import Slider from "react-slick";
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const MainCtn = styled.div`
   max-width: 1000px;
@@ -50,15 +54,15 @@ const ContentCtn = styled.div`
   display: flex;
 `;
 
-const Search = styled.input`
-  width: 70%;
-  border-radius: 25px;
-  box-shadow: none;
-  border: 1px solid rgb(204, 204, 204);
-  padding: 3px 0px 3px 50px;
-  font-size: 18px;
-  margin: 2rem 0;
-`;
+// const Search = styled.input`
+//   width: 70%;
+//   border-radius: 25px;
+//   box-shadow: none;
+//   border: 1px solid rgb(204, 204, 204);
+//   padding: 3px 0px 3px 50px;
+//   font-size: 18px;
+//   margin: 2rem 0;
+// `;
 
 const Slide = styled.div`
   width: 25%;
@@ -105,6 +109,15 @@ const TopSection = styled.section`
 const LastLabel = styled.label`
   font-size: 1.5rem;
   font-style: italic;
+`;
+
+const BookLabel = styled.label`
+  font-size: 1.2rem;
+  font-weight: 550;
+`;
+
+const Div1 = styled.div`
+  margin-bottom: 1rem;
 `;
 
 const ListWrapper = styled.ul`
@@ -176,11 +189,68 @@ const Ptag = styled.p`
   }
 `;
 
+const Search = styled.input`
+  width: 70%;
+  height: 1.8rem;
+  border-radius: 25px;
+  box-shadow: none;
+  border: 1px solid rgb(204, 204, 204);
+  padding: 4px 0px 4px 50px;
+  font-size: 18px;
+  margin: 2rem 0;
+  align-self: center;
+  /* text-align: center; */
+`;
+
+const ImgxCtn = styled.img`
+  height: 250px;
+`;
+
 const MilestonesPage = () => {
   const [milestonesList, setMilestonesList] = useState([]);
   const groupsList = useSelector((state) => state.groupsList);
   const categoryList = useSelector((state) => state.categoryList);
   const usersList = useSelector((state) => state.usersList);
+
+  const [bookList, setBookList] = useState([]);
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    // speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+    speed: 3000,
+    autoplaySpeed: 3000,
+    cssEase: "linear",
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
 
   const findGroup = (article) => {
     const groupObj = groupsList.find(
@@ -196,28 +266,43 @@ const MilestonesPage = () => {
     return authorData?.displayName;
   };
 
-  const getTime = (content) => {
-    const time = new Date(content.creationTime?.toDate()).toLocaleString(
-      "zh-TW"
-    );
-    return time;
-  };
+  // const getTime = (content) => {
+  //   const time = new Date(content.creationTime?.toDate()).toLocaleString(
+  //     "zh-TW"
+  //   );
+  //   return time;
+  // };
 
   useEffect(() => {
     firebase.getContentsListSort("articles", setMilestonesList);
+    const groupID = "9HfGGlnlwvzrgVefq3XL";
+    firebase.getGroupBook("books", groupID, setMilestonesList).then((res) => {
+      console.log(res);
+      setBookList(res);
+    });
   }, []);
 
-  console.log("milllllllllll", milestonesList.slice(0, 5));
+  // console.log("milllllllllll", milestonesList.slice(0, 5));
 
   return (
     <MainCtn>
       <TopSection>
         <SlideShow>
-          <ImgCtn
-            src={
-              "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FmessageImage_1606748363551.jpg?alt=media&token=bdc87592-6f60-4e19-a4c9-68d3f26339a6"
-            }
-          />
+          <Div1>
+            <BookLabel>看看大家在看什麼書？</BookLabel>
+          </Div1>
+          <Slider {...settings}>
+            {bookList.map((b, i) => {
+              return (
+                <div key={i}>
+                  <div>
+                    <p>{b.title}</p>
+                    <ImgxCtn src={b.imageLinks.thumbnail || ""} />
+                  </div>
+                </div>
+              );
+            })}
+          </Slider>
         </SlideShow>
         <LastBlock>
           <ArticleList>
@@ -246,11 +331,12 @@ const MilestonesPage = () => {
           </ArticleList>
         </LastBlock>
       </TopSection>
-      <ListWrapper>
+      <Search />
+      {/* <ListWrapper>
         {categoryList.map((item, i) => {
           return <ListCtn key={i}>{item.name}</ListCtn>;
         })}
-      </ListWrapper>
+      </ListWrapper> */}
       <div>
         <Wrapper>
           {milestonesList.map((item) => {

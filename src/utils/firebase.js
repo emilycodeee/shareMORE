@@ -940,19 +940,39 @@ export const getGroupsNoteContent = async (option, groupID, tagName, docID) => {
   return docSnap.data();
 };
 
-// export const getGroupNotes = async (option,groupID,tagName) => {
+export const setGroupBook = async (groupID, data) => {
+  const docRef = doc(collection(db, "books", groupID, "bookcase")).id;
+  // const docSnap = await getDoc(docRef);
+  // return docSnap.data();
+
+  await setDoc(doc(db, "books", groupID, "bookcase", docRef), data);
+};
+
+export const getGroupBook = async (option, groupID) => {
+  const q = query(collection(db, option, groupID, "bookcase"));
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  return arr;
+
+  // const docRef = doc(db, option, groupID, tagName, docID);
+  // const docSnap = await getDoc(docRef);
+  // return docSnap.data();
+};
+
+// export const getGroupNotes = async (option, groupID, tagName) => {
 //   const q = query(
 //     collection(db, option, groupID, tagName),
-//     orderBy("joinTime", "desc")
+//     orderBy("creationTime", "desc")
 //   );
-//   const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//     const data = [];
-//     querySnapshot.forEach((doc) => {
-//       data.push(doc.data());
-//     });
-//     console.log(data);
-//     setFunction(data);
+//   const querySnapshot = await getDocs(q);
+//   const arr = [];
+//   querySnapshot.forEach((doc) => {
+//     arr.push(doc.data());
 //   });
+
+//   return arr;
 // };
-// AiFillTrophy;
-// AiOutlineTrophy;

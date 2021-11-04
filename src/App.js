@@ -16,7 +16,9 @@ import ChatRoom from "./pages/ChatRoom";
 import ProfileSetting from "./pages/Profile/ProfileSetting";
 import GroupsPage from "./pages/Groups/GroupsPage";
 import NotePage from "./pages/Notes";
-
+import Book from "./pages/Profile/Book";
+// import Bookshelf from "./pages/Groups/Bookshelf.js";
+import Bookshelf from "./pages/Bookshelf";
 import { useEffect } from "react";
 import * as firebase from "./utils/firebase";
 import { useDispatch, useSelector } from "react-redux";
@@ -88,6 +90,10 @@ function App() {
         <Route path="/group/:groupID/notes" exact>
           <NotesPage />
         </Route>
+        {/* bookshelf */}
+        <Route path="/group/:groupID/bookshelf" exact>
+          <Bookshelf />
+        </Route>
         <Route path="/group/:groupID/notes/:postID/post" exact>
           <NotesEditorPage />
         </Route>
@@ -115,6 +121,10 @@ function App() {
         </Route>
         <Route path="/profile/:userID/edit" exact>
           <ProfileSetting />
+        </Route>
+
+        <Route path="/book" exact>
+          <Book />
         </Route>
       </Switch>
     </Layouts>

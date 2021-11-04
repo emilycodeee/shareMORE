@@ -9,6 +9,7 @@ import { TopCover, ViderCover, Shield } from "./index.styled";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import GroupsCard from "./components/GroupsCard";
+import Fireworks from "../../components/Fireworks";
 const Container = styled.div`
   width: 100%;
   margin: 0 auto;
@@ -87,6 +88,10 @@ const HomePage = ({ userList, groupList }) => {
     firebase.getContentsListSort("articles", setMilestonesIntro);
   }, []);
 
+  // useEffect(() => {
+  //   alert("hu");
+  // }, []);
+
   return (
     <Container>
       <TopCover>
@@ -143,6 +148,7 @@ const HomePage = ({ userList, groupList }) => {
       </Section>
       <button onClick={() => firebase.logOut()}>logOut</button>
       {/* </Container> */}
+      <Fireworks />
     </Container>
   );
 };
