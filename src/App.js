@@ -14,6 +14,7 @@ import NotesEditorPage from "./pages/Notes/NotesEditorPage";
 import ProfileSetting from "./pages/Profile/ProfileSetting";
 import GroupsPage from "./pages/Groups/GroupsPage";
 import NotePage from "./pages/Notes";
+import GroupMilestone from "./pages/MileStones/GroupMilestone";
 import Bookshelf from "./pages/Bookshelf";
 import { useEffect } from "react";
 import * as firebase from "./utils/firebase";
@@ -164,7 +165,7 @@ function App() {
           <GroupPage />
         </Route>
         <Route path="/group/:groupID/milestones" exact>
-          <NotesPage />
+          <GroupMilestone />
         </Route>
         <Route path="/group/:groupID/notes" exact>
           <NotesPage />

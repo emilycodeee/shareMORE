@@ -979,3 +979,13 @@ export const getGroupBookShelf = async () => {
 export const deleteBook = async (docRefId) => {
   await deleteDoc(doc(db, "books", docRefId));
 };
+
+export const getGroupPost = async (groupID) => {
+  const q = query(collection(db, "groups", groupID, "posts"));
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+  return arr;
+};
