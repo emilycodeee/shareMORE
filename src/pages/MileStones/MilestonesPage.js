@@ -88,7 +88,7 @@ const ImgCtn = styled.img`
 
 const LastBlock = styled.div`
   width: 30%;
-  margin-left: 1rem;
+  margin-left: 2rem;
 `;
 
 const TopSection = styled.section`
@@ -203,6 +203,20 @@ const BookImg = styled.img`
   width: auto;
 `;
 
+const StyledSlider = styled(Slider)`
+  .slick-list {
+    padding: 0 !important;
+  }
+  .slick-prev:before,
+  .slick-next:before {
+    color: black;
+  }
+  /* .slick-dots li button:before {
+    height: 2px;
+    width: 2px;
+  } */
+`;
+
 const MilestonesPage = () => {
   const [milestonesList, setMilestonesList] = useState([]);
   const groupsList = useSelector((state) => state.groupsList);
@@ -215,14 +229,16 @@ const MilestonesPage = () => {
   const [showBookContent, setShowBookContent] = useState(false);
 
   const settings = {
-    dots: true,
+    // dots: true,
     infinite: true,
     // speed: 500,
+
+    lazyLoad: true,
     slidesToShow: 3,
     slidesToScroll: 1,
     autoplay: true,
     speed: 3000,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 4000,
     cssEase: "linear",
     responsive: [
       {
@@ -231,7 +247,7 @@ const MilestonesPage = () => {
           slidesToShow: 3,
           slidesToScroll: 3,
           infinite: true,
-          dots: true,
+          // dots: true,
         },
       },
       {
@@ -310,18 +326,17 @@ const MilestonesPage = () => {
           <Div1>
             <BookLabel>看看大家在看什麼書？</BookLabel>
           </Div1>
-          <Slider {...settings}>
+          <StyledSlider {...settings}>
             {bookList.length > 0 &&
               bookList.map((b, i) => {
                 return (
-                  <SelectedBook
-                    key={b.groupBookID}
-                    onClick={() => {
-                      setShowBookContent(true);
-                      setBookContent(b);
-                    }}
-                  >
-                    <BookImgWrapper>
+                  <SelectedBook key={b.groupBookID}>
+                    <BookImgWrapper
+                      onClick={() => {
+                        setShowBookContent(true);
+                        setBookContent(b);
+                      }}
+                    >
                       <BookImg src={b.volumeInfo.imageLinks?.thumbnail} />
                     </BookImgWrapper>
                     <BookBrief>
@@ -329,12 +344,16 @@ const MilestonesPage = () => {
                       <SubTitle>
                         作者/譯者：{b.volumeInfo.authors?.join(",")}
                       </SubTitle>
-                      <SubTitle>選自：{convertGroupName(b.groupID)}</SubTitle>
+                      <GroupLink to={`/group/${b.groupID}`}>
+                        <SubTitleLink>
+                          選自：{convertGroupName(b.groupID)}
+                        </SubTitleLink>
+                      </GroupLink>
                     </BookBrief>
                   </SelectedBook>
                 );
               })}
-          </Slider>
+          </StyledSlider>
         </SlideShow>
         <LastBlock>
           <ArticleList>
@@ -377,8 +396,11 @@ const MilestonesPage = () => {
 
 export default MilestonesPage;
 
+const GroupLink = styled(Link)`
+  text-decoration: none;
+`;
+
 const SelectedBook = styled.div`
-  cursor: pointer;
   margin: 0 1vmin;
 `;
 
@@ -390,6 +412,7 @@ const BookBrief = styled.div`
 `;
 
 const BookImgWrapper = styled.div`
+  cursor: pointer;
   display: flex;
   justify-content: center;
 `;
@@ -404,6 +427,12 @@ const SubTitle = styled.p`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const SubTitleLink = styled(SubTitle)`
+  color: rgb(255 182 0);
+  font-weight: 500;
+  cursor: pointer;
 `;
 
 const Title = styled.p`

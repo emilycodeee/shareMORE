@@ -38,7 +38,7 @@ const ListStyle = styled.li`
 
 const SubList = styled.li`
   display: ${(props) => (props.active === props.category ? "block" : "none")};
-
+  cursor: pointer;
   list-style: none;
   font-weight: 500;
   font-size: 0.9rem;
@@ -90,11 +90,25 @@ const GroupsPage = () => {
   const [subClassesName, setSubClassesName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubClass, setSelectedSubClass] = useState(null);
+  const [renderGroups, setRenderGroups] = useState([]);
+
+  const handleSubCategory = (e) => {
+    const target = e.target.innerText;
+    const filterCategory = groupsList.filter((g) => g.subClass === target);
+    setRenderGroups(filterCategory);
+    console.log(target);
+  };
 
   const handleCategory = (e) => {
     const target = e.target.innerText;
+    const filterCategory = groupsList.filter((g) => g.category === target);
+    setRenderGroups(filterCategory);
     setSubClassesName(target);
   };
+
+  useEffect(() => {
+    setRenderGroups(groupsList);
+  }, [groupsList]);
 
   return (
     <MainCtn>
@@ -113,6 +127,7 @@ const GroupsPage = () => {
                   key={uuidv4()}
                   category={item.name}
                   active={subClassesName}
+                  onClick={handleSubCategory}
                 >
                   {sitem}
                 </SubList>
@@ -121,7 +136,7 @@ const GroupsPage = () => {
           ))}
         </Slide>
         <Wrapper>
-          {groupsList.map((item) => {
+          {renderGroups.map((item) => {
             return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>

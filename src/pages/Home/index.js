@@ -23,7 +23,9 @@ const ListWrapper = styled.ul`
   margin: 3rem 0;
 `;
 
-const ListCtn = styled.li`
+const ListCtn = styled.div`
+  cursor: pointer;
+  display: flex;
   padding: 6px 6px;
   border-radius: 20px;
   border: 1px solid rgb(70 69 65);
@@ -83,13 +85,21 @@ const HomePage = ({ userList, groupList }) => {
   const articlesList = useSelector((state) => state.articlesList);
   const [groupsIntro, setGroupsIntro] = useState([]);
   const [milestonesIntro, setMilestonesIntro] = useState([]);
+  //  const [milestonesIntro, setMilestonesIntro] = useState([]);
   console.log("groupsListgroupsList", groupsList);
   useEffect(() => {
+    setGroupsIntro(groupsList);
     // firebase.getContentsListSort("groups", setGroupsIntro);
     // firebase.getContentsListSort("articles", setMilestonesIntro);
-  }, []);
+  }, [groupsList]);
 
   const filterPublicArticles = articlesList.filter((a) => a.public === true);
+
+  const handleSelected = (e) => {
+    const target = e.target.textContent;
+    const targetFilter = groupsList.filter((g) => g.category === target);
+    setGroupsIntro(targetFilter);
+  };
 
   return (
     <Container>
@@ -105,13 +115,13 @@ const HomePage = ({ userList, groupList }) => {
         <ListWrapper>
           {categoryList.map((item, i) => {
             return (
-              <ListCtn key={i}>
-                <Link
-                  to={`/groups/${item.name}`}
-                  style={{ textDecoration: "none" }}
-                >
-                  {item.name}
-                </Link>
+              <ListCtn key={i} onClick={handleSelected}>
+                {/* <div
+                to={`/groups/${item.name}`}
+                style={{ textDecoration: "none" }}
+                > */}
+                {item.name}
+                {/* </div> */}
               </ListCtn>
             );
           })}
@@ -121,7 +131,7 @@ const HomePage = ({ userList, groupList }) => {
       <Section>
         <Slogan>看看最近大家在學些什麼</Slogan>
         <Wrapper>
-          {groupsList.map((item) => {
+          {groupsIntro.slice(0, 8).map((item) => {
             return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>
@@ -131,7 +141,7 @@ const HomePage = ({ userList, groupList }) => {
       <Section>
         <Slogan>一起的日子 慶祝我們的里程碑</Slogan>
         <Wrapper>
-          {filterPublicArticles.map((item) => {
+          {filterPublicArticles.slice(0, 8).map((item) => {
             console.log(item);
             return (
               <Card

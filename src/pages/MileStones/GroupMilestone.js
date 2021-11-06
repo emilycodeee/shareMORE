@@ -59,7 +59,9 @@ const GroupMilestone = () => {
             <Avatat src={getUserData(maxPost?.userID)?.avatar} />
           </Link>
           <div> {getUserData(maxPost?.userID)?.displayName}</div>
-          <h3>發起最多討論</h3>
+          <Link to={`/group/${groupID}`}>
+            <h3>發起最多討論</h3>
+          </Link>
           <div>共 {maxPost.point} 則</div>
         </ItemWp>
         <ItemWp>
@@ -67,8 +69,9 @@ const GroupMilestone = () => {
             <Avatat src={getUserData(maxArticles?.userID)?.avatar} />
           </Link>
           <div> {getUserData(maxArticles?.userID)?.displayName}</div>
-
-          <h3>分享最多文章</h3>
+          <Link to={`/milestones`}>
+            <h3>分享最多文章</h3>
+          </Link>
           <div>共 {maxArticles.point} 則</div>
         </ItemWp>
         <ItemWp>
@@ -76,7 +79,9 @@ const GroupMilestone = () => {
             <Avatat src={getUserData(maxBooks?.userID)?.avatar} />
           </Link>
           <div>{getUserData(maxBooks?.userID)?.displayName}</div>
-          <h3>分享最多書本</h3>
+          <Link to={`/group/${groupID}/bookshelf`}>
+            <h3>分享最多書本</h3>
+          </Link>
           <div>共 {maxBooks.point} 則</div>
         </ItemWp>
       </WinnerWrapper>
