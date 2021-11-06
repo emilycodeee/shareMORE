@@ -108,7 +108,7 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
       </Header>
 
       <Body>
-        <Content>{applicant.content}</Content>
+        <Content>{applicant?.content}</Content>
         <ButtonWrapper>
           <Button onClick={handleConfirm}>確認</Button>
           <Button onClick={handleReject}>拒絕</Button>

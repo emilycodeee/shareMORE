@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const CardContainer = styled(Link)`
   text-decoration: none;
@@ -53,6 +53,8 @@ const TitleContainer = styled.div`
 
 // style={{ textDecoration: "none" }}
 const GroupsCard = ({ item }) => {
+  // const { groupID } = useParams;
+  // console.log(groupID);
   // console.log(item);
   return (
     <CardContainer to={`/group/${item.groupID}`}>

@@ -1,3 +1,4 @@
+import { getGroupsList } from "../redux/actions";
 import { initializeApp } from "firebase/app";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -46,7 +47,7 @@ const firebaseConfig = {
 //init firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth();
-const db = getFirestore();
+export const db = getFirestore();
 const storage = getStorage(firebaseApp);
 
 export const facebookProvider = new FacebookAuthProvider();
@@ -230,6 +231,51 @@ export const getTotalDocList = async (optionName) => {
   return arr;
 };
 
+export const getTotalDocSortList = async (optionName) => {
+  // const q = query(collection(db, optionName));
+
+  const q = query(collection(db, optionName), orderBy("creationTime", "desc"));
+
+  const querySnapshot = await getDocs(q);
+  const arr = [];
+  querySnapshot.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  return arr;
+};
+
+// export const getTotalDocList = async (optionName) => {
+//   const q = query(collection(db, optionName));
+//   const querySnapshot = await getDocs(q);
+//   const arr = [];
+//   querySnapshot.forEach((doc) => {
+//     arr.push(doc.data());
+//   });
+
+//   return arr;
+// };
+
+// const q = query(collection(db, "cities"), where("state", "==", "CA"));
+// const unsubscribe = onSnapshot(q, (querySnapshot) => {
+//   const cities = [];
+//   querySnapshot.forEach((doc) => {
+//     cities.push(doc.data().name);
+//   });
+//   console.log("Current cities in CA: ", cities.join(", "));
+// });
+
+// export const obsTotalDocList = async (optionName) => {
+//   const q = query(collection(db, optionName));
+//   const querySnapshot = await getDocs(q);
+//   const arr = [];
+//   querySnapshot.forEach((doc) => {
+//     arr.push(doc.data());
+//   });
+
+//   return arr;
+// };
+
 // up3
 export const toggleMilestone = async (collectionName, docID, action) => {
   // await deleteDoc(doc(db, collectionName, docID));
@@ -289,32 +335,6 @@ export const postGroupNotes = async (groupID, data, file) => {
   return response;
 };
 
-// 在這裡
-// export const editGroupNotes = async (data, file, groupID, postID, imgUrl) => {
-//   const docRefId = doc(collection(db, "groups", groupID, "notes")).id;
-
-//   let imgURL =
-//     "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
-//   if (file) {
-//     const storageRef = ref(storage);
-//     const imagesRef = ref(storageRef, "cover-images/" + docRefId);
-//     const metadata = { contenType: file.type };
-//     const uploadTask = await uploadBytes(imagesRef, file, metadata);
-//     imgURL = await getDownloadURL(uploadTask.ref);
-//   }
-//   const finalData = {
-//     ...data,
-//     noteID: docRefId,
-//     coverImage: imgURL,
-//   };
-
-//   const response = await setDoc(
-//     doc(db, "groups", groupID, "notes", docRefId),
-//     finalData
-//   );
-//   return response;
-// };
-
 export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {
   let updateImgURL = imgURL;
   if (file) {
@@ -340,32 +360,6 @@ export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {
   );
 };
 
-// editGroupData👶
-// export const editGroupData = async (data, file, imgURL, groupID) => {
-//   let updateImgURL = imgURL;
-//   if (file) {
-//     const imgID = uuidv4();
-//     const storageRef = ref(storage);
-//     const imagesRef = ref(storageRef, "cover-images/" + imgID);
-//     const metadata = { contenType: file.type };
-//     const uploadTask = await uploadBytes(imagesRef, file, metadata);
-//     updateImgURL = await getDownloadURL(uploadTask.ref);
-//   }
-//   const finalData = {
-//     ...data,
-
-//     coverImage: updateImgURL,
-//   };
-
-//   const response = await setDoc(
-//     doc(db, "groups", groupID, "notes", postID),
-//     finalData,
-//     {
-//       merge: true,
-//     }
-//   );
-// };
-
 export const editGroupData = async (data, groupID) => {
   await setDoc(doc(db, "groups", groupID), data, {
     merge: true,
@@ -389,22 +383,6 @@ export const editGroupImage = async (file, groupID) => {
     merge: true,
   });
 };
-
-// export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {
-//   let updateImgURL = imgURL;
-//   if (file) {
-//     const imgID = uuidv4();
-//     const storageRef = ref(storage);
-//     const imagesRef = ref(storageRef, `groups/${groupID}/` + imgID);
-//     const metadata = { contenType: file.type };
-//     const uploadTask = await uploadBytes(imagesRef, file, metadata);
-//     updateImgURL = await getDownloadURL(uploadTask.ref);
-//   }
-//   const finalData = {
-//     ...data,
-
-//     coverImage: updateImgURL,
-//   };
 
 export const removeTopLevelPost = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
@@ -491,17 +469,6 @@ export const getMySaveArticles = async (userID) => {
   );
 
   const articlesQuerySnapshot = await getDocs(articlesQ);
-  // const memberArr = [];
-  // memberQuerySnapshot.forEach((doc) => {
-  //   memberArr.push(doc.data());
-  // });
-
-  // const creatorQ = query(
-  //   collection(db, "groups"),
-  //   where("creatorID", "==", userID)
-  // );
-
-  // const creatorQuerySnapshot = await getDocs(creatorQ);
   const saveArr = [];
   articlesQuerySnapshot.forEach((doc) => {
     saveArr.push(doc.data());
@@ -819,6 +786,23 @@ export const getTotalApplicationList = async (groupID, setApplicationData) => {
     });
   }
 };
+// good
+// export const getTotalApplicationList = async (groupID, setApplicationData) => {
+//   const applicationRef = collection(db, "groups", groupID, "applications");
+//   console.log(applicationRef);
+//   if (applicationRef) {
+//     const q = query(applicationRef, where("approve", "==", false));
+//     const unsubscribe = onSnapshot(q, (querySnapshot) => {
+//       const data = [];
+//       if (querySnapshot.docs) {
+//         querySnapshot.forEach((doc) => {
+//           data.push(doc.data());
+//         });
+//       }
+//       setApplicationData({ count: data.length, data: data });
+//     });
+//   }
+// };
 
 export const confirmApplication = async (memberID, groupID, data) => {
   const batch = writeBatch(db);
@@ -853,15 +837,6 @@ export const editComment = async (groupID, docRefId, textData) => {
   });
 };
 
-// const applicationRef = doc(
-//   collection(db, "groups", groupID, "applications"),
-//   memberID
-// );
-// batch.update(applicationRef, {
-//   approve: true,
-// });
-
-//postContainer.js
 export const deleteComment = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
@@ -940,39 +915,67 @@ export const getGroupsNoteContent = async (option, groupID, tagName, docID) => {
   return docSnap.data();
 };
 
-export const setGroupBook = async (groupID, data) => {
-  const docRef = doc(collection(db, "books", groupID, "bookcase")).id;
-  // const docSnap = await getDoc(docRef);
-  // return docSnap.data();
+export const setGroupBook = async (data) => {
+  const docRef = doc(collection(db, "books")).id;
 
-  await setDoc(doc(db, "books", groupID, "bookcase", docRef), data);
+  const finalData = {
+    ...data,
+    groupBookID: docRef,
+  };
+
+  await setDoc(doc(db, "books", docRef), finalData);
 };
 
-export const getGroupBook = async (option, groupID) => {
-  const q = query(collection(db, option, groupID, "bookcase"));
+export const getBookApplication = async (groupID, setfunction) => {
+  const q = query(collection(db, "books"), where("groupID", "==", groupID));
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const arr = [];
+    querySnapshot.forEach((doc) => {
+      !doc.data().applyStatus && arr.push(doc.data());
+    });
+    console.log("getBookApplication", arr);
+    setfunction({ count: arr.length, data: arr });
+  });
+};
+
+//postContainer.js🎈
+export const confirmBookApplication = async (docRefId) => {
+  const postDocRef = doc(collection(db, "books"), docRefId);
+  await updateDoc(postDocRef, {
+    applyStatus: true,
+  });
+};
+
+export const rejectBookApplication = async (docRefId) => {
+  await deleteDoc(doc(db, "books", docRefId));
+};
+
+export const getGroupBook = async (groupID, setFunction) => {
+  const q = query(
+    collection(db, "books"),
+    where("groupID", "==", groupID),
+    orderBy("shareDate", "desc")
+  );
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const data = [];
+    querySnapshot.forEach((doc) => {
+      doc.data().applyStatus && data.push(doc.data());
+    });
+    setFunction(data);
+  });
+};
+
+export const getGroupBookShelf = async () => {
+  const q = query(collection(db, "books"), where("applyStatus", "==", true));
+
   const querySnapshot = await getDocs(q);
   const arr = [];
   querySnapshot.forEach((doc) => {
     arr.push(doc.data());
   });
-
   return arr;
-
-  // const docRef = doc(db, option, groupID, tagName, docID);
-  // const docSnap = await getDoc(docRef);
-  // return docSnap.data();
 };
 
-// export const getGroupNotes = async (option, groupID, tagName) => {
-//   const q = query(
-//     collection(db, option, groupID, tagName),
-//     orderBy("creationTime", "desc")
-//   );
-//   const querySnapshot = await getDocs(q);
-//   const arr = [];
-//   querySnapshot.forEach((doc) => {
-//     arr.push(doc.data());
-//   });
-
-//   return arr;
-// };
+export const deleteBook = async (docRefId) => {
+  await deleteDoc(doc(db, "books", docRefId));
+};

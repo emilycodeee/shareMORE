@@ -79,18 +79,17 @@ const Slogan = styled.div`
 const HomePage = ({ userList, groupList }) => {
   const categoryList = useSelector((state) => state.categoryList);
   const userData = useSelector((state) => state.userData);
-
+  const groupsList = useSelector((state) => state.groupsList);
+  const articlesList = useSelector((state) => state.articlesList);
   const [groupsIntro, setGroupsIntro] = useState([]);
   const [milestonesIntro, setMilestonesIntro] = useState([]);
-
+  console.log("groupsListgroupsList", groupsList);
   useEffect(() => {
-    firebase.getContentsListSort("groups", setGroupsIntro);
-    firebase.getContentsListSort("articles", setMilestonesIntro);
+    // firebase.getContentsListSort("groups", setGroupsIntro);
+    // firebase.getContentsListSort("articles", setMilestonesIntro);
   }, []);
 
-  // useEffect(() => {
-  //   alert("hu");
-  // }, []);
+  const filterPublicArticles = articlesList.filter((a) => a.public === true);
 
   return (
     <Container>
@@ -122,7 +121,7 @@ const HomePage = ({ userList, groupList }) => {
       <Section>
         <Slogan>看看最近大家在學些什麼</Slogan>
         <Wrapper>
-          {groupsIntro.map((item) => {
+          {groupsList.map((item) => {
             return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>
@@ -132,7 +131,7 @@ const HomePage = ({ userList, groupList }) => {
       <Section>
         <Slogan>一起的日子 慶祝我們的里程碑</Slogan>
         <Wrapper>
-          {milestonesIntro.map((item) => {
+          {filterPublicArticles.map((item) => {
             console.log(item);
             return (
               <Card

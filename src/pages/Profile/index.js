@@ -157,21 +157,29 @@ const ProfilePage = () => {
   const defaultRender = useRef(true);
 
   useEffect(() => {
-    firebase
-      .getMyGroupsObj(userID)
-      .then((res) => setMyGroupsObj(res))
-      .catch((err) => console.error(err));
-    firebase
-      .getMyMilestones(userID)
-      .then((res) => setMyMilestones(res))
-      .catch((err) => console.error(err));
-    firebase
-      .getMySaveArticles(userID)
-      .then((res) => {
-        console.log("mySaveArticles👱‍♂️", res);
-        setMySaveArticles(res);
-      })
-      .catch((err) => console.error(err));
+    let isMounted = true;
+
+    if (isMounted) {
+      firebase
+        .getMyGroupsObj(userID)
+        .then((res) => setMyGroupsObj(res))
+        .catch((err) => console.error(err));
+      firebase
+        .getMyMilestones(userID)
+        .then((res) => setMyMilestones(res))
+        .catch((err) => console.error(err));
+      firebase
+        .getMySaveArticles(userID)
+        .then((res) => {
+          console.log("mySaveArticles👱‍♂️", res);
+          setMySaveArticles(res);
+        })
+        .catch((err) => console.error(err));
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (userData?.uid === userID) {

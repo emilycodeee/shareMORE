@@ -190,7 +190,13 @@ const PostContainer = ({ item, content }) => {
   const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => {
-    firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
+    let isMounted = true;
+    if (isMounted) {
+      firebase.postCommentsListener(item.groupID, item.postID, setRenderPost);
+    }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const LeaveMsgHandler = () => {

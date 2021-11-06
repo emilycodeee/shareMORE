@@ -43,8 +43,11 @@ const ApplicationStyled = styled.div`
 `;
 
 const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
+  console.log("🎉applicationData", applicationData);
+  console.log("🎍appliedData", appliedData);
   const [value, setValue] = useState("");
   const userData = useSelector((state) => state.userData);
+  const groupsList = useSelector((state) => state.groupsList);
   const handleSubmit = () => {
     const data = {
       content: value,
@@ -63,7 +66,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
     });
   };
 
-  if (groupData.creatorID !== userData.uid) {
+  if (groupData?.creatorID !== userData.uid) {
     if (appliedData) {
       return (
         <>

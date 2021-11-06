@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Card from "../Home/components/Card";
 import * as firebase from "../../utils/firebase";
 import Slider from "react-slick";
+import BookContent from "../Bookshelf/component/BookContnet";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -53,16 +54,6 @@ const SubList = styled.li`
 const ContentCtn = styled.div`
   display: flex;
 `;
-
-// const Search = styled.input`
-//   width: 70%;
-//   border-radius: 25px;
-//   box-shadow: none;
-//   border: 1px solid rgb(204, 204, 204);
-//   padding: 3px 0px 3px 50px;
-//   font-size: 18px;
-//   margin: 2rem 0;
-// `;
 
 const Slide = styled.div`
   width: 25%;
@@ -202,17 +193,26 @@ const Search = styled.input`
   /* text-align: center; */
 `;
 
-const ImgxCtn = styled.img`
-  height: 250px;
+const BookImg = styled.img`
+  background-position: center center;
+  background-size: cover;
+  box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
+  /* height: 20vmin;
+  width: 15vmin; */
+  height: 200px;
+  width: auto;
 `;
 
 const MilestonesPage = () => {
   const [milestonesList, setMilestonesList] = useState([]);
   const groupsList = useSelector((state) => state.groupsList);
   const categoryList = useSelector((state) => state.categoryList);
+  const articlesList = useSelector((state) => state.articlesList);
   const usersList = useSelector((state) => state.usersList);
 
   const [bookList, setBookList] = useState([]);
+  const [bookContent, setBookContent] = useState({});
+  const [showBookContent, setShowBookContent] = useState(false);
 
   const settings = {
     dots: true,
@@ -252,6 +252,11 @@ const MilestonesPage = () => {
     ],
   };
 
+  const convertGroupName = (groupID) => {
+    const g = groupsList.find((b) => b.groupID === groupID);
+    if (g) return g.name;
+  };
+
   const findGroup = (article) => {
     const groupObj = groupsList.find(
       (item) => item.groupID === article?.groupID
@@ -266,42 +271,69 @@ const MilestonesPage = () => {
     return authorData?.displayName;
   };
 
-  // const getTime = (content) => {
-  //   const time = new Date(content.creationTime?.toDate()).toLocaleString(
-  //     "zh-TW"
-  //   );
-  //   return time;
-  // };
-
   useEffect(() => {
-    firebase.getContentsListSort("articles", setMilestonesList);
-    const groupID = "9HfGGlnlwvzrgVefq3XL";
-    firebase.getGroupBook("books", groupID, setMilestonesList).then((res) => {
-      console.log(res);
-      setBookList(res);
-    });
+    let isMounted = true;
+
+    if (isMounted) {
+      firebase.getContentsListSort("articles", setMilestonesList);
+
+      firebase.getGroupBookShelf().then((res) => {
+        setBookList(res);
+      });
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // console.log("milllllllllll", milestonesList.slice(0, 5));
+  console.log(milestonesList);
 
   return (
     <MainCtn>
+      {showBookContent && (
+        <ContentShield
+          data-target="shield-content"
+          onClick={(e) => {
+            e.target.dataset.target === "shield-content" &&
+              setShowBookContent(!showBookContent);
+          }}
+        >
+          <BookContent
+            bookContent={bookContent}
+            setShowBookContent={setShowBookContent}
+          />
+        </ContentShield>
+      )}
       <TopSection>
         <SlideShow>
           <Div1>
             <BookLabel>看看大家在看什麼書？</BookLabel>
           </Div1>
           <Slider {...settings}>
-            {bookList.map((b, i) => {
-              return (
-                <div key={i}>
-                  <div>
-                    <p>{b.title}</p>
-                    <ImgxCtn src={b.imageLinks.thumbnail || ""} />
-                  </div>
-                </div>
-              );
-            })}
+            {bookList.length > 0 &&
+              bookList.map((b, i) => {
+                return (
+                  <SelectedBook
+                    key={b.groupBookID}
+                    onClick={() => {
+                      setShowBookContent(true);
+                      setBookContent(b);
+                    }}
+                  >
+                    <BookImgWrapper>
+                      <BookImg src={b.volumeInfo.imageLinks?.thumbnail} />
+                    </BookImgWrapper>
+                    <BookBrief>
+                      <Title>{b.volumeInfo.title}</Title>
+                      <SubTitle>
+                        作者/譯者：{b.volumeInfo.authors?.join(",")}
+                      </SubTitle>
+                      <SubTitle>選自：{convertGroupName(b.groupID)}</SubTitle>
+                    </BookBrief>
+                  </SelectedBook>
+                );
+              })}
           </Slider>
         </SlideShow>
         <LastBlock>
@@ -332,11 +364,6 @@ const MilestonesPage = () => {
         </LastBlock>
       </TopSection>
       <Search />
-      {/* <ListWrapper>
-        {categoryList.map((item, i) => {
-          return <ListCtn key={i}>{item.name}</ListCtn>;
-        })}
-      </ListWrapper> */}
       <div>
         <Wrapper>
           {milestonesList.map((item) => {
@@ -349,3 +376,70 @@ const MilestonesPage = () => {
 };
 
 export default MilestonesPage;
+
+const SelectedBook = styled.div`
+  cursor: pointer;
+  margin: 0 1vmin;
+`;
+
+const BookBrief = styled.div`
+  margin: 1vmin 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const BookImgWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const SubTitle = styled.p`
+  margin-bottom: 5px;
+  color: gray;
+  font-size: 12px;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const Title = styled.p`
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const ContentShield = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* cursor: zoom-out; */
+`;
+
+// {
+//   showBookContent && (
+//     <PageShield
+//       data-target="shield-content"
+//       onClick={(e) => {
+//         e.target.dataset.target === "shield-content" &&
+//           setShowBookContent(!showBookContent);
+//       }}
+//     >
+//       <BookContent
+//         bookContent={bookContent}
+//         setShowBookContent={setShowBookContent}
+//       />
+//     </PageShield>
+//   );
+// }

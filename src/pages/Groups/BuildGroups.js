@@ -110,14 +110,20 @@ const BuildGroups = () => {
   const [introduce, setIntroduce] = useState("");
 
   useEffect(() => {
-    const subCategoryObj = categoryList.find(
-      (item) => item.name === selectedCategory
-    );
-    // console.log(subCategoryObj);
-    const subCategoryOpt = subCategoryObj?.subClasses.map((item) => {
-      return { value: item, label: item };
-    });
-    setSubClassesName(subCategoryOpt);
+    let isMounted = true;
+    if (isMounted) {
+      const subCategoryObj = categoryList.find(
+        (item) => item.name === selectedCategory
+      );
+      // console.log(subCategoryObj);
+      const subCategoryOpt = subCategoryObj?.subClasses.map((item) => {
+        return { value: item, label: item };
+      });
+      setSubClassesName(subCategoryOpt);
+    }
+    return () => {
+      isMounted = false;
+    };
   }, [selectedCategory]);
 
   const previewImg = file
@@ -147,10 +153,10 @@ const BuildGroups = () => {
       public: true,
     };
     firebase.createGroup(data, file).then(() => {
-      firebase
-        .getTotalDocList("groups")
-        .then((res) => d(getGroupsList(res)))
-        .catch((err) => console.log(err));
+      // firebase
+      //   .getTotalDocSortList("groups")
+      //   .then((res) => d(getGroupsList(res)))
+      //   .catch((err) => console.log(err));
       alert("新社團建立成功");
       history.push("/");
     });

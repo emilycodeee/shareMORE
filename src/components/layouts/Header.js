@@ -120,8 +120,6 @@ const Header = () => {
 
   const currentUser = usersList.find((item) => item.uid === userData?.uid);
 
-  console.log("dddddddddddddd", currentUser);
-
   const userAvatar =
     currentUser?.avatar ||
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";

@@ -7,8 +7,8 @@ import Select from "react-select";
 import Switch from "../../components/Switch";
 import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Fireworks from "../../components/Fireworks";
 
-// import * as firebase from "../../utils/firebase";
 const ContainerStyled = styled.div`
   border-radius: 20px;
   border: 1px solid #3e2914;
@@ -138,22 +138,28 @@ const MilestoneEditor = () => {
   }, []);
 
   useEffect(() => {
-    if (milestoneID) {
-      firebase.getMilestone("articles", milestoneID).then((res) => {
-        setTitle(res.title);
-        setIntroduce(res.introduce);
-        setOriginLabel(
-          groupsList.find((item) => item.groupID === res.groupID)?.name
-        );
-        setSelected(res.groupID);
-        setValue(res.content);
-        setCheck(res.public);
-        setOriginContent(res);
-        console.log(res.coverImage);
-        setPreviewUrl(res.coverImage);
-        editMode.current = true;
-      });
+    let isMounted = true;
+    if (isMounted) {
+      if (milestoneID) {
+        firebase.getMilestone("articles", milestoneID).then((res) => {
+          setTitle(res.title);
+          setIntroduce(res.introduce);
+          setOriginLabel(
+            groupsList.find((item) => item.groupID === res.groupID)?.name
+          );
+          setSelected(res.groupID);
+          setValue(res.content);
+          setCheck(res.public);
+          setOriginContent(res);
+          console.log(res.coverImage);
+          setPreviewUrl(res.coverImage);
+          editMode.current = true;
+        });
+      }
     }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // if (groupsName)

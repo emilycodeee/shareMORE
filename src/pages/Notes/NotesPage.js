@@ -105,21 +105,29 @@ const NotesPage = () => {
   console.log(currentGroupData);
 
   useEffect(() => {
-    if (endpoint.includes("notes")) {
-      console.log("你在筆記葉");
-      firebase
-        .getGroupNotes("groups", groupID, "notes")
-        .then((res) => setContentsList(res))
-        .catch((err) => console.log(err));
-    } else if (endpoint.includes("milestones")) {
-      firebase.getGroupMilestones(groupID).then((res) => {
-        const filterPublic = res.filter((item) => {
-          return item.public === true;
+    let isMounted = true;
+
+    if (isMounted) {
+      if (endpoint.includes("notes")) {
+        console.log("你在筆記葉");
+        firebase
+          .getGroupNotes("groups", groupID, "notes")
+          .then((res) => setContentsList(res))
+          .catch((err) => console.log(err));
+      } else if (endpoint.includes("milestones")) {
+        firebase.getGroupMilestones(groupID).then((res) => {
+          const filterPublic = res.filter((item) => {
+            return item.public === true;
+          });
+          setContentsList(filterPublic);
+          emptyText = "目前尚未存在與社團相關的公開里程碑";
         });
-        setContentsList(filterPublic);
-        emptyText = "目前尚未存在與社團相關的公開里程碑";
-      });
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>

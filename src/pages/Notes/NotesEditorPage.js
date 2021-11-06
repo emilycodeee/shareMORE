@@ -98,26 +98,34 @@ const NotesEditorPage = () => {
   };
   console.log(value);
   useEffect(() => {
-    if (pathname.includes("edit")) {
-      firebase
-        .getGroupsNoteContent("groups", groupID, "notes", postID)
-        .then((res) => {
-          setTitle(res.title);
-          setValue(res.content);
-          setIntroduce(res.introduce);
-          setPreviewUrl(res.coverImage);
-          setOriginContent(res);
-          editMode.current = true;
-          console.log(res);
-        })
-        .catch((err) => console.log(err));
-    } else if (postID) {
-      firebase.getRawGroupNotes(groupID, postID).then((res) => {
-        const { mainPost, comments } = res;
-        const html = generateText(mainPost, comments);
-        setValue(html);
-      });
+    let isMounted = true;
+
+    if (isMounted) {
+      if (pathname.includes("edit")) {
+        firebase
+          .getGroupsNoteContent("groups", groupID, "notes", postID)
+          .then((res) => {
+            setTitle(res.title);
+            setValue(res.content);
+            setIntroduce(res.introduce);
+            setPreviewUrl(res.coverImage);
+            setOriginContent(res);
+            editMode.current = true;
+            console.log(res);
+          })
+          .catch((err) => console.log(err));
+      } else if (postID) {
+        firebase.getRawGroupNotes(groupID, postID).then((res) => {
+          const { mainPost, comments } = res;
+          const html = generateText(mainPost, comments);
+          setValue(html);
+        });
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleSubmit = () => {

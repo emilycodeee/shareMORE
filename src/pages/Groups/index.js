@@ -150,7 +150,7 @@ const DivCtn = styled.div`
 const GroupPage = () => {
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
-
+  const groupsList = useSelector((state) => state.groupsList);
   const { groupID } = useParams();
   const [showBtn, setShowBtn] = useState(false);
   const [content, setContent] = useState({});
@@ -169,21 +169,35 @@ const GroupPage = () => {
   const [imageCover, setImageCover] = useState("");
 
   useEffect(() => {
-    firebase
-      .getTopLevelContent("groups", groupID)
-      .then((res) => {
-        setContent(res);
-        setAboutValue(res.introduce);
-        setDateValue(res.goalDate);
-        setGoal(res.goal);
-        setImageCover(res.coverImage);
-      })
-      .catch((err) => console.log(err));
+    let isMounted = true;
+    const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
+
+    // if (isMounted) {
+    if (currentGroupData) {
+      setContent(currentGroupData);
+      setAboutValue(currentGroupData.introduce);
+      setDateValue(currentGroupData.goalDate);
+      setGoal(currentGroupData.goal);
+      setImageCover(currentGroupData.coverImage);
+    }
+    // firebase
+    //   .getTopLevelContent("groups", groupID)
+    //   .then((res) => {
+    //     setContent(res);
+    //     setAboutValue(res.introduce);
+    //     setDateValue(res.goalDate);
+    //     setGoal(res.goal);
+    //     setImageCover(res.coverImage);
+    //   })
+    //   .catch((err) => console.log(err));
     firebase.postsListener(groupID, setRenderPost);
     firebase.getMembersList(groupID, setRenderMember);
-  }, []);
+    // }
 
-  // dateCounter(dateValue);
+    // return () => {
+    //   isMounted = false;
+    // };
+  }, [groupsList]);
 
   const postHandler = () => {
     const data = {
@@ -228,6 +242,7 @@ const GroupPage = () => {
     (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
   const checkOwner = content.creatorID === userData?.uid;
+
   return (
     <Wrapper>
       <ImgWrapper>
@@ -248,7 +263,7 @@ const GroupPage = () => {
         )}
         {checkOwner && actEditImage && <SaveImage onClick={handleSubmitImg} />}
       </ImgWrapper>
-      <GroupHeader content={content} stationHead={stationHead} />
+      <GroupHeader />
       <SectionStyled>
         <LabelStyled>學習夥伴</LabelStyled>
         <MemberContainer>

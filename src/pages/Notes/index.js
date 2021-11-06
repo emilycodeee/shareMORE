@@ -75,13 +75,20 @@ const NotePage = () => {
   console.log(currentGroupData);
   const [noteContent, setNoteContent] = useState("");
   const history = useHistory();
-  const checkGroupCreator = currentGroupData?.creatorID === userData.uid;
+  const checkGroupCreator = currentGroupData?.creatorID === userData?.uid;
   console.log(checkGroupCreator);
   useEffect(() => {
-    firebase
-      .getGroupsNoteContent("groups", groupID, "notes", postID)
-      .then((res) => setNoteContent(res))
-      .catch((err) => console.log(err));
+    let isMounted = true;
+    if (isMounted) {
+      firebase
+        .getGroupsNoteContent("groups", groupID, "notes", postID)
+        .then((res) => setNoteContent(res))
+        .catch((err) => console.log(err));
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // const handleEdit = () => {};

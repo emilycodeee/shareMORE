@@ -9,15 +9,11 @@ import BuildGroups from "./pages/Groups/BuildGroups";
 import MilestonesPage from "./pages/MileStones/MilestonesPage";
 import MilestonePage from "./pages/MileStones";
 import NotesPage from "./pages/Notes/NotesPage";
-// import MyProfilePage from "./pages/Profile/MyProfile";
 import ProfilePage from "./pages/Profile";
 import NotesEditorPage from "./pages/Notes/NotesEditorPage";
-import ChatRoom from "./pages/ChatRoom";
 import ProfileSetting from "./pages/Profile/ProfileSetting";
 import GroupsPage from "./pages/Groups/GroupsPage";
 import NotePage from "./pages/Notes";
-import Book from "./pages/Profile/Book";
-// import Bookshelf from "./pages/Groups/Bookshelf.js";
 import Bookshelf from "./pages/Bookshelf";
 import { useEffect } from "react";
 import * as firebase from "./utils/firebase";
@@ -27,39 +23,122 @@ import {
   getUsersList,
   getUserData,
   getCategoryList,
+  getBooksList,
+  getArticlesList,
 } from "./redux/actions";
+
+import {
+  query,
+  collection,
+  where,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 
 function App() {
   const d = useDispatch();
-  const userData = useSelector((state) => state.userData);
 
   useEffect(() => {
-    if (userData) return;
-    firebase
-      .getOptionsName("categories")
-      .then((res) => {
-        //redux
-        d(getCategoryList(res));
-      })
-      .catch((err) => console.log(err));
-    firebase.subscribeToUser((currentUser) => {
-      if (currentUser) {
-        //redux
-        d(getUserData(currentUser));
-      } else {
-        d(getUserData(null));
-      }
-    });
-    //redux
-    firebase
-      .getTotalDocList("users")
-      .then((res) => d(getUsersList(res)))
-      .catch((err) => console.log(err));
+    let isMounted = true;
+    if (isMounted) {
+      firebase
+        .getOptionsName("categories")
+        .then((res) => {
+          //redux
+          d(getCategoryList(res));
+        })
+        .catch((err) => console.log(err));
 
-    firebase
-      .getTotalDocList("groups")
-      .then((res) => d(getGroupsList(res)))
-      .catch((err) => console.log(err));
+      firebase.subscribeToUser((currentUser) => {
+        if (currentUser) {
+          //redux
+          d(getUserData(currentUser));
+        } else {
+          d(getUserData(null));
+        }
+      });
+
+      //redux
+      firebase
+        .getTotalDocList("users")
+        .then((res) => d(getUsersList(res)))
+        .catch((err) => console.log(err));
+
+      // firebase
+      //   .getTotalDocSortList("groups")
+      //   .then((res) => d(getGroupsList(res)))
+      //   .catch((err) => console.log(err));
+
+      // firebase
+      //   .getTotalDocSortList("articles")
+      //   .then((res) => d(getArticlesList(res)))
+      //   .catch((err) => console.log(err));
+
+      // firebase
+      //   .getTotalDocList("books")
+      //   .then((res) => d(getBooksList(res)))
+      //   .catch((err) => console.log(err));
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const obsUserStatus = () => {
+      const q = query(
+        collection(firebase.db, "users"),
+        orderBy("creationTime", "desc")
+      );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+        d(getUsersList(data));
+      });
+    };
+
+    const obsArticlesStatus = () => {
+      const q = query(
+        collection(firebase.db, "articles"),
+        // where("public", "==", true),
+        orderBy("creationTime", "desc")
+      );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+        d(getArticlesList(data));
+      });
+    };
+
+    const obsGroupStatus = () => {
+      const q = query(
+        collection(firebase.db, "groups"),
+        orderBy("creationTime", "desc")
+      );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+        d(getGroupsList(data));
+      });
+    };
+
+    if (isMounted) {
+      obsUserStatus();
+      obsGroupStatus();
+      obsArticlesStatus();
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -123,9 +202,9 @@ function App() {
           <ProfileSetting />
         </Route>
 
-        <Route path="/book" exact>
+        {/* <Route path="/book" exact>
           <Book />
-        </Route>
+        </Route> */}
       </Switch>
     </Layouts>
   );
