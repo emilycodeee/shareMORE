@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import GroupsCard from "../Home/components/GroupsCard";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import algolia from "../../utils/algolia";
+// import algoliasearch from "algoliasearch";
 const MainCtn = styled.div`
   max-width: 1000px;
   margin: 0 auto;
@@ -90,13 +92,22 @@ const GroupsPage = () => {
   const [subClassesName, setSubClassesName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubClass, setSelectedSubClass] = useState(null);
+  const [inputValue, setInputValue] = useState("");
   const [renderGroups, setRenderGroups] = useState([]);
+
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      algolia.search(e.target.value).then((result) => {
+        console.log(result.hits);
+      });
+    }
+  };
 
   const handleSubCategory = (e) => {
     const target = e.target.innerText;
     const filterCategory = groupsList.filter((g) => g.subClass === target);
     setRenderGroups(filterCategory);
-    console.log(target);
+    // console.log(target);
   };
 
   const handleCategory = (e) => {
@@ -113,7 +124,12 @@ const GroupsPage = () => {
   return (
     <MainCtn>
       <TopCtn>
-        <Search placeholder="請輸入社群名稱..." />
+        <Search
+          placeholder="請輸入社群名稱..."
+          value={inputValue}
+          onKeyPress={handleSearch}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
         <TopBtn>最新發起</TopBtn>
         <TopBtn>排序</TopBtn>
       </TopCtn>

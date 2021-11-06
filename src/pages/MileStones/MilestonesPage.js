@@ -7,7 +7,7 @@ import Card from "../Home/components/Card";
 import * as firebase from "../../utils/firebase";
 import Slider from "react-slick";
 import BookContent from "../Bookshelf/component/BookContnet";
-
+import algolia from "../../utils/algolia";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -223,10 +223,11 @@ const MilestonesPage = () => {
   const categoryList = useSelector((state) => state.categoryList);
   const articlesList = useSelector((state) => state.articlesList);
   const usersList = useSelector((state) => state.usersList);
-
+  const [inputValue, setInputValue] = useState("");
   const [bookList, setBookList] = useState([]);
   const [bookContent, setBookContent] = useState({});
   const [showBookContent, setShowBookContent] = useState(false);
+  const [renderMilestone, setRenderMileStone] = useState([]);
 
   const settings = {
     // dots: true,
@@ -287,6 +288,29 @@ const MilestonesPage = () => {
     return authorData?.displayName;
   };
 
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      algolia.search(e.target.value).then((result) => {
+        const key = result.hits.map((r) => r.objectID);
+        console.log(key);
+
+        const finalFilter = articlesList.filter((el) =>
+          key.includes(el.milestoneID)
+        );
+
+        // const articleFilter = key.forEach((k) =>
+        //   articlesList.filter((a) => a.milestoneID === key)
+        // );
+        setRenderMileStone(finalFilter);
+        // setRenderMileStone(articlesList.filter((a) => a.milestoneID === key));
+      });
+    }
+  };
+
+  useEffect(() => {
+    setRenderMileStone(articlesList);
+  }, [articlesList]);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -303,7 +327,7 @@ const MilestonesPage = () => {
     };
   }, []);
 
-  console.log(milestonesList);
+  // console.log(milestonesList);
 
   return (
     <MainCtn>
@@ -382,10 +406,15 @@ const MilestonesPage = () => {
           </ArticleList>
         </LastBlock>
       </TopSection>
-      <Search />
+      <Search
+        placeholder="文章標題、文章內容..."
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyPress={handleSearch}
+      />
       <div>
         <Wrapper>
-          {milestonesList.map((item) => {
+          {renderMilestone.map((item) => {
             return <Card item={item} key={item.milestoneID} />;
           })}
         </Wrapper>
