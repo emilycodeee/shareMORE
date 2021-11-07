@@ -99,9 +99,9 @@ const NotesPage = () => {
   const groupsList = useSelector((state) => state.groupsList);
   const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
-  const currentGroupData = groupsList.find((item) => item.groupID === groupID);
+  const currentGroupData = groupsList.find((item) => item?.groupID === groupID);
   let emptyText = "目前尚未建立社群筆記";
-  const checkGroupCreator = currentGroupData.creatorID === userData.uid;
+  const checkGroupCreator = currentGroupData?.creatorID === userData?.uid;
   console.log(currentGroupData);
 
   useEffect(() => {
@@ -174,7 +174,7 @@ const NotesPage = () => {
             <Content>
               <TitleStyle>{item.title}</TitleStyle>
               <TimeTag>
-                {usersList.find((p) => p.uid === item.creatorID).displayName}
+                {usersList.find((p) => p.uid === item.creatorID)?.displayName}
               </TimeTag>
               <TimeTag>{getTime(item)}</TimeTag>
               <TextTag>{item.introduce}</TextTag>

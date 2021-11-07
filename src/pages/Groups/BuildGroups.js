@@ -128,7 +128,7 @@ const BuildGroups = () => {
 
   const previewImg = file
     ? URL.createObjectURL(file)
-    : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+    : "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
 
   const handleSubmit = () => {
     if (goal.length === 0 || name.length === 0 || goalDate.length === 0) {

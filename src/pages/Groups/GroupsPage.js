@@ -97,9 +97,29 @@ const GroupsPage = () => {
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
-      algolia.search(e.target.value).then((result) => {
-        console.log(result.hits);
-      });
+      const keyWord = e.target.value;
+      const search = groupsList.filter((g) => g.name.includes(keyWord));
+      setRenderGroups(search);
+      // algolia.search(e.target.value).then((result) => {
+      //   console.log(result.hits);
+      // });
+    }
+  };
+
+  const handleSearchBtn = (e) => {
+    const keyWord = inputValue;
+    console.log(keyWord);
+    const search = groupsList.filter((g) => g.name.includes(keyWord));
+    setRenderGroups(search);
+    // algolia.search(e.target.value).then((result) => {
+    //   console.log(result.hits);
+    // });
+  };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    if (e.target.value === "") {
+      setRenderGroups(groupsList);
     }
   };
 
@@ -128,10 +148,10 @@ const GroupsPage = () => {
           placeholder="請輸入社群名稱..."
           value={inputValue}
           onKeyPress={handleSearch}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleInputChange}
         />
-        <TopBtn>最新發起</TopBtn>
-        <TopBtn>排序</TopBtn>
+        {/* <TopBtn>最新發起</TopBtn> */}
+        <TopBtn onClick={handleSearchBtn}>搜尋</TopBtn>
       </TopCtn>
       <ContentCtn>
         <Slide>

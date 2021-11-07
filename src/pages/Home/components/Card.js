@@ -7,7 +7,7 @@ const CardContainer = styled(Link)`
   text-decoration: none;
   color: black;
   box-shadow: 0 2px 10px #a2a2a2;
-  border-radius: 10px;
+  border-radius: 5px;
   margin-bottom: 10px;
   height: 280px;
   overflow: hidden;
@@ -15,8 +15,8 @@ const CardContainer = styled(Link)`
 
 const CoverContainer = styled.div`
   background-image: url(${(props) => props.item.coverImage});
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   height: 150px;
   background-size: cover;
   background-position: center;
@@ -27,7 +27,8 @@ const ContentContainer = styled.div`
 `;
 
 const TitleContainer = styled.div`
-  font-weight: 550;
+  font-weight: 600;
+  font-size: 1.2rem;
   margin-bottom: 10px;
   display: -webkit-box;
   -webkit-line-clamp: 1;

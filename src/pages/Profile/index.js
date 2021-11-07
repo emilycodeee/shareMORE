@@ -144,9 +144,13 @@ const ProfilePage = () => {
 
   const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
+  const groupsList = useSelector((state) => state.groupsList);
+  const articlesList = useSelector((state) => state.articlesList);
   const currentUser = usersList?.find((item) => item.uid === userID);
 
-  const [myGroupsObj, setMyGroupsObj] = useState({});
+  const [myJoinGroups, setMyJoinGroups] = useState([]);
+  const [myCreateGroups, setMyCreateGroups] = useState([]);
+  // const [myGroupsObj, setMyGroupsObj] = useState({});
   const [myMilestones, setMyMilestones] = useState([]);
   const [mySaveArticles, setMySaveArticles] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -157,30 +161,46 @@ const ProfilePage = () => {
   const defaultRender = useRef(true);
 
   useEffect(() => {
-    let isMounted = true;
+    // if (groupsList) {
+    const participate = groupsList?.filter((g) =>
+      g.membersList?.includes(userData?.uid)
+    );
+    setMyJoinGroups(participate);
+    const owner = groupsList?.filter((g) => g.creatorID === userData?.uid);
+    setMyCreateGroups(owner);
 
-    if (isMounted) {
-      firebase
-        .getMyGroupsObj(userID)
-        .then((res) => setMyGroupsObj(res))
-        .catch((err) => console.error(err));
-      firebase
-        .getMyMilestones(userID)
-        .then((res) => setMyMilestones(res))
-        .catch((err) => console.error(err));
-      firebase
-        .getMySaveArticles(userID)
-        .then((res) => {
-          console.log("mySaveArticles👱‍♂️", res);
-          setMySaveArticles(res);
-        })
-        .catch((err) => console.error(err));
-    }
+    const myMile = articlesList.filter((a) => a.creatorID === userData?.uid);
+    setMyMilestones(myMile);
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    const mySave = articlesList.filter((a) =>
+      a.saveBy?.includes(userData?.uid)
+    );
+    const publicChecker = mySave.filter((a) => a.public === true);
+    setMySaveArticles(publicChecker);
+    // }
+    // let isMounted = true;
+    // if (isMounted) {
+    //   firebase
+    //     .getMyGroupsObj(userID)
+    //     .then((res) => setMyGroupsObj(res))
+    //     .catch((err) => console.error(err));
+    //   firebase
+    //     .getMyMilestones(userID)
+    //     .then((res) => setMyMilestones(res))
+    //     .catch((err) => console.error(err));
+    //   firebase
+    //     .getMySaveArticles(userID)
+    //     .then((res) => {
+    //       console.log("mySaveArticles👱‍♂️", res);
+    //       const publicChecker = res.filter((a) => a.public === true);
+    //       setMySaveArticles(publicChecker);
+    //     })
+    //     .catch((err) => console.error(err));
+    // }
+    // return () => {
+    //   isMounted = false;
+    // };
+  }, [articlesList, groupsList]);
 
   if (userData?.uid === userID) {
     isOwner.current = true;
@@ -193,11 +213,11 @@ const ProfilePage = () => {
     switch (e.target.dataset.id) {
       case "part":
         setActive("我參加的社團");
-        setSelected(myGroupsObj.participate);
+        setSelected(myJoinGroups);
         break;
       case "own":
         setActive("我創建的社團");
-        setSelected(myGroupsObj.owner);
+        setSelected(myCreateGroups);
         break;
       case "stone":
         setActive("我的里程碑");
@@ -272,12 +292,12 @@ const ProfilePage = () => {
           <TagWrapper>
             <TagSet>
               <div>參加</div>
-              <div>{myGroupsObj.participate?.length}</div>
+              <div>{myJoinGroups.length}</div>
               <div>社群</div>
             </TagSet>
             <TagSet>
               <div>發起</div>
-              <div>{myGroupsObj.owner?.length}</div>
+              <div>{myCreateGroups.length}</div>
               <div>社群</div>
             </TagSet>
             <TagSet>
@@ -318,7 +338,7 @@ const ProfilePage = () => {
         </ListCtn>
         <ContentCtn>
           {defaultRender.current
-            ? myGroupsObj.participate?.map((item) => {
+            ? myJoinGroups?.map((item) => {
                 // console.log(selected);
                 return <ContentCards item={item} key={uuidv4()} />;
               })

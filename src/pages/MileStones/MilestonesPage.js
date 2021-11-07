@@ -24,76 +24,47 @@ const Wrapper = styled.div`
   padding: 1em;
   align-items: flex-start;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 1.3em;
-  grid-row-gap: 1.3em;
+  grid-column-gap: 1.2rem;
+  grid-row-gap: 1.2rem;
   margin: 0 auto;
+
+  @media only screen and (max-width: 992px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 
   @media only screen and (max-width: 800px) {
     grid-template-columns: 1fr 1fr;
   }
-`;
 
-const ListStyle = styled.li`
-  cursor: pointer;
-
-  list-style: none;
-  font-weight: 600;
-  margin: 1rem 0;
-  font-size: 1.2rem;
-`;
-
-const SubList = styled.li`
-  display: ${(props) => (props.active === props.category ? "block" : "none")};
-
-  list-style: none;
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-`;
-
-const ContentCtn = styled.div`
-  display: flex;
-`;
-
-const Slide = styled.div`
-  width: 25%;
-`;
-
-const TopCtn = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const TopBtn = styled.div`
-  /* flex-grow: 1; */
-  align-self: center;
-  text-align: center;
-  width: 8%;
-  padding: 1% 0;
-  margin-left: 1rem;
-  border-radius: 25px;
-  background-color: #f5f5f5;
-  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
-  cursor: pointer;
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const SlideShow = styled.div`
-  width: 70%;
+  /* padding: 0 1rem; */
+  width: 60%;
   margin: 0 auto;
-`;
-
-const ImgCtn = styled.img`
-  width: 100%;
+  /* border: 1px solid blue; */
+  @media only screen and (max-width: 992px) {
+    width: 70%;
+  }
 `;
 
 const LastBlock = styled.div`
   width: 30%;
-  margin-left: 2rem;
+
+  /* margin-left: 2rem; */
+  /* border: 1px solid salmon; */
+
+  @media only screen and (max-width: 992px) {
+    display: none;
+  }
 `;
 
 const TopSection = styled.section`
   display: flex;
-  align-items: flex-start;
+  justify-content: space-around;
   margin-top: 3rem;
 `;
 
@@ -111,37 +82,24 @@ const Div1 = styled.div`
   margin-bottom: 1rem;
 `;
 
-const ListWrapper = styled.ul`
-  margin: 3rem 0;
-`;
-
-const ListCtn = styled.li`
-  /* background-color: red; */
-  padding: 6px 6px;
-  border-radius: 20px;
-  border: 1px solid rgb(70 69 65);
-  font-size: 1.2rem;
-  padding-bottom: 5px;
-  display: inline;
-  text-align: center;
-  margin-right: 10px;
-  transition: 0.3s all;
-  &:hover {
-    border-bottom: 2px solid salmon;
-    border-radius: 5px;
-  }
+const ArticleCtn = styled.div`
+  margin-top: 10px;
 `;
 
 const ArticleList = styled.div`
+  margin: 0 0.5rem 1rem 0.5rem;
   display: flex;
   flex-direction: column;
+  height: 100%;
 `;
 
 const LinkStyle = styled(Link)`
+  width: 100%;
   text-decoration: none;
-  color: black;
+  color: rgb(17 17 17);
   display: flex;
   padding: 0.5rem 0;
+
   border-bottom: 1px solid #3e2914;
 `;
 
@@ -166,18 +124,21 @@ const Number = styled.label`
 const Author = styled.div`
   font-size: 8px;
   display: flex;
-  overflow: hidden;
+  /* border: ; */
+  justify-content: space-between;
+  /* overflow: hidden; */
+  gap: 10px;
   /* justify-content: end; */
   /* align-items: flex-end; */
 `;
 
-const Ptag = styled.p`
-  margin-right: 10px;
+const Ptag = styled.div`
+  /* margin-right: 10px; */
   font-weight: 550;
   color: rgb(111 104 102);
-  &:last-child {
+  /* &:last-child {
     margin-left: 10px;
-  }
+  } */
 `;
 
 const Search = styled.input`
@@ -201,6 +162,14 @@ const BookImg = styled.img`
   width: 15vmin; */
   height: 200px;
   width: auto;
+  @media only screen and (max-width: 800px) {
+    height: 150px;
+    width: auto;
+  }
+  @media only screen and (max-width: 600px) {
+    height: 100px;
+    width: auto;
+  }
 `;
 
 const StyledSlider = styled(Slider)`
@@ -228,12 +197,12 @@ const MilestonesPage = () => {
   const [bookContent, setBookContent] = useState({});
   const [showBookContent, setShowBookContent] = useState(false);
   const [renderMilestone, setRenderMileStone] = useState([]);
+  const [gorden, setGorden] = useState([]);
 
   const settings = {
     // dots: true,
     infinite: true,
     // speed: 500,
-
     lazyLoad: true,
     slidesToShow: 3,
     slidesToScroll: 1,
@@ -243,7 +212,7 @@ const MilestonesPage = () => {
     cssEase: "linear",
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 992,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
@@ -292,7 +261,7 @@ const MilestonesPage = () => {
     if (e.key === "Enter") {
       algolia.search(e.target.value).then((result) => {
         const key = result.hits.map((r) => r.objectID);
-        console.log(key);
+        // console.log(key);
 
         const finalFilter = articlesList.filter((el) =>
           key.includes(el.milestoneID)
@@ -307,6 +276,13 @@ const MilestonesPage = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+    if (e.target.value === "") {
+      setRenderMileStone(articlesList);
+    }
+  };
+
   useEffect(() => {
     setRenderMileStone(articlesList);
   }, [articlesList]);
@@ -316,7 +292,7 @@ const MilestonesPage = () => {
 
     if (isMounted) {
       firebase.getContentsListSort("articles", setMilestonesList);
-
+      firebase.getTotalDocList("gorden").then((res) => setGorden(res));
       firebase.getGroupBookShelf().then((res) => {
         setBookList(res);
       });
@@ -378,38 +354,45 @@ const MilestonesPage = () => {
                 );
               })}
           </StyledSlider>
+          <div>你的氣質裡，藏著你曾讀過的書、走過的路、愛過的人。</div>
+          <Golden>
+            <div>{gorden[0]?.content}</div>
+            <div>{gorden[0]?.from}</div>
+          </Golden>
         </SlideShow>
         <LastBlock>
           <ArticleList>
             <LastLabel>Latest 5</LastLabel>
-            {milestonesList.slice(0, 5).map((item, i) => {
-              console.log(item);
-              return (
-                <LinkStyle
-                  to={`/milestone/${item.milestoneID}`}
-                  key={item.milestoneID}
-                >
-                  <Number>{i + 1}.</Number>
-                  <div>
-                    <TitleStyle>{item.title}</TitleStyle>
-                    <PStyle>啟發自：{findGroup(item)}</PStyle>
-                    <Author>
-                      <Ptag>作者：{findAuthor(item)}</Ptag>
-                      <Ptag>
-                        {item.creationTime?.toDate().toLocaleString("zh-TW")}
-                      </Ptag>
-                    </Author>
-                  </div>
-                </LinkStyle>
-              );
-            })}
+            <ArticleCtn>
+              {milestonesList.slice(0, 5).map((item, i) => {
+                console.log(item);
+                return (
+                  <LinkStyle
+                    to={`/milestone/${item.milestoneID}`}
+                    key={item.milestoneID}
+                  >
+                    <Number>{i + 1}.</Number>
+                    <div>
+                      <TitleStyle>{item.title}</TitleStyle>
+                      <PStyle>啟發自：{findGroup(item)}</PStyle>
+                      <Author>
+                        <Ptag>作者：{findAuthor(item)}</Ptag>
+                        <Ptag>
+                          {item.creationTime?.toDate().toLocaleString("zh-TW")}
+                        </Ptag>
+                      </Author>
+                    </div>
+                  </LinkStyle>
+                );
+              })}
+            </ArticleCtn>
           </ArticleList>
         </LastBlock>
       </TopSection>
       <Search
         placeholder="文章標題、文章內容..."
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={handleInputChange}
         onKeyPress={handleSearch}
       />
       <div>
@@ -434,7 +417,9 @@ const SelectedBook = styled.div`
 `;
 
 const BookBrief = styled.div`
-  margin: 1vmin 0;
+  margin: 10px 0;
+  gap: 5px;
+  /* margin: 1vmin 0; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -446,8 +431,14 @@ const BookImgWrapper = styled.div`
   justify-content: center;
 `;
 
+const Golden = styled.div`
+  width: 100%;
+  height: 100%;
+  border: 1px solid red;
+`;
+
 const SubTitle = styled.p`
-  margin-bottom: 5px;
+  /* margin-bottom: 5px; */
   color: gray;
   font-size: 12px;
   font-weight: 600;
@@ -466,7 +457,9 @@ const SubTitleLink = styled(SubTitle)`
 
 const Title = styled.p`
   font-weight: 600;
-  margin-bottom: 5px;
+  font-size: 1rem;
+
+  /* margin-bottom: 5px; */
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
@@ -484,20 +477,3 @@ const ContentShield = styled.div`
   background-color: rgba(0, 0, 0, 0.6);
   /* cursor: zoom-out; */
 `;
-
-// {
-//   showBookContent && (
-//     <PageShield
-//       data-target="shield-content"
-//       onClick={(e) => {
-//         e.target.dataset.target === "shield-content" &&
-//           setShowBookContent(!showBookContent);
-//       }}
-//     >
-//       <BookContent
-//         bookContent={bookContent}
-//         setShowBookContent={setShowBookContent}
-//       />
-//     </PageShield>
-//   );
-// }

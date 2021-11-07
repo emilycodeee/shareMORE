@@ -23,11 +23,11 @@ const Main = styled.div`
 
 const Layouts = (props) => {
   return (
-    <Wrapper>
+    <>
       <Header user={props.user} />
       <Main>{props.children}</Main>
       {/* <Footer /> */}
-    </Wrapper>
+    </>
   );
 };
 

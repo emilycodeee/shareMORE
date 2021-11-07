@@ -261,7 +261,7 @@ const MilestonePage = () => {
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const userData = useSelector((state) => state.userData);
-  const currentUser = usersList.find((item) => item.uid === userData.uid);
+  const currentUser = usersList.find((item) => item.uid === userData?.uid);
   const root = window.location.host;
   const pathname = useLocation().pathname;
 
@@ -314,10 +314,10 @@ const MilestonePage = () => {
   }, []);
 
   useEffect(() => {
-    if (content.creatorID) {
+    if (content?.creatorID) {
       setPublicStatus(content.public);
 
-      if (!content.public && userData?.uid !== content.creatorID) {
+      if (!content.public && userData?.uid !== content?.creatorID) {
         history.push("/");
       }
     }

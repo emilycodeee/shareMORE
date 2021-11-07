@@ -66,7 +66,7 @@ export const socialMediaAuth = async (provider, setFunction) => {
         displayName: result.user.displayName || "",
         avatar:
           result.user.photoURL ||
-          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
+          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e",
         email: result.user.email,
         uid: result.user.uid,
       };
@@ -96,7 +96,7 @@ export const register = async (name, email, password, setFunction) => {
       creationTime: result.user.metadata.creationTime,
       displayName: name,
       avatar:
-        "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add",
+        "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e",
       email: result.user.email,
       uid: result.user.uid,
     };
@@ -158,7 +158,7 @@ export function subscribeToUser(callback) {
 export const postArticles = async (data, file) => {
   const docRefId = doc(collection(db, "articles")).id;
   let imgURL =
-    "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
   if (file) {
     const storageRef = ref(storage);
     const imagesRef = ref(
@@ -314,7 +314,7 @@ export const postGroupNotes = async (groupID, data, file) => {
   const docRefId = doc(collection(db, "groups", groupID, "notes")).id;
 
   let imgURL =
-    "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
   if (file) {
     const storageRef = ref(storage);
     const imagesRef = ref(storageRef, `groups/${groupID}/notes/` + docRefId);
@@ -515,7 +515,7 @@ export const getGroupMilestones = async (grouprID) => {
 
 export const createGroup = async (data, file) => {
   let imgURL =
-    "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
   const docRefId = doc(collection(db, "groups")).id;
   if (file) {
     const storageRef = ref(storage);

@@ -1,4 +1,5 @@
 import "./normalize.css";
+import "./index.css";
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import Layouts from "./components/layouts/Layouts";

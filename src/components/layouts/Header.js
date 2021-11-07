@@ -1,55 +1,57 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { useHistory } from "react-router";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import SigninPopup from "../SigninPopup";
 import logo from "../../sharemore.png";
-import chat from "../../sources/chat.png";
-import search from "../../sources/search.png";
+import * as firebase from "../../utils/firebase";
 
-const LogoCtn = styled.img`
-  max-width: 315px;
-`;
-
-const HeaderContainer = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  background-color: rgb(255 234 182);
-  /* background-color: rgb(246 246 246); */
-  box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
-`;
-
-const LogoContainer = styled(Link)`
-  flex-grow: 1;
-`;
+import { HiOutlineLogout, HiMenu, HiChevronDoubleRight } from "react-icons/hi";
+// import { FaHamburger } from "react-icons/fa";
 
 const ListContainer = styled.ul`
   display: flex;
   align-items: center;
+  padding: 0 1rem;
+
+  @media only screen and (max-width: 800px) {
+    padding: 0;
+  }
 `;
 
 const ListStyled = styled(Link)`
   font-weight: 600;
-  margin: 0 20px;
+  margin-right: 1rem;
   list-style: none;
   text-decoration: none;
+
+  color: rgb(17 17 17);
+  &:last-child {
+    margin-right: 0;
+  }
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
 `;
 
 const LoginBtn = styled.button`
   margin-right: 20px;
-  height: 3em;
+  /* height: 2em; */
+  font-size: 1rem;
+  padding: 0.3rem 1rem;
   cursor: pointer;
-  font-weight: 600;
-  border-radius: 6px;
+  font-weight: 550;
+  border-radius: 2px;
   background-color: transparent;
-  border: 1px solid #fff;
-  color: black;
+  border: 1px solid rgb(255 182 0);
+  /* 
+  color: rgb(255 182 0); */
   text-decoration: none;
   &:hover {
-    background-color: white;
-    color: rgb(255 234 182);
+    background-color: rgb(255 182 0);
+    color: white;
   }
 `;
 
@@ -64,65 +66,24 @@ const LoginPage = styled.div`
   /* cursor: zoom-out; */
 `;
 
-const ImgCtn = styled.img`
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-`;
-
-// const Input = styled.input`
-//   width: 15%;
-//   border-radius: 25px;
-//   box-shadow: none;
-//   border: 1px solid rgb(204, 204, 204);
-//   padding: 4px 0px 4px 50px;
-//   font-size: 18px;
-//   background-color: #f5f5f5;
-//   /* float: left;
-//   width: 3rem;
-//   height: 2rem;
-//   padding: 0 15px;
-//   border: 1px solid var(--light);
-//   background-color: #eceff1;
-//   border-radius: 21px; */
-// `;
-
-const Input = styled.input`
-  width: 50px;
-  height: 20px;
-  padding: 10px;
-  border: none;
-  border-radius: 25px;
-  outline: none;
-  font-size: 16px;
-  background-image: url(${search});
-  background-position: right center;
-  background-repeat: no-repeat;
-  background-size: 32px;
-  cursor: pointer;
-  background-color: rgb(255 234 182);
-  /* position: absolute;
-  right: 5px; */
-
-  &:focus {
-    padding: 8px 48px 8px 20px;
-    border: solid 1px #979797;
-    left: 10px;
-    cursor: text;
-  }
-`;
-
 const Header = () => {
+  const history = useHistory();
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
 
   const [showLogin, setShowLogin] = useState(false);
+  const [toggleMobile, setToggleMobile] = useState(false);
 
   const currentUser = usersList.find((item) => item.uid === userData?.uid);
 
+  const handleLogout = () => {
+    firebase.logOut();
+    history.push("/");
+  };
+
   const userAvatar =
     currentUser?.avatar ||
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FkilakilaAvatar.png?alt=media&token=1a597182-f899-4ae1-8c47-486b3e2d5add";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e";
 
   const showLoginPage = () => {
     setShowLogin(!showLogin);
@@ -141,30 +102,174 @@ const Header = () => {
     );
   }
   return (
-    <HeaderContainer>
-      <LogoContainer to="/">
-        <LogoCtn src={logo} />
-      </LogoContainer>
-      <ListContainer>
-        {/* <Input placeholder="搜尋  " type="text" /> */}
-        <ListStyled to="/milestones">所有里程碑</ListStyled>
+    <>
+      <HeaderContainer>
+        <LogoContainer to="/">
+          <LogoCtn src={logo} />
+        </LogoContainer>
+        <ListContainer>
+          {/* <Input placeholder="搜尋  " type="text" /> */}
+          <ListStyled to="/milestones">所有里程碑</ListStyled>
+          {userData && (
+            <>
+              <ListStyled to="/groups">所有社團</ListStyled>
+              <ListStyled to="/groups/post">發起社團</ListStyled>
+              <ListStyled to="/milestones/post">創建里程碑</ListStyled>
+
+              <ListStyled to={`/profile/${userData?.uid}`}>
+                <ImgCtn src={userAvatar} />
+              </ListStyled>
+            </>
+          )}
+          {!userData && <LoginBtn onClick={showLoginPage}>登入</LoginBtn>}
+        </ListContainer>
+
         {userData && (
-          <>
-            <ListStyled to="/groups">所有社群</ListStyled>
-            <ListStyled to="/groups/post">發起社群</ListStyled>
-            <ListStyled to="/milestones/post">發表里程碑</ListStyled>
-            {/* <ListStyled to="/messages/ ">
-              <ImgCtn src={chat} />
-            </ListStyled> */}
-            <ListStyled to={`/profile/${userData?.uid}`}>
-              <ImgCtn src={userAvatar} />
-            </ListStyled>
-          </>
+          <IconSet>
+            <MenuBurger onClick={() => setToggleMobile(!toggleMobile)} />
+            <LogoutBtn onClick={handleLogout} />
+          </IconSet>
         )}
-        {!userData && <LoginBtn onClick={showLoginPage}>登入/註冊</LoginBtn>}
-      </ListContainer>
-    </HeaderContainer>
+      </HeaderContainer>
+      <MobileMenu toggleMobile={toggleMobile}>
+        <MobileCtn>
+          <Close onClick={() => setToggleMobile(!toggleMobile)} />
+        </MobileCtn>
+        <MLogo src={logo} />
+        <MobileList to="/milestones">所有里程碑</MobileList>
+        <MobileList to="/groups">所有社團</MobileList>
+        <MobileList to="/groups/post">發起社團</MobileList>
+        <MobileList to="/milestones/post">創建里程碑</MobileList>
+        <MobileList to={`/profile/${userData?.uid}`}>個人頁面</MobileList>
+        <MobileCtn>
+          登出 <LogoutBtn onClick={handleLogout} />
+        </MobileCtn>
+      </MobileMenu>
+    </>
   );
 };
 
 export default Header;
+
+const HeaderContainer = styled.div`
+  /* max-width: 1200px; */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  background-color: rgb(255 234 182);
+  box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
+  @media only screen and (max-width: 800px) {
+    justify-content: space-between;
+  }
+`;
+
+const LogoContainer = styled(Link)`
+  flex-grow: 1;
+  @media only screen and (max-width: 800px) {
+    max-width: 200px;
+  }
+`;
+
+const LogoCtn = styled.img`
+  max-width: 300px;
+  @media only screen and (max-width: 800px) {
+    width: 200px;
+  }
+`;
+
+const MobileMenu = styled.div`
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  right: 0;
+  top: 42px;
+  background-color: rgb(255 234 182);
+  font-size: 1rem;
+  z-index: 999999;
+  top: 0px;
+  bottom: 0px;
+  min-width: 240px;
+  width: 60%;
+  gap: 10px;
+  right: ${(props) => (props.toggleMobile ? "0%" : "-100%")};
+  transition: right 0.3s ease 0s;
+`;
+
+const MLogo = styled.img`
+  width: 200px;
+  height: 40px;
+  background-position: center;
+`;
+
+const MobileList = styled(Link)`
+  text-decoration: none;
+  color: rgb(17 17 17);
+  cursor: pointer;
+  height: 2rem;
+  /* padding: 10px; */
+  /* border: 1px solid red; */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:first-child {
+    justify-content: start;
+  }
+`;
+
+const MobileCtn = styled.div`
+  text-decoration: none;
+  color: rgb(17 17 17);
+  cursor: pointer;
+  height: 2rem;
+  /* padding: 10px; */
+  /* border: 1px solid red; */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const IconSet = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+`;
+
+const ImgCtn = styled.img`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+`;
+const iconStyle = {
+  width: "1.5rem",
+  height: "1.5rem",
+};
+
+const Close = styled(HiChevronDoubleRight)`
+  ${iconStyle}
+  display: flex;
+  justify-content: start;
+`;
+
+const LogoutBtn = styled(HiOutlineLogout)`
+  ${iconStyle}
+  cursor: pointer;
+  @media only screen and (max-width: 800px) {
+    /* display: none; */
+  }
+`;
+
+const MenuBurger = styled(HiMenu)`
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+  margin-right: 1rem;
+  display: none;
+  @media only screen and (max-width: 800px) {
+    display: block;
+  }
+`;

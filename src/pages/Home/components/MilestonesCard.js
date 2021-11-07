@@ -4,17 +4,22 @@ import { Link } from "react-router-dom";
 // import { useState, useEffect } from "react";
 
 const CardContainer = styled(Link)`
-  width: 100%;
+  /* width: 100%;
   text-decoration: none;
   box-shadow: rgb(0 0 0 / 15%) 0px 1px 2px;
   transition: transform 0.28s ease-in-out 0s;
-  border-radius: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px; */
+  text-decoration: none;
+  color: black;
+  box-shadow: 0 2px 10px #a2a2a2;
+  border-radius: 4px;
   margin-bottom: 10px;
 `;
 
 const CoverContainer = styled.div`
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   height: 150px;
   background-size: cover;
   background-position: center;

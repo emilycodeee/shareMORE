@@ -14,6 +14,46 @@ const canvasStyles = {
   left: 0,
 };
 
+// const Fireworks = () => {
+//   let isAnimationEnabled = false;
+//   let animationInstance = null;
+//   let intervalId = null;
+
+//   const getAnimationSettings = (originXA, originXB) => {
+//     return {
+//       angle: randomInRange(55, 125),
+//       spread: randomInRange(50, 70),
+//       ticks: 180,
+//       zIndex: 0,
+//       particleCount: randomInRange(50, 100),
+//       origin: { y: 0.6 },
+//     };
+//   };
+
+//   const startAnimation = () => {
+//     for (let i = 0; i < 3; i++) {
+//       animationInstance = getAnimationSettings(0.1, 0.3);
+//     }
+//   };
+
+//   const handlerClickStart = () => {
+//     startAnimation();
+//   };
+
+//   const getInstance = (instance) => {
+//     animationInstance = instance;
+//   };
+
+//   return (
+//     <>
+//       <div>
+//         <button onClick={handlerClickStart}>Start</button>
+//       </div>
+//       <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
+//     </>
+//   );
+// };
+///////////////////////////////////////////////////////
 export default class Fireworks extends React.Component {
   constructor(props) {
     super(props);
@@ -61,3 +101,5 @@ export default class Fireworks extends React.Component {
     );
   }
 }
+
+// export default Fireworks;

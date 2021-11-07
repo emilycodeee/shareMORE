@@ -117,7 +117,7 @@ const MilestoneEditor = () => {
   const [check, setCheck] = useState(true);
   const [originLabel, setOriginLabel] = useState("");
   const [previewUrl, setPreviewUrl] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage.png?alt=media&token=7b4118c2-46f8-41e9-a5de-de954c4aeb48"
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1"
   );
   // init
   const editMode = useRef(false);
@@ -265,6 +265,7 @@ const MilestoneEditor = () => {
           </UploadBtn>
         </SettingWrapper>
         <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
+        <Fireworks />
       </SideSetting>
     </ContainerStyled>
   );
