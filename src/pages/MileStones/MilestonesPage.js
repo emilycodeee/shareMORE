@@ -10,6 +10,7 @@ import BookContent from "../Bookshelf/component/BookContnet";
 import algolia from "../../utils/algolia";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { GiBookmarklet } from "react-icons/gi";
 
 const MainCtn = styled.div`
   max-width: 1000px;
@@ -29,6 +30,7 @@ const Wrapper = styled.div`
   margin: 0 auto;
 
   @media only screen and (max-width: 992px) {
+    width: 80%;
     grid-template-columns: 1fr 1fr 1fr;
   }
 
@@ -47,7 +49,7 @@ const SlideShow = styled.div`
   margin: 0 auto;
   /* border: 1px solid blue; */
   @media only screen and (max-width: 992px) {
-    width: 70%;
+    width: 80%;
   }
 `;
 
@@ -142,7 +144,7 @@ const Ptag = styled.div`
 `;
 
 const Search = styled.input`
-  width: 70%;
+  width: 80%;
   height: 1.8rem;
   border-radius: 25px;
   box-shadow: none;
@@ -152,6 +154,13 @@ const Search = styled.input`
   margin: 2rem 0;
   align-self: center;
   /* text-align: center; */
+`;
+
+const SearchWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 80%;
+  margin: 0 auto;
 `;
 
 const BookImg = styled.img`
@@ -354,10 +363,16 @@ const MilestonesPage = () => {
                 );
               })}
           </StyledSlider>
-          <div>你的氣質裡，藏著你曾讀過的書、走過的路、愛過的人。</div>
+
           <Golden>
-            <div>{gorden[0]?.content}</div>
-            <div>{gorden[0]?.from}</div>
+            <Label>
+              <Bookmark />
+              金句放送
+            </Label>
+            <GoldenCtn>
+              <div>{gorden[0]?.content}</div>
+              <div> ─ {gorden[0]?.from}</div>
+            </GoldenCtn>
           </Golden>
         </SlideShow>
         <LastBlock>
@@ -389,12 +404,15 @@ const MilestonesPage = () => {
           </ArticleList>
         </LastBlock>
       </TopSection>
-      <Search
-        placeholder="文章標題、文章內容..."
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyPress={handleSearch}
-      />
+      <SearchWrapper>
+        <Search
+          placeholder="文章標題、文章內容..."
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyPress={handleSearch}
+        />
+        <SerachButton>搜尋</SerachButton>
+      </SearchWrapper>
       <div>
         <Wrapper>
           {renderMilestone.map((item) => {
@@ -431,10 +449,46 @@ const BookImgWrapper = styled.div`
   justify-content: center;
 `;
 
+const Label = styled.div`
+  font-size: 1.2rem;
+  font-weight: 550;
+  margin: 10px 0 5px 0;
+`;
+
+const Bookmark = styled(GiBookmarklet)`
+  margin-right: 0.8rem;
+`;
+
 const Golden = styled.div`
+  /* width: 100%;
+  background-color: salmon; */
+  /* border: 1px solid red; */
+`;
+
+const GoldenCtn = styled.div`
   width: 100%;
-  height: 100%;
-  border: 1px solid red;
+  background-color: #fff3d6;
+  /* border: 1px solid red; */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  line-height: 1.2rem;
+  box-shadow: rgb(153 153 153 / 16%) 0px 5px 11px 0px;
+`;
+
+const SerachButton = styled.button`
+  align-self: center;
+  text-align: center;
+  width: 8%;
+  padding: 1% 0;
+  margin-left: 1rem;
+  border-radius: 25px;
+  background-color: #f5f5f5;
+  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
+  cursor: pointer;
+  border: none;
 `;
 
 const SubTitle = styled.p`

@@ -15,36 +15,52 @@ const MainCtn = styled.div`
 
 const Wrapper = styled.div`
   display: grid;
-  width: 100%;
+  width: 90%;
   padding: 1em;
   align-items: flex-start;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 1.3em;
-  grid-row-gap: 1.3em;
+  grid-column-gap: 1.2rem;
+  grid-row-gap: 1.2rem;
   margin: 0 auto;
   /* border: 1px solid red; */
+
+  @media only screen and (max-width: 992px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 
   @media only screen and (max-width: 800px) {
     grid-template-columns: 1fr 1fr;
   }
+
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const ListStyle = styled.li`
+  display: flex;
+  justify-content: center;
   cursor: pointer;
   /* text-decoration: none; */
   list-style: none;
   font-weight: 600;
-  margin: 1rem 0;
+  /* margin: 1rem 0; */
   font-size: 1.2rem;
+  padding: 0.6rem 0;
 `;
 
 const SubList = styled.li`
   display: ${(props) => (props.active === props.category ? "block" : "none")};
   cursor: pointer;
   list-style: none;
+  /* display: flex; */
+  /* justify-content: center; */
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  padding: 0.4rem 0;
   margin-bottom: 0.5rem;
+  text-align: center;
+  /* margin: 0 auto; */
 `;
 
 const ContentCtn = styled.div`
@@ -62,9 +78,8 @@ const Search = styled.input`
   margin: 2rem 0;
 `;
 
-const Slide = styled.div`
+const Side = styled.div`
   width: 25%;
-  /* ${(props) => console.log(props)} */
 `;
 
 const TopCtn = styled.div`
@@ -132,9 +147,14 @@ const GroupsPage = () => {
 
   const handleCategory = (e) => {
     const target = e.target.innerText;
-    const filterCategory = groupsList.filter((g) => g.category === target);
-    setRenderGroups(filterCategory);
-    setSubClassesName(target);
+    console.log(target);
+    if (target === "全部") {
+      setRenderGroups(groupsList);
+    } else {
+      const filterCategory = groupsList.filter((g) => g.category === target);
+      setRenderGroups(filterCategory);
+      setSubClassesName(target);
+    }
   };
 
   useEffect(() => {
@@ -154,7 +174,10 @@ const GroupsPage = () => {
         <TopBtn onClick={handleSearchBtn}>搜尋</TopBtn>
       </TopCtn>
       <ContentCtn>
-        <Slide>
+        <Side>
+          <ListStyle key={uuidv4()} onClick={handleCategory}>
+            全部
+          </ListStyle>
           {categoryList.map((item, i) => (
             <div key={uuidv4()}>
               <ListStyle onClick={handleCategory}>{item.name}</ListStyle>
@@ -170,7 +193,7 @@ const GroupsPage = () => {
               ))}
             </div>
           ))}
-        </Slide>
+        </Side>
         <Wrapper>
           {renderGroups.map((item) => {
             return <GroupsCard item={item} key={item.groupID} />;

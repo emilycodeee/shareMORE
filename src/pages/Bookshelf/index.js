@@ -12,7 +12,7 @@ import BookContent from "./component/BookContnet";
 import { JumpCircleLoading } from "react-loadingg";
 
 const Wrapper = styled.div`
-  width: 1000px;
+  max-width: 1000px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -66,6 +66,7 @@ const TopCover = styled.div`
 
 const BookItem = styled.div`
   position: relative;
+  margin: 10px;
 `;
 
 const DeleteIcon = styled(AiOutlineClose)`
@@ -81,6 +82,8 @@ const SerchButton = styled.button`
   width: 80%;
   margin: 0 auto;
   margin-bottom: 20px;
+  border: none;
+  padding: 0.6rem;
 `;
 
 const Bookshelf = () => {
@@ -260,7 +263,7 @@ const SelectedBook = styled.div`
 
 const BookAuthor = styled.div`
   color: gray;
-  font-size: 12px;
+  font-size: 1rem;
   font-weight: 600;
   margin-bottom: 10px;
   display: -webkit-box;
@@ -271,14 +274,15 @@ const BookAuthor = styled.div`
 `;
 
 const BookTitle = styled.div`
-  margin-top: 0.7rem;
+  font-size: 1.1rem;
+  margin: 0.7rem 0;
   font-weight: 550;
 `;
 
 const RecommendText = styled.div`
   margin-top: 0.5rem;
   text-align: start;
-  background-color: #f1eded;
+  background-color: #f7f5f5;
   padding: 0.5rem;
   border-radius: 3px;
 `;
@@ -306,6 +310,17 @@ const ShelfWrapper = styled.div`
   grid-column-gap: 1rem;
   text-align: center;
   padding: 10px;
+  @media only screen and (max-width: 992px) {
+    width: 80%;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const BookImage = styled.img`

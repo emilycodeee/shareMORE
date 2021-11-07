@@ -17,7 +17,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const SideCard = styled.div`
   padding: 1rem;
-  width: 400px;
+  width: 30%;
   /* height: 550px; */
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@ const SideCard = styled.div`
 `;
 
 const Wrapper = styled.div`
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   border-radius: 10px;
   margin: 0 auto;
   margin-top: 2rem;
@@ -52,8 +52,8 @@ const AvatarCtn = styled.div`
 `;
 
 const Avatar = styled.img`
-  width: 160px;
-  height: 160px;
+  width: 60%;
+  height: 60%;
   border-radius: 50%;
 `;
 
@@ -112,11 +112,6 @@ const ListItem = styled.li`
   /* &:last-child {
     background-color: #dfdfdf;
   } */
-`;
-
-const LinkStyle = styled(Link)`
-  text-decoration: none;
-  color: black;
 `;
 
 const SettingBtn = styled(Link)`

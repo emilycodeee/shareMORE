@@ -41,6 +41,17 @@ const ResultWrapper = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   text-align: center;
   gap: 1rem;
+  @media only screen and (max-width: 992px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Title = styled.p`
@@ -202,7 +213,7 @@ const SearchBook = () => {
           <>
             {/* <label>查找書目</label> */}
             <SearchBookInput>
-              <input
+              <SearchInput
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="書名、作者名、ISBN..."
@@ -278,7 +289,7 @@ const SearchBook = () => {
             <ContentText>
               {HtmlParser(bookContent.volumeInfo.description)}
             </ContentText>
-            <button
+            {/* <button
               onClick={() => {
                 setShowBookContent(false);
 
@@ -286,7 +297,7 @@ const SearchBook = () => {
               }}
             >
               返回
-            </button>
+            </button> */}
           </BookWrapper>
         )}
       </Wrapper>
@@ -350,6 +361,13 @@ const InputWrapper = styled.div`
   max-height: calc(100vh - 240px);
   overflow-y: auto;
   scroll-behavior: smooth;
+`;
+
+const SearchInput = styled.input`
+  border-radius: 4px;
+  outline: none;
+  border: 1px solid #d1cbcb;
+  padding: 3px 5px;
 `;
 
 const SearchBookInput = styled.div`

@@ -20,6 +20,7 @@ const AvatarImg = styled.img`
 const NameLogo = styled.input`
   border: ${(props) => (props.actEdit ? "1px solid black" : " none")};
   /* border: none; */
+  /* max-width: 1000px; */
   /* align-self: cent。 */
   font-weight: 550;
   font-size: 2rem;
@@ -101,7 +102,7 @@ const TitleBar = styled.div`
   margin: 0;
   padding: 0;
   display: flex;
-  flex-grow: 1;
+  /* flex-grow: 1; */
   align-items: center;
 `;
 

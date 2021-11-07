@@ -10,19 +10,28 @@ import { useSelector } from "react-redux";
 import Fireworks from "../../components/Fireworks";
 
 const ContainerStyled = styled.div`
-  border-radius: 20px;
-  border: 1px solid #3e2914;
+  /* border-radius: 20px; */
+  /* border: 1px solid #3e2914; */
+  max-width: 1000px;
   display: flex;
-  margin: 3rem 5rem;
+  /* margin: 3rem 5rem; */
   padding: 3rem 5rem;
+  margin: 0 auto;
+  @media only screen and (max-width: 992px) {
+    padding: 1rem 2rem;
+  }
 `;
 
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 70%;
+
+  /* background-color: salmon; */
 `;
 
 const SideSetting = styled.div`
+  width: 30%;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -30,17 +39,24 @@ const SideSetting = styled.div`
 `;
 
 const LabelCtn = styled.label`
+  padding: 10px 0 0 8px;
   font-size: 1.1rem;
   font-weight: 550;
   margin-right: 10px;
 `;
 
 const InputCtn = styled.input`
-  border-radius: 10px;
+  width: 100%;
   padding: 3px 10px;
   font-size: 1.2rem;
   margin: 1rem 0;
   border: 1px solid #b5b2b0;
+  /* border: 1px solid #b5b2b0; */
+`;
+
+const InputWrapper = styled.div`
+  border-radius: 4px;
+  padding: 8px;
 `;
 
 const UploadBtn = styled.label`
@@ -53,6 +69,7 @@ const SubmitBtn = styled.button`
   margin: 0 auto;
   padding: 10px;
   border-radius: 10px;
+  border: none;
 `;
 
 const SwitchCtn = styled.div`
@@ -70,7 +87,7 @@ const SettingLb = styled.label`
 `;
 
 const PreViewCtn = styled.img`
-  width: 300px;
+  width: 100%;
   margin: 10px 0;
 `;
 
@@ -86,7 +103,7 @@ const SettingWrapper = styled.div`
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #b5b2b0;
-  border-radius: 10px;
+  border-radius: 4px;
 `;
 
 const Introduce = styled.textarea`
@@ -221,11 +238,13 @@ const MilestoneEditor = () => {
     <ContainerStyled>
       <MainContainer>
         <LabelCtn>分享新的里程碑</LabelCtn>
-        <InputCtn
-          placeholder="請輸入標題..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <InputWrapper>
+          <InputCtn
+            placeholder="請輸入標題..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </InputWrapper>
         <WrapperStyled>
           <RichTextEditor value={value} editorHandler={editorHandler} />
         </WrapperStyled>
@@ -265,7 +284,7 @@ const MilestoneEditor = () => {
           </UploadBtn>
         </SettingWrapper>
         <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
-        <Fireworks />
+        {/* <Fireworks /> */}
       </SideSetting>
     </ContainerStyled>
   );

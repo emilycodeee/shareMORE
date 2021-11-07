@@ -38,9 +38,10 @@ const TopCover = styled.div`
 
 const Wrapper = styled.div`
   margin: 30px 10px;
-  border-radius: 30px;
+  border-radius: 4px;
   padding: 30px;
-  border: 1px solid #3e2914;
+  /* border: 1px solid #3e2914; */
+  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
 `;
 
 const SideSetting = styled.div`
@@ -53,7 +54,7 @@ const SideSetting = styled.div`
   margin-top: 30px;
   height: 600px;
   border: 1px solid #d1cbcb;
-  border-radius: 25px;
+  border-radius: 4px;
   position: sticky;
   top: 20px;
   left: 0;
@@ -82,8 +83,8 @@ const Count = styled.div`
 `;
 
 const Avatar = styled.img`
-  width: 5rem;
-  height: 5rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   margin: 20px 0;
 `;
@@ -206,8 +207,8 @@ const MainPost = styled.div`
 `;
 
 const PostAvatar = styled.img`
-  height: 3rem;
-  width: 3rem;
+  height: 30%;
+  width: 30%;
   border-radius: 50%;
   margin-right: 1rem;
 `;

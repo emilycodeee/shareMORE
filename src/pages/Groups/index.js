@@ -37,7 +37,7 @@ const MemberContainer = styled.div`
 `;
 
 const TopCover = styled.div`
-  border-radius: 30px;
+  border-radius: 10px;
   opacity: 0.8;
   margin-bottom: 0.8rem;
   height: 300px;
@@ -72,12 +72,12 @@ const ContentCtn = styled.textarea`
 `;
 
 const Wrapper = styled.div`
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   margin-top: 30px;
   border-radius: 30px;
   padding: 30px;
-  border: 1px solid #3e2914;
+  /* border: 1px solid #3e2914; */
 `;
 
 const Text = styled.div`
