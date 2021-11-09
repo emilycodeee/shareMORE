@@ -4,10 +4,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  /* width: 100%; */
 }
 
 body {
-  font-family: "Noto Serif TC", serif;
-
+  /* font-family: "Noto Serif TC", serif; */
+  /* width: 100%; */
   color: rgb(17 17 17);
 }

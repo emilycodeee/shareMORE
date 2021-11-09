@@ -8,16 +8,283 @@ import SigninPopup from "../SigninPopup";
 import logo from "../../sharemore.png";
 import * as firebase from "../../utils/firebase";
 
+import {
+  query,
+  collection,
+  where,
+  orderBy,
+  onSnapshot,
+  limit,
+} from "firebase/firestore";
+
 import { HiOutlineLogout, HiMenu, HiChevronDoubleRight } from "react-icons/hi";
-// import { FaHamburger } from "react-icons/fa";
+import { MdAgriculture, MdOutlineNotificationsActive } from "react-icons/md";
+
+const Header = () => {
+  const history = useHistory();
+  const userData = useSelector((state) => state.userData);
+  const usersList = useSelector((state) => state.usersList);
+  const groupsList = useSelector((state) => state.groupsList);
+  const articlesList = useSelector((state) => state.articlesList);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+
+  const [notificationCtn, setNotificationCtn] = useState([]);
+  const [toggleMobile, setToggleMobile] = useState(false);
+
+  const currentUser = usersList.find((item) => item.uid === userData?.uid);
+
+  const actNotifications = () => {
+    setShowNotification(!showNotification);
+  };
+  // const convertTime =
+
+  const getUserName = (uid) => {
+    const user = usersList.find((p) => p.uid === uid);
+    console.log(user);
+    return user.displayName;
+  };
+
+  const getGroupName = (gid) => {
+    const group = groupsList.find((g) => g.groupID === gid);
+    console.log(group);
+    return group.name;
+  };
+
+  const getArticles = (mileID) => {
+    const articles = articlesList.find((a) => a.milestoneID === mileID);
+    return articles.title;
+  };
+
+  const handleReadNoti = (e) => {
+    const target = e.target.dataset.id;
+    console.log(target);
+    firebase.readNotification(target, userData.uid);
+    //m-tLuSLTIUJzPNuSspUKyR
+  };
+
+  useEffect(() => {
+    if (userData) {
+      const q = query(
+        collection(firebase.db, "users", userData.uid, "notification"),
+        orderBy("creationTime", "desc"),
+        limit(10)
+      );
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          console.log("😍", doc.data());
+          const tinyArr = {};
+          if (doc.data().docId?.includes("m-")) {
+            console.log("有里程碑留言", doc.data().sender);
+          } else if (doc.data().docId?.includes("g-")) {
+            console.log("有社團留言", doc.data());
+          }
+          data.push(doc.data());
+          console.log(data);
+        });
+        setNotificationCtn(data);
+      });
+      return () => {
+        unsubscribe();
+      };
+    }
+  }, [userData]);
+
+  const handleLogout = () => {
+    firebase.logOut();
+    history.push("/");
+  };
+
+  const userAvatar =
+    currentUser?.avatar ||
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e";
+
+  const showLoginPage = () => {
+    setShowLogin(!showLogin);
+  };
+
+  if (!userData && showLogin) {
+    return (
+      <LoginPage
+        data-target="shield"
+        onClick={(e) => {
+          e.target.dataset.target === "shield" && setShowLogin(!showLogin);
+        }}
+      >
+        <SigninPopup setShowLogin={setShowLogin} />
+      </LoginPage>
+    );
+  }
+  return (
+    <>
+      <HeaderContainer>
+        <LogoContainer to="/">
+          <LogoCtn src={logo} />
+        </LogoContainer>
+        <ListContainer>
+          <ListStyled to="/milestones">所有里程碑</ListStyled>
+          {userData && (
+            <>
+              <ListStyled to="/groups">所有社團</ListStyled>
+              <ListStyled to="/groups/post">發起社團</ListStyled>
+              <ListStyled to="/milestones/post">創建里程碑</ListStyled>
+              <ListStyled to={`/profile/${userData?.uid}`}>
+                <ImgCtn src={userAvatar} />
+              </ListStyled>
+              <IconSet>
+                <Notifications onClick={actNotifications} />
+                <Count>1</Count>
+                <MenuBurger onClick={() => setToggleMobile(!toggleMobile)} />
+                <LogoutBtn onClick={handleLogout} />
+              </IconSet>
+            </>
+          )}
+          {!userData && <LoginBtn onClick={showLoginPage}>登入</LoginBtn>}
+        </ListContainer>
+      </HeaderContainer>
+      {showNotification && (
+        <NotificationsArea>
+          {notificationCtn.map((msg) => {
+            console.log(msg);
+            if (msg.docId?.includes("m-")) {
+              return (
+                <NotifiLink
+                  key={msg.docId}
+                  to={`/milestone/${msg.milestoneID}`}
+                  onClick={handleReadNoti}
+                  data-id={msg.docId}
+                >
+                  <Dot status={msg.readed} data-id={msg.docId} />
+                  <BoldName data-id={msg.docId} data-id={msg.docId}>
+                    {getUserName(msg.sender)}
+                  </BoldName>
+                  在你的里程碑
+                  <BoldName data-id={msg.docId} data-id={msg.docId}>
+                    {" "}
+                    {getArticles(msg.milestoneID)}{" "}
+                  </BoldName>
+                  發表新回覆
+                </NotifiLink>
+              );
+            } else if (msg.docId?.includes("g-")) {
+              if (msg.role === "owner") {
+                return (
+                  <NotifiLink
+                    key={msg.docId}
+                    to={`/group/${msg.groupID}`}
+                    onClick={handleReadNoti}
+                    data-id={msg.docId}
+                  >
+                    <Dot status={msg.readed} data-id={msg.docId} />
+                    你的社團
+                    <BoldName data-id={msg.docId}>
+                      {" "}
+                      {getGroupName(msg.groupID)}{" "}
+                    </BoldName>
+                    有新的入社申請
+                  </NotifiLink>
+                );
+              } else {
+                return (
+                  <NotifiLink
+                    key={msg.docId}
+                    to={`/group/${msg.groupID}`}
+                    onClick={handleReadNoti}
+                    data-id={msg.docId}
+                  >
+                    <Dot status={msg.readed} data-id={msg.docId} />
+                    你在
+                    <BoldName data-id={msg.docId}>
+                      {" "}
+                      {getGroupName(msg.groupID)}{" "}
+                    </BoldName>
+                    的社團申請已經通過囉
+                  </NotifiLink>
+                );
+              }
+            }
+          })}
+        </NotificationsArea>
+      )}
+      <MobileMenu toggleMobile={toggleMobile}>
+        <MobileCtn>
+          <Close onClick={() => setToggleMobile(!toggleMobile)} />
+        </MobileCtn>
+        <MLogo src={logo} />
+        <MobileList to="/milestones">所有里程碑</MobileList>
+        <MobileList to="/groups">所有社團</MobileList>
+        <MobileList to="/groups/post">發起社團</MobileList>
+        <MobileList to="/milestones/post">創建里程碑</MobileList>
+        <MobileList to={`/profile/${userData?.uid}`}>個人頁面</MobileList>
+        {/* <MobileCtn>
+          登出 <LogoutBtn onClick={handleLogout} />
+        </MobileCtn> */}
+      </MobileMenu>
+    </>
+  );
+};
+
+export default Header;
+
+const Count = styled.div`
+  position: absolute;
+  bottom: 0;
+  right: 3px;
+`;
+
+const Dot = styled.span`
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: ${(props) => (props.status ? "#dbd3c6" : "#FCB643")};
+  border-radius: 50%;
+  margin-right: 5px;
+`;
+
+const BoldName = styled.span`
+  font-weight: 600;
+`;
+
+const NotificationsArea = styled.div`
+  font-size: 0.9rem;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 20%;
+  height: auto;
+  right: 10px;
+  z-index: 99;
+  background-color: rgb(255 234 182);
+  padding: 10px 10px;
+  overflow-y: auto;
+  @media only screen and (max-width: 992px) {
+    width: 30%;
+  }
+  @media only screen and (max-width: 400px) {
+    width: 40%;
+  }
+`;
+
+const NotifiLink = styled(Link)`
+  margin: 10px 0;
+  text-decoration: none;
+  align-self: center;
+  height: 30%;
+`;
 
 const ListContainer = styled.ul`
   display: flex;
   align-items: center;
-  padding: 0 1rem;
+  padding: 0 0 0 1rem;
+  /* border: 1px solid red; */
 
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 992px) {
     padding: 0;
+    /* border: 1px solid red; */
   }
 `;
 
@@ -31,7 +298,7 @@ const ListStyled = styled(Link)`
   &:last-child {
     margin-right: 0;
   }
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 992px) {
     display: none;
   }
 `;
@@ -66,91 +333,6 @@ const LoginPage = styled.div`
   /* cursor: zoom-out; */
 `;
 
-const Header = () => {
-  const history = useHistory();
-  const userData = useSelector((state) => state.userData);
-  const usersList = useSelector((state) => state.usersList);
-
-  const [showLogin, setShowLogin] = useState(false);
-  const [toggleMobile, setToggleMobile] = useState(false);
-
-  const currentUser = usersList.find((item) => item.uid === userData?.uid);
-
-  const handleLogout = () => {
-    firebase.logOut();
-    history.push("/");
-  };
-
-  const userAvatar =
-    currentUser?.avatar ||
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e";
-
-  const showLoginPage = () => {
-    setShowLogin(!showLogin);
-  };
-
-  if (!userData && showLogin) {
-    return (
-      <LoginPage
-        data-target="shield"
-        onClick={(e) => {
-          e.target.dataset.target === "shield" && setShowLogin(!showLogin);
-        }}
-      >
-        <SigninPopup setShowLogin={setShowLogin} />
-      </LoginPage>
-    );
-  }
-  return (
-    <>
-      <HeaderContainer>
-        <LogoContainer to="/">
-          <LogoCtn src={logo} />
-        </LogoContainer>
-        <ListContainer>
-          {/* <Input placeholder="搜尋  " type="text" /> */}
-          <ListStyled to="/milestones">所有里程碑</ListStyled>
-          {userData && (
-            <>
-              <ListStyled to="/groups">所有社團</ListStyled>
-              <ListStyled to="/groups/post">發起社團</ListStyled>
-              <ListStyled to="/milestones/post">創建里程碑</ListStyled>
-
-              <ListStyled to={`/profile/${userData?.uid}`}>
-                <ImgCtn src={userAvatar} />
-              </ListStyled>
-            </>
-          )}
-          {!userData && <LoginBtn onClick={showLoginPage}>登入</LoginBtn>}
-        </ListContainer>
-
-        {userData && (
-          <IconSet>
-            <MenuBurger onClick={() => setToggleMobile(!toggleMobile)} />
-            <LogoutBtn onClick={handleLogout} />
-          </IconSet>
-        )}
-      </HeaderContainer>
-      <MobileMenu toggleMobile={toggleMobile}>
-        <MobileCtn>
-          <Close onClick={() => setToggleMobile(!toggleMobile)} />
-        </MobileCtn>
-        <MLogo src={logo} />
-        <MobileList to="/milestones">所有里程碑</MobileList>
-        <MobileList to="/groups">所有社團</MobileList>
-        <MobileList to="/groups/post">發起社團</MobileList>
-        <MobileList to="/milestones/post">創建里程碑</MobileList>
-        <MobileList to={`/profile/${userData?.uid}`}>個人頁面</MobileList>
-        <MobileCtn>
-          登出 <LogoutBtn onClick={handleLogout} />
-        </MobileCtn>
-      </MobileMenu>
-    </>
-  );
-};
-
-export default Header;
-
 const HeaderContainer = styled.div`
   /* max-width: 1200px; */
   width: 100%;
@@ -159,21 +341,21 @@ const HeaderContainer = styled.div`
   padding: 0 1rem;
   background-color: rgb(255 234 182);
   box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 992px) {
     justify-content: space-between;
   }
 `;
 
 const LogoContainer = styled(Link)`
   flex-grow: 1;
-  @media only screen and (max-width: 800px) {
-    max-width: 200px;
+  @media only screen and (max-width: 992px) {
+    /* max-width: 200px; */
   }
 `;
 
 const LogoCtn = styled.img`
   max-width: 300px;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 992px) {
     width: 200px;
   }
 `;
@@ -208,8 +390,6 @@ const MobileList = styled(Link)`
   color: rgb(17 17 17);
   cursor: pointer;
   height: 2rem;
-  /* padding: 10px; */
-  /* border: 1px solid red; */
   width: 100%;
   display: flex;
   align-items: center;
@@ -225,8 +405,6 @@ const MobileCtn = styled.div`
   color: rgb(17 17 17);
   cursor: pointer;
   height: 2rem;
-  /* padding: 10px; */
-  /* border: 1px solid red; */
   width: 100%;
   display: flex;
   align-items: center;
@@ -237,6 +415,7 @@ const IconSet = styled.div`
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  gap: 10px;
 `;
 
 const ImgCtn = styled.img`
@@ -255,21 +434,25 @@ const Close = styled(HiChevronDoubleRight)`
   justify-content: start;
 `;
 
+const Notifications = styled(MdOutlineNotificationsActive)`
+  ${iconStyle}
+  cursor: pointer;
+`;
+
 const LogoutBtn = styled(HiOutlineLogout)`
   ${iconStyle}
   cursor: pointer;
-  @media only screen and (max-width: 800px) {
-    /* display: none; */
+  @media only screen and (max-width: 992px) {
   }
 `;
 
 const MenuBurger = styled(HiMenu)`
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
   cursor: pointer;
-  margin-right: 1rem;
+  /* margin-right: 1rem; */
   display: none;
-  @media only screen and (max-width: 800px) {
+  @media only screen and (max-width: 992px) {
     display: block;
   }
 `;

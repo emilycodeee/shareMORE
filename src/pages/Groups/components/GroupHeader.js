@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { Link, useLocation, useParams } from "react-router-dom";
 import ApplicationPopup from "./ApplicationPopup";
-import BookApplicationPopup from "./BookApplicationPopup";
+// import BookApplicationPopup from "./BookApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
@@ -218,24 +218,24 @@ const GroupHeader = () => {
     );
   }
 
-  if (showBookApply) {
-    return (
-      <Shield
-        data-target="shield"
-        onClick={(e) => {
-          e.target.dataset.target === "shield" &&
-            setShowBookApply(!showBookApply);
-        }}
-      >
-        <BookApplicationPopup
-          bookListData={bookListData}
-          // appliedData={appliedData}
-          // groupData={content}
-          // applicationData={applicationData}
-        />
-      </Shield>
-    );
-  }
+  // if (showBookApply) {
+  //   return (
+  //     <Shield
+  //       data-target="shield"
+  //       onClick={(e) => {
+  //         e.target.dataset.target === "shield" &&
+  //           setShowBookApply(!showBookApply);
+  //       }}
+  //     >
+  //       {/* <BookApplicationPopup
+  //         bookListData={bookListData}
+  //         // appliedData={appliedData}
+  //         // groupData={content}
+  //         // applicationData={applicationData}
+  //       /> */}
+  //     </Shield>
+  //   );
+  // }
 
   // console.log(applicationData);
   return (

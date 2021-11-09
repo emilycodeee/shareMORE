@@ -4,10 +4,12 @@ import { useParams, useHistory, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 // import * as firebase from "../../../utils/firebase";
-import { GrRevert, GrBook, GrSearchAdvanced } from "react-icons/gr";
+import { GrRevert, GrBook, GrSearchAdvanced, GrLink } from "react-icons/gr";
 import { JumpCircleLoading } from "react-loadingg";
+import BookContent from "./BookContnet";
 import * as firebase from "../../../utils/firebase";
 import HtmlParser from "react-html-parser";
+
 const Wrapper = styled.div`
   width: 80%;
   display: flex;
@@ -17,7 +19,7 @@ const Wrapper = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   margin-right: 120px;
-  max-width: 70%;
+  /* max-width: 70%; */
   outline: none;
   background-color: white;
   z-index: 99;
@@ -87,6 +89,7 @@ const BookWrapper = styled.div`
 
   justify-content: center;
   align-items: center;
+  width: 100%;
 `;
 
 const BookDetail = styled.div`
@@ -94,24 +97,22 @@ const BookDetail = styled.div`
   justify-content: center;
   align-items: center;
   margin: 1rem;
-
+  width: 80%;
   /* flex-direction: column; */
+  @media only screen and (max-width: 800px) {
+    flex-direction: column;
+    gap: 1rem;
+  }
 `;
 
 const BookImage = styled.img`
   box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
   height: 200px;
   margin-right: 2rem;
-`;
 
-const TopCover = styled.div`
-  border-radius: 30px;
-  opacity: 0.8;
-  margin-bottom: 0.8rem;
-  height: 300px;
-  background-size: cover;
-  background-position: center;
-  box-shadow: 0px 2px 5px grey;
+  @media only screen and (max-width: 800px) {
+    margin: 0;
+  }
 `;
 
 const style = {
@@ -120,6 +121,10 @@ const style = {
   height: "1.5rem",
   width: "1.5rem",
 };
+
+const LinkIcon = styled(GrLink)`
+  ${style}
+`;
 
 const RevertIcon = styled(GrRevert)`
   ${style}
@@ -218,7 +223,7 @@ const SearchBook = () => {
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="書名、作者名、ISBN..."
               />
-              <GrSearchAdvancedIcon onClick={submit} />
+              <AdvancedIcon onClick={submit} />
               {/* <button onClick={submit}>搜尋</button> */}
             </SearchBookInput>
             {isLoading && <JumpCircleLoading />}
@@ -262,20 +267,23 @@ const SearchBook = () => {
               </div>
               <div>
                 <div>
-                  <div>書名：{bookContent.volumeInfo.title}</div>
-                  <div>
+                  <Titlestyle>{bookContent.volumeInfo.title}</Titlestyle>
+                  <Pstyle>
                     作者/譯者：{bookContent.volumeInfo.authors?.join(",")}
-                  </div>
-                  <div>出版社：{bookContent.volumeInfo.publisher}</div>
-                  <div>出版日期：{bookContent.volumeInfo.publishedDate}</div>
-                  <a href={bookContent.volumeInfo.previewLink} target="_blank">
-                    試讀連結
-                  </a>
+                  </Pstyle>
+                  <Pstyle>出版社：{bookContent.volumeInfo.publisher}</Pstyle>
+                  <Pstyle>
+                    出版日期：{bookContent.volumeInfo.publishedDate}
+                  </Pstyle>
                 </div>
-                <div>
+                <ActionIcon>
+                  <a href={bookContent.volumeInfo.previewLink} target="_blank">
+                    <LinkIcon />
+                  </a>
                   <RevertIcon
                     onClick={() => {
                       setShowBookContent(false);
+                      setSubmitValue("");
                     }}
                   />
                   <GrBookIcon
@@ -283,7 +291,7 @@ const SearchBook = () => {
                       setShowSubmitDialogue(true);
                     }}
                   />
-                </div>
+                </ActionIcon>
               </div>
             </BookDetail>
             <ContentText>
@@ -311,13 +319,13 @@ const SearchBook = () => {
         >
           <InputWrapper>
             <div>說說為什麼想推薦，幫助夥伴快速瞭解這本書(30字內)</div>
-            <textarea
+            <RecTextarea
               value={submitValue}
               onChange={(e) => {
                 setSubmitValue(e.target.value);
               }}
             />
-            <button onClick={handleRec}>送出推薦</button>
+            <RecButton onClick={handleRec}>送出推薦</RecButton>
           </InputWrapper>
         </PageShield>
       )}
@@ -327,8 +335,48 @@ const SearchBook = () => {
 
 export default SearchBook;
 
+const RecButton = styled.button`
+  margin: 0 auto;
+  border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+  border-radius: 4px;
+`;
+
+const RecTextarea = styled.textarea`
+  height: 4rem;
+  overflow-y: auto;
+  padding: 3px 5px;
+`;
+
+const Pstyle = styled.p`
+  line-height: 1.3rem;
+  /* color: red; */
+  font-weight: 550;
+  color: gray;
+  @media only screen and (max-width: 800px) {
+    text-align: center;
+  }
+`;
+
+const ActionIcon = styled.div`
+  @media only screen and (max-width: 800px) {
+    text-align: center;
+  }
+`;
+
+const Titlestyle = styled.p`
+  font-weight: 550;
+  line-height: 1.5rem;
+  /* color: red; */
+  @media only screen and (max-width: 800px) {
+    text-align: center;
+  }
+`;
+
 const ContentText = styled.div`
-  width: 70%;
+  width: 80%;
+  line-height: 1.2rem;
 `;
 const PageShield = styled.div`
   width: 100vw;
@@ -354,8 +402,9 @@ const InputWrapper = styled.div`
   outline: none;
   background-color: white;
   z-index: 99;
-  border-radius: 3px;
+  border-radius: 4px;
   min-height: 150px;
+  gap: 10px;
   /* padding: 0px 0px 20px; */
   padding: 2rem;
   max-height: calc(100vh - 240px);
@@ -364,16 +413,24 @@ const InputWrapper = styled.div`
 `;
 
 const SearchInput = styled.input`
+  width: 100%;
+  height: 20%;
   border-radius: 4px;
   outline: none;
   border: 1px solid #d1cbcb;
-  padding: 3px 5px;
+  padding: 4px 5px;
+`;
+
+const AdvancedIcon = styled(GrSearchAdvancedIcon)`
+  cursor: pointer;
+  margin-left: 10px;
+  margin-right: 0;
 `;
 
 const SearchBookInput = styled.div`
   display: flex;
   margin: 0 auto;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   align-items: center;
 `;

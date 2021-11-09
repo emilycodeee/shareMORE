@@ -43,8 +43,6 @@ const ApplicationStyled = styled.div`
 `;
 
 const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
-  console.log("🎉applicationData", applicationData);
-  console.log("🎍appliedData", appliedData);
   const [value, setValue] = useState("");
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
@@ -56,12 +54,8 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
       applicantID: userData.uid,
       applicantionID: userData.uid,
     };
-    const response = firebase.SendApplication(
-      groupData.groupID,
-      data,
-      userData.uid
-    );
-    response.then((res) => {
+    firebase.SendApplication(groupData.groupID, data, userData.uid).then(() => {
+      firebase.sendLeadNotification(groupData.groupID, groupData.creatorID);
       alert("送出成功，請等候社長審核");
     });
   };

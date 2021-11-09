@@ -80,8 +80,8 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
       )
       .then(() => {
         firebase
-          .getTotalDocList("groups")
-          .then((res) => d(getGroupsList(res)))
+          .sendGroupNotification(groupData.groupID, currentUser.uid)
+          .then((res) => console.log("ssss", res))
           .catch((err) => console.log(err));
         alert("確認完成");
       });

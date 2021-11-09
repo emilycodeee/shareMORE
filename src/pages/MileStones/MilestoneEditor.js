@@ -139,19 +139,25 @@ const MilestoneEditor = () => {
   // init
   const editMode = useRef(false);
   useEffect(() => {
-    if (!userData) {
-      history.push("/");
-    }
-    if (userData) {
-      firebase.getMyGroupsName(userData?.uid).then((res) => {
-        setgroupsName(res);
+    let isMounted = true;
+    if (isMounted) {
+      if (!userData) {
+        history.push("/");
+      }
+      if (userData) {
+        firebase.getMyGroupsName(userData?.uid).then((res) => {
+          setgroupsName(res);
 
-        if (res.length === 0) {
-          alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
-          history.push("/");
-        }
-      });
+          if (res.length === 0) {
+            alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
+            history.push("/");
+          }
+        });
+      }
     }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -180,7 +186,7 @@ const MilestoneEditor = () => {
   }, []);
 
   // if (groupsName)
-  console.log("editModeeditModeeditModel", editMode);
+  // console.log("editModeeditModeeditModel", editMode);
   const userData = useSelector((state) => state.userData);
 
   const editorHandler = (e) => {

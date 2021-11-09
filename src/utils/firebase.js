@@ -826,6 +826,115 @@ export const confirmApplication = async (memberID, groupID, data) => {
   await batch.commit();
 };
 
+export const sendLeadNotification = async (groupID, userID) => {
+  const docRefId = doc(collection(db, "users", userID, "notification")).id;
+
+  const docId = `g-${docRefId}`;
+  const data = {
+    creationTime: new Date(),
+    docId,
+    groupID,
+    readed: false,
+    role: "owner",
+  };
+
+  const a = await setDoc(
+    doc(collection(db, "users", userID, "notification"), docId),
+    data
+  );
+
+  console.log(a);
+  // return data;
+};
+
+//
+export const sendGroupNotification = async (groupID, userID) => {
+  const docRefId = doc(collection(db, "users", userID, "notification")).id;
+  const docId = `g-${docRefId}`;
+  const data = {
+    creationTime: new Date(),
+    docId,
+    groupID,
+    readed: false,
+    role: "member",
+  };
+
+  const a = await setDoc(
+    doc(collection(db, "users", userID, "notification"), docId),
+    data
+  );
+
+  console.log(a);
+  // return data;
+};
+
+//
+export const sendMilestoneNotification = async (mileID, toAuthor, fromUser) => {
+  const docRefId = doc(collection(db, "users", toAuthor, "notification")).id;
+  const docId = `m-${docRefId}`;
+
+  const data = {
+    creationTime: new Date(),
+    docId,
+    milestoneID: mileID,
+    sender: fromUser,
+    readed: false,
+  };
+  console.log("ddddd");
+  await setDoc(
+    doc(collection(db, "users", toAuthor, "notification"), docId),
+    data
+  );
+  // return data;
+};
+
+export const readNotification = async (docID, userID) => {
+  console.log(docID);
+  console.log(userID);
+
+  const notificationRef = doc(db, "users", userID, "notification", docID);
+  console.log(notificationRef);
+  // Set the "capital" field of the city 'DC'
+  await updateDoc(notificationRef, {
+    readed: true,
+  });
+};
+
+// export const saveForMilestone = async (groupID, docID, userID) => {
+//   console.log(docID, userID);
+//   const docRef = doc(db, "groups", groupID, "posts", docID);
+//   const docSnap = await getDoc(docRef);
+
+//   if (docSnap.data().clapBy?.includes(userID)) {
+//     await updateDoc(docRef, {
+//       clapBy: arrayRemove(userID),
+//     });
+//   } else {
+//     await updateDoc(docRef, {
+//       clapBy: arrayUnion(userID),
+//     });
+//   }
+// };
+
+//  const q = query(
+//    collection(firebase.db, "users", userData.uid, "notification")
+//  );
+
+// export const sendPostComment = async (groupID, postID, data) => {
+//   const docRefId = doc(
+//     collection(db, "groups", groupID, "posts", postID, "comments")
+//   ).id;
+//   const finalData = { ...data, commentID: docRefId };
+
+//   await setDoc(
+//     doc(
+//       collection(db, "groups", groupID, "posts", postID, "comments"),
+//       docRefId
+//     ),
+//     finalData
+//   );
+// };
+
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
 };

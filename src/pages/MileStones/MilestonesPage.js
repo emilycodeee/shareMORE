@@ -411,7 +411,7 @@ const MilestonesPage = () => {
           onChange={handleInputChange}
           onKeyPress={handleSearch}
         />
-        <SerachButton>搜尋</SerachButton>
+        <SerachButton onClick={handleSearch}>搜尋</SerachButton>
       </SearchWrapper>
       <div>
         <Wrapper>

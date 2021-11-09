@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import HtmlParser from "react-html-parser";
 import { RiArrowGoBackLine } from "react-icons/ri";
+import { GrLink } from "react-icons/gr";
 
 const defaultBook =
   "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
@@ -24,7 +25,7 @@ const BookContent = ({ bookContent, setShowBookContent }) => {
             <Pstyle>出版社：{bookContent.volumeInfo.publisher}</Pstyle>
             <Pstyle>出版日期：{bookContent.volumeInfo.publishedDate}</Pstyle>
             <a href={bookContent.volumeInfo.previewLink} target="_blank">
-              試讀連結
+              <GrLink />
             </a>
           </div>
         </div>

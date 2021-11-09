@@ -12,7 +12,8 @@ import BookContent from "./component/BookContnet";
 import { JumpCircleLoading } from "react-loadingg";
 
 const Wrapper = styled.div`
-  max-width: 1000px;
+  /* max-width: 1000px; */
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -29,14 +30,16 @@ const caret = keyframes`
 `;
 
 const Run = styled.h1`
-  font: bold 200% Consolas, Monaco, monospace;
-  /* 	width: 8.25em; */
   width: 34rem;
   white-space: nowrap;
   overflow: hidden;
   border-right: 0.05em solid;
   color: white;
   animation: ${typing} 6s steps(15) infinite, ${caret} 1s steps(1) infinite;
+  @media only screen and (max-width: 500px) {
+    font-size: 1.2rem;
+    width: 20rem;
+  }
 `;
 
 const PageShield = styled.div`
@@ -84,6 +87,11 @@ const SerchButton = styled.button`
   margin-bottom: 20px;
   border: none;
   padding: 0.6rem;
+  cursor: pointer;
+  &:hover {
+    background-color: transparent;
+    border: 1px solid #d1cbcb;
+  }
 `;
 
 const Bookshelf = () => {
@@ -113,35 +121,35 @@ const Bookshelf = () => {
   };
 
   useEffect(() => {
-    let isMounted = true;
-    if (isMounted) {
-      const groupDetail = groupsList.find((g) => g.groupID === groupID);
+    // let isMounted = true;
+    // if (isMounted) {
+    const groupDetail = groupsList.find((g) => g.groupID === groupID);
 
-      const checkMembership =
-        groupDetail?.membersList?.includes(userData?.uid) ||
-        groupDetail?.creatorID === userData?.uid;
-      setIsInsider(checkMembership);
+    const checkMembership =
+      groupDetail?.membersList?.includes(userData?.uid) ||
+      groupDetail?.creatorID === userData?.uid;
+    setIsInsider(checkMembership);
 
-      const groupOwner = groupDetail?.creatorID === userData?.uid;
-      setIsOwner(groupOwner);
-    }
-    return () => {
-      isMounted = false;
-    };
+    const groupOwner = groupDetail?.creatorID === userData?.uid;
+    setIsOwner(groupOwner);
+    // }
+    // return () => {
+    //   isMounted = false;
+    // };
   }, [groupsList]);
 
   // console.log(groupDetail);
   // console.log(currentUserDetail);
 
   const getRecommender = (uid) => {
-    let isMounted = true;
-    if (isMounted) {
-      const currentUserDetail = usersList.find((p) => p.uid === uid);
-      return currentUserDetail;
-    }
-    return () => {
-      isMounted = false;
-    };
+    // let isMounted = true;
+    // if (isMounted) {
+    const currentUserDetail = usersList.find((p) => p.uid === uid);
+    return currentUserDetail;
+    // }
+    // return () => {
+    //   isMounted = false;
+    // };
   };
 
   useEffect(() => {
@@ -169,7 +177,7 @@ const Bookshelf = () => {
   return (
     <Wrapper>
       <TopCover style={{ backgroundImage: `url(${bookshelf})` }}>
-        <Run>找書更方便！一起建立社群書櫃！</Run>
+        <Run>找書更方便！一起建立社團書櫃！</Run>
       </TopCover>
       {isLoading && <JumpCircleLoading />}
       {isInsider && (
@@ -280,6 +288,7 @@ const BookTitle = styled.div`
 `;
 
 const RecommendText = styled.div`
+  line-height: 1.3rem;
   margin-top: 0.5rem;
   text-align: start;
   background-color: #f7f5f5;

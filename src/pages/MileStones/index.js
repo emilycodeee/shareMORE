@@ -207,8 +207,8 @@ const MainPost = styled.div`
 `;
 
 const PostAvatar = styled.img`
-  height: 30%;
-  width: 30%;
+  height: 3rem;
+  width: 3rem;
   border-radius: 50%;
   margin-right: 1rem;
 `;
@@ -283,6 +283,11 @@ const MilestonePage = () => {
     };
 
     firebase.sendMilestoneComment(milestoneID, data).then(() => {
+      firebase.sendMilestoneNotification(
+        milestoneID,
+        authorData?.uid,
+        userData.uid
+      );
       setCmtValue("");
     });
   };

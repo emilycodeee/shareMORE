@@ -4,19 +4,9 @@ import * as firebase from "../utils/firebase";
 import { useState } from "react";
 import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
-import { BlockLoading } from "react-loadingg";
+import { TouchBallLoading } from "react-loadingg";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsersList } from "../redux/actions";
-// import {
-//   EmbedSignIn,
-//   AuthButton,
-//   SocialIconCtn,
-//   InputStyled,
-//   Horizontal,
-//   Ptag,
-//   ShowSignUp,
-//   ErrorMsg,
-// } from "./Signin.styled";
 
 const Signin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,18 +30,28 @@ const Signin = () => {
     setMessage("");
     setIsLoading(true);
     firebase.register(name, email, password, setMessage).then(() => {
+      setIsLoading(false);
       firebase
         .getTotalDocList("users")
         .then((res) => d(getUsersList(res)))
         .catch((err) => console.log(err));
     });
   };
-  // console.log("😍😍", message);
+
+  const handleLogin = () => {
+    setMessage("");
+    setIsLoading(true);
+    firebase.logIn(email, password, setMessage).then(() => {
+      setIsLoading(false);
+    });
+    // message && alert(message);
+  };
+
   return (
     <EmbedSignIn>
       {!showSignUp && (
         <>
-          {isLoading && <BlockLoading />}
+          {isLoading && <TouchBallLoading />}
           {/* {} */}
           <AuthButton
             onClick={() => {
@@ -82,16 +82,7 @@ const Signin = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <AuthButton
-            onClick={() => {
-              setMessage("");
-              setIsLoading(true);
-              firebase.logIn(email, password, setMessage);
-              // message && alert(message);
-            }}
-          >
-            登入
-          </AuthButton>
+          <AuthButton onClick={handleLogin}>登入</AuthButton>
 
           {message && <ErrorMsg>{message}</ErrorMsg>}
 
@@ -109,7 +100,7 @@ const Signin = () => {
       )}
       {showSignUp && (
         <>
-          {isLoading && <BlockLoading />}
+          {isLoading && <TouchBallLoading />}
           <InputStyled
             placeholder="請輸入使用者名稱"
             value={name}

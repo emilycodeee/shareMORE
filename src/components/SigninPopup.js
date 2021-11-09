@@ -4,23 +4,35 @@ import { useState } from "react";
 import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
 import styled from "styled-components";
+import { TouchBallLoading } from "react-loadingg";
 
 const Container = styled.div`
+  max-width: 800px;
+  width: 80%;
   display: flex;
-  padding: 0px;
+  justify-content: center;
   position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   margin-right: 120px;
-  width: 668px;
   outline: none;
+  z-index: 99;
+  border-radius: 10px;
+  /* 卷軸 */
+  min-height: 150px;
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
 `;
 
 const AuthCtn = styled.div`
+  width: 60%;
   display: flex;
   flex-direction: column;
-  width: 300px;
+  /* justify-content: center; */
+  align-items: center;
+  max-width: 300px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   background-color: rgb(255, 255, 255);
@@ -28,6 +40,8 @@ const AuthCtn = styled.div`
 `;
 
 const Sider = styled.div`
+  padding: 0 10px;
+  width: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -38,21 +52,21 @@ const Sider = styled.div`
   padding: 10px;
 `;
 
-export const AuthButton = styled.button`
+const AuthButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   width: 100%;
-  border: 1px;
+  /* border: no。 */
   height: 40px;
-  font-size: 14.98px;
-  font-family: "GT Walsheim Pro", Arial, sans-serif;
+  /* font-size: 14.98px; */
+  /* font-family: "GT Walsheim Pro", Arial, sans-serif; */
   font-weight: 700;
   border-color: #394649;
-  border-style: solid;
+  /* border-style: solid; */
   border-radius: 4px;
-  letter-spacing: 0.2px;
+  /* letter-spacing: 0.2px; */
   background-color: #fff;
   margin-bottom: 10px;
   &:hover {
@@ -60,12 +74,12 @@ export const AuthButton = styled.button`
   }
 `;
 
-export const SocialIconCtn = styled.img`
+const SocialIconCtn = styled.img`
   height: 20px;
   margin-right: 10px;
 `;
 
-export const InputStyled = styled.input`
+const InputStyled = styled.input`
   margin-bottom: 10px;
   height: 38px;
   padding: 0px 14px;
@@ -75,16 +89,15 @@ export const InputStyled = styled.input`
   /* height: 40px; */
 `;
 
-export const Horizontal = styled.div`
+const Horizontal = styled.div`
   height: 1px;
   margin: 14px 0px;
   border-color: #002333;
   border-style: solid;
-
   border-top-width: 1px;
 `;
 
-export const Ptag = styled.p`
+const Ptag = styled.p`
   font-family: "GT Walsheim Pro", Arial, sans-serif;
   background: rgb(255, 255, 255);
   color: rgb(0, 35, 51);
@@ -96,7 +109,7 @@ export const Ptag = styled.p`
   font-weight: bold;
 `;
 
-export const ShowSignUp = styled.button`
+const ShowSignUp = styled.button`
   color: #3722d3;
   font-size: 18px;
   background: none;
@@ -107,7 +120,7 @@ export const ShowSignUp = styled.button`
   cursor: pointer;
 `;
 
-export const ErrorMsg = styled.p`
+const ErrorMsg = styled.p`
   text-align: center;
   color: red;
   font-size: 1rem;
@@ -115,6 +128,7 @@ export const ErrorMsg = styled.p`
 `;
 
 const SigninPopup = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -126,6 +140,22 @@ const SigninPopup = () => {
     firebase.socialMediaAuth(provider, setMessage);
   };
 
+  const handleRegister = () => {
+    setIsLoading(true);
+    setMessage("");
+    firebase.register(name, email, password, setMessage).then(() => {
+      setIsLoading(false);
+    });
+  };
+
+  const handleLogin = () => {
+    setIsLoading(true);
+    setMessage("");
+    firebase.logIn(email, password, setMessage).then(() => {
+      setIsLoading(false);
+    });
+  };
+
   return (
     <Container>
       <Sider>
@@ -135,6 +165,7 @@ const SigninPopup = () => {
       <AuthCtn>
         {!showMore && (
           <>
+            {isLoading && <TouchBallLoading />}
             <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
               <SocialIconCtn src={googleIcon} />
               Continue with Google
@@ -157,14 +188,7 @@ const SigninPopup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <AuthButton
-              onClick={() => {
-                setMessage("");
-                firebase.logIn(email, password, setMessage);
-              }}
-            >
-              登入
-            </AuthButton>
+            <AuthButton onClick={handleLogin}>登入</AuthButton>
             {message && <ErrorMsg>{message}</ErrorMsg>}
             <Horizontal>
               <Ptag>or</Ptag>
@@ -180,6 +204,7 @@ const SigninPopup = () => {
         )}
         {showMore && (
           <>
+            {isLoading && <TouchBallLoading />}
             <InputStyled
               placeholder="請輸入使用者名稱"
               value={name}
@@ -199,14 +224,7 @@ const SigninPopup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <AuthButton
-              onClick={() => {
-                setMessage("");
-                firebase.register(name, email, password, setMessage);
-              }}
-            >
-              註冊
-            </AuthButton>
+            <AuthButton onClick={handleRegister}>註冊</AuthButton>
             {message && <ErrorMsg>{message}</ErrorMsg>}
             <Horizontal>
               <Ptag>or</Ptag>

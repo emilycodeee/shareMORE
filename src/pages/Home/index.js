@@ -101,13 +101,9 @@ const HomePage = ({ userList, groupList }) => {
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
   const [groupsIntro, setGroupsIntro] = useState([]);
-  // const [milestonesIntro, setMilestonesIntro] = useState([]);
-  //  const [milestonesIntro, setMilestonesIntro] = useState([]);
-  console.log("groupsListgroupsList", groupsList);
+
   useEffect(() => {
     setGroupsIntro(groupsList);
-    // firebase.getContentsListSort("groups", setGroupsIntro);
-    // firebase.getContentsListSort("articles", setMilestonesIntro);
   }, [groupsList]);
 
   const filterPublicArticles = articlesList.filter((a) => a.public === true);
@@ -134,24 +130,18 @@ const HomePage = ({ userList, groupList }) => {
       {!userData && <Signin />}
       <div>
         <ListWrapper>
-          {categoryList.map((item, i) => {
-            return (
-              <ListCtn key={i} onClick={handleSelected}>
-                {/* <div
-                to={`/groups/${item.name}`}
-                style={{ textDecoration: "none" }}
-                > */}
-                {item.name}
-                {/* </div> */}
-              </ListCtn>
-            );
-          })}
           <ListCtn key="all" onClick={handleSelected}>
             全部
           </ListCtn>
+          {categoryList.map((item, i) => {
+            return (
+              <ListCtn key={i} onClick={handleSelected}>
+                {item.name}
+              </ListCtn>
+            );
+          })}
         </ListWrapper>
       </div>
-      {/* <Container> */}
       <Section>
         <Slogan>看看最近大家在學些什麼</Slogan>
         <Wrapper>
@@ -179,9 +169,6 @@ const HomePage = ({ userList, groupList }) => {
         </Wrapper>
         <LinkStyled to="/milestones">查看更多</LinkStyled>
       </Section>
-      {/* <button onClick={() => firebase.logOut()}>logOut</button> */}
-      {/* </Container> */}
-      {/* <Fireworks /> */}
     </Container>
   );
 };
@@ -191,7 +178,7 @@ export default HomePage;
 const TopCover = styled.div`
   padding: 0;
   margin: 0;
-  /* height: 720px; */
+
   height: 100vh;
   width: 100%;
   overflow: hidden;

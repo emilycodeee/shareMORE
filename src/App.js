@@ -61,10 +61,10 @@ function App() {
       });
 
       //redux
-      firebase
-        .getTotalDocList("users")
-        .then((res) => d(getUsersList(res)))
-        .catch((err) => console.log(err));
+      // firebase
+      //   .getTotalDocList("users")
+      //   .then((res) => d(getUsersList(res)))
+      //   .catch((err) => console.log(err));
 
       // firebase
       //   .getTotalDocSortList("groups")
@@ -87,59 +87,57 @@ function App() {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const obsUserStatus = () => {
-      const q = query(
-        collection(firebase.db, "users"),
-        orderBy("creationTime", "desc")
-      );
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const data = [];
-        querySnapshot.forEach((doc) => {
-          data.push(doc.data());
-        });
-        d(getUsersList(data));
+    //usersList
+    const userq = query(
+      collection(firebase.db, "users"),
+      orderBy("creationTime", "desc")
+    );
+    const userStatusUnsubscribe = onSnapshot(userq, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
       });
-    };
+      d(getUsersList(data));
+    });
 
-    const obsArticlesStatus = () => {
-      const q = query(
-        collection(firebase.db, "articles"),
-        // where("public", "==", true),
-        orderBy("creationTime", "desc")
-      );
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const data = [];
-        querySnapshot.forEach((doc) => {
-          data.push(doc.data());
-        });
-        d(getArticlesList(data));
+    //articles
+    const groupq = query(
+      collection(firebase.db, "articles"),
+      // where("public", "==", true),
+      orderBy("creationTime", "desc")
+    );
+    const groupStatusUnsubscribe = onSnapshot(groupq, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
       });
-    };
+      d(getArticlesList(data));
+    });
 
-    const obsGroupStatus = () => {
-      const q = query(
-        collection(firebase.db, "groups"),
-        orderBy("creationTime", "desc")
-      );
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const data = [];
-        querySnapshot.forEach((doc) => {
-          data.push(doc.data());
-        });
-        d(getGroupsList(data));
+    //groups
+    const articleq = query(
+      collection(firebase.db, "groups"),
+      orderBy("creationTime", "desc")
+    );
+    const articlesStatusUnsubscribe = onSnapshot(articleq, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
       });
-    };
+      d(getGroupsList(data));
+    });
 
-    if (isMounted) {
-      obsUserStatus();
-      obsGroupStatus();
-      obsArticlesStatus();
-    }
+    // if (isMounted) {
+    //   obsUserStatus();
+    //   obsGroupStatus();
+    //   obsArticlesStatus();
+    // }
 
     return () => {
-      isMounted = false;
+      // isMounted = false;
+      userStatusUnsubscribe();
+      groupStatusUnsubscribe();
+      articlesStatusUnsubscribe();
     };
   }, []);
 
@@ -155,7 +153,6 @@ function App() {
         <Route path="/milestone/:milestoneID/edit" exact>
           <MilestoneEditor />
         </Route>
-
         <Route path="/groups" exact>
           <GroupsPage />
         </Route>
@@ -171,7 +168,6 @@ function App() {
         <Route path="/group/:groupID/notes" exact>
           <NotesPage />
         </Route>
-        {/* bookshelf */}
         <Route path="/group/:groupID/bookshelf" exact>
           <Bookshelf />
         </Route>
@@ -193,20 +189,12 @@ function App() {
         <Route path="/milestone/:milestoneID" exact>
           <MilestonePage />
         </Route>
-
-        {/* <Route path="/messages/:sendTo" exact>
-          <ChatRoom />
-        </Route> */}
         <Route path="/profile/:userID" exact>
           <ProfilePage />
         </Route>
         <Route path="/profile/:userID/edit" exact>
           <ProfileSetting />
         </Route>
-
-        {/* <Route path="/book" exact>
-          <Book />
-        </Route> */}
       </Switch>
     </Layouts>
   );
