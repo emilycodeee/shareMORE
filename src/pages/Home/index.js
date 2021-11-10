@@ -2,22 +2,25 @@ import React from "react";
 import styled from "styled-components";
 import * as firebase from "../../utils/firebase";
 import { useState, useEffect } from "react";
-import discover from "../../sources/discover.mp4";
 import Card from "./components/Card";
-import Signin from "../../components/Signin";
-// import { TopCover, ViderCover, Shield } from "./index.styled";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import GroupsCard from "./components/GroupsCard";
-import Fireworks from "../../components/Fireworks";
+import Tilt from "react-tilt";
+import main from "../../sources/main.png";
+import bg from "../../sources/bg.jpg";
+import MainText from "./components/MainText";
+import { Animated } from "react-animated-css";
 
 const Container = styled.div`
+  width: 1000px;
   width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #fff4e4;
 `;
 
 const ListWrapper = styled.ul`
@@ -26,6 +29,9 @@ const ListWrapper = styled.ul`
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.8rem;
+  @media (max-width: 670px) {
+    display: none;
+  }
 `;
 
 const ListCtn = styled.div`
@@ -40,11 +46,6 @@ const ListCtn = styled.div`
   font-weight: 600;
 
   text-align: center;
-
-  /* &:hover {
-    border-bottom: 2px solid salmon;
-    border-radius: 5px;
-  } */
 `;
 
 const Wrapper = styled.div`
@@ -76,17 +77,26 @@ const Section = styled.div`
   padding: 20px;
   width: 90%;
   margin-bottom: 10px;
+  /* background-color: #fff4e4; ; */
 `;
 
 const LinkStyled = styled(Link)`
-  font-size: 1.2rem;
+  margin-top: 1rem;
   text-decoration: none;
-  padding: 6px 10px;
-  border-radius: 4px;
-  border: 1px solid rgb(70 69 65);
-  margin-top: 2rem;
-  color: rgb(44 33 6);
-  font-weight: 660;
+  font-size: 1.3vw;
+  font-weight: 600;
+  background: #f27e59;
+  border: none;
+  padding: 0.8rem 1.1rem;
+  color: #fff4e4;
+  border-radius: 1rem;
+  transition: all 0.3s ease-in-out;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0px 17px 16px -11px #ffae96;
+    transform: translateY(-8px);
+  }
 `;
 
 const Slogan = styled.div`
@@ -120,43 +130,57 @@ const HomePage = ({ userList, groupList }) => {
 
   return (
     <Container>
-      <TopCover>
-        <ViderCover autoPlay loop muted>
-          <source src={discover} type="video/mp4" />
-        </ViderCover>
-        <Shield />
-      </TopCover>
-      <hr />
-      {!userData && <Signin />}
+      <CoverContainer bg={bg}>
+        <SecondWrapper>
+          <InnerWrapper>
+            <Left>
+              <MainText />
+            </Left>
+            <TiltWrapper options={{ max: 25 }}>
+              <Img src={main} alt="@gouthamgtronics" />
+            </TiltWrapper>
+          </InnerWrapper>
+        </SecondWrapper>
+      </CoverContainer>
       <div>
         <ListWrapper>
-          <ListCtn key="all" onClick={handleSelected}>
+          <CateBtn key="all" onClick={handleSelected}>
             全部
-          </ListCtn>
-          {categoryList.map((item, i) => {
+          </CateBtn>
+          {categoryList.map((item) => {
             return (
-              <ListCtn key={i} onClick={handleSelected}>
+              <CateBtn key={item.name} onClick={handleSelected}>
                 {item.name}
-              </ListCtn>
+              </CateBtn>
             );
           })}
         </ListWrapper>
       </div>
       <Section>
         <Slogan>看看最近大家在學些什麼</Slogan>
+
         <Wrapper>
           {groupsIntro.slice(0, 8).map((item) => {
-            return <GroupsCard item={item} key={item.groupID} />;
+            return (
+              // <Animated
+              //   animationIn="fadeInDown"
+              //   // animationOut="fadeOutDownBig"
+              //   animationInDuration="2000"
+              //   isVisible={true}
+              // >
+              <GroupsCard item={item} key={item.groupID} />
+              // </Animated>
+            );
           })}
         </Wrapper>
+
         <LinkStyled to="/groups">查看更多</LinkStyled>
       </Section>
-      <hr />
+      {/* <hr /> */}
       <Section>
         <Slogan>一起的日子 慶祝我們的里程碑</Slogan>
         <Wrapper>
           {filterPublicArticles.slice(0, 8).map((item) => {
-            console.log(item);
             return (
               <Card
                 item={item}
@@ -175,36 +199,69 @@ const HomePage = ({ userList, groupList }) => {
 
 export default HomePage;
 
-const TopCover = styled.div`
-  padding: 0;
-  margin: 0;
+const Left = styled.div`
+  width: 40%;
+`;
 
-  height: 100vh;
+const Img = styled.img`
+  width: 80%;
+  margin: 0 10%;
+`;
+
+const TiltWrapper = styled(Tilt)`
+  width: 60%;
+`;
+
+const SecondWrapper = styled.div`
   width: 100%;
-  overflow: hidden;
-  position: relative;
-
-  @media only screen and (max-width: 800px) {
-    height: 100vh;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+    -webkit-backdrop-filter: blur(35px);
+    backdrop-filter: blur(35px);
+    background-color: rgba(255, 255, 255, 0.5);
   }
 `;
 
-const ViderCover = styled.video`
-  position: absolute;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  top: auto;
-  height: 100%;
+const CoverContainer = styled.div`
+  margin: 0 auto;
+  flex-direction: column;
   width: 100%;
-  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url(${({ bg }) => bg});
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 `;
 
-const Shield = styled.div`
-  z-index: 3;
-  background: rgba(0, 0, 0, 0.4);
+const InnerWrapper = styled.div`
+  width: 800px;
+  width: 80%;
+  margin: 0 10%;
   display: flex;
+  justify-content: center;
   align-items: center;
-  height: 100%;
-  position: relative;
+  flex-wrap: nowrap;
+  padding: 5%;
+`;
+
+const CateBtn = styled.div`
+  text-decoration: none;
+  font-size: 1.3vw;
+  font-weight: 600;
+  background: #f27e59;
+  border: none;
+  padding: 0.8rem 1.1rem;
+  color: #fff4e4;
+  border-radius: 1rem;
+  /* box-shadow: 0px 13px 24px -7px #ffae96; */
+  transition: all 0.3s ease-in-out;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0px 17px 16px -11px #ffae96;
+    transform: translateY(-8px);
+  }
 `;

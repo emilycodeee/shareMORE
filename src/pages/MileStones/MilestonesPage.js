@@ -337,7 +337,7 @@ const MilestonesPage = () => {
           </Div1>
           <StyledSlider {...settings}>
             {bookList.length > 0 &&
-              bookList.map((b, i) => {
+              bookList.map((b) => {
                 return (
                   <SelectedBook key={b.groupBookID}>
                     <BookImgWrapper

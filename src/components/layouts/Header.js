@@ -11,7 +11,6 @@ import * as firebase from "../../utils/firebase";
 import {
   query,
   collection,
-  where,
   orderBy,
   onSnapshot,
   limit,
@@ -58,9 +57,7 @@ const Header = () => {
 
   const handleReadNoti = (e) => {
     const target = e.target.dataset.id;
-    console.log(target);
     firebase.readNotification(target, userData.uid);
-    //m-tLuSLTIUJzPNuSspUKyR
   };
 
   useEffect(() => {
@@ -120,29 +117,31 @@ const Header = () => {
   return (
     <>
       <HeaderContainer>
-        <LogoContainer to="/">
-          <LogoCtn src={logo} />
-        </LogoContainer>
-        <ListContainer>
-          <ListStyled to="/milestones">所有里程碑</ListStyled>
-          {userData && (
-            <>
-              <ListStyled to="/groups">所有社團</ListStyled>
-              <ListStyled to="/groups/post">發起社團</ListStyled>
-              <ListStyled to="/milestones/post">創建里程碑</ListStyled>
-              <ListStyled to={`/profile/${userData?.uid}`}>
-                <ImgCtn src={userAvatar} />
-              </ListStyled>
-              <IconSet>
-                <Notifications onClick={actNotifications} />
-                <Count>1</Count>
-                <MenuBurger onClick={() => setToggleMobile(!toggleMobile)} />
-                <LogoutBtn onClick={handleLogout} />
-              </IconSet>
-            </>
-          )}
-          {!userData && <LoginBtn onClick={showLoginPage}>登入</LoginBtn>}
-        </ListContainer>
+        <InnerWrapper>
+          <LogoContainer to="/">
+            <LogoCtn src={logo} />
+          </LogoContainer>
+          <ListContainer>
+            <ListStyled to="/milestones">所有里程碑</ListStyled>
+            {userData && (
+              <>
+                <ListStyled to="/groups">所有社團</ListStyled>
+                <ListStyled to="/groups/post">發起社團</ListStyled>
+                <ListStyled to="/milestones/post">創建里程碑</ListStyled>
+                <ListStyled to={`/profile/${userData?.uid}`}>
+                  <ImgCtn src={userAvatar} />
+                </ListStyled>
+                <IconSet>
+                  <Notifications onClick={actNotifications} />
+                  {/* <Count>1</Count> */}
+                  <MenuBurger onClick={() => setToggleMobile(!toggleMobile)} />
+                  <LogoutBtn onClick={handleLogout} />
+                </IconSet>
+              </>
+            )}
+            {!userData && <LoginBtn onClick={showLoginPage}>登入</LoginBtn>}
+          </ListContainer>
+        </InnerWrapper>
       </HeaderContainer>
       {showNotification && (
         <NotificationsArea>
@@ -258,9 +257,10 @@ const NotificationsArea = styled.div`
   height: auto;
   right: 10px;
   z-index: 99;
-  background-color: rgb(255 234 182);
-  padding: 10px 10px;
+  background-color: rgb(255 244 228);
+  padding: 10px 0;
   overflow-y: auto;
+
   @media only screen and (max-width: 992px) {
     width: 30%;
   }
@@ -274,17 +274,20 @@ const NotifiLink = styled(Link)`
   text-decoration: none;
   align-self: center;
   height: 30%;
+  color: black;
+  padding: 0.5rem;
+  :hover {
+    background-color: #ffae96;
+  }
 `;
 
 const ListContainer = styled.ul`
   display: flex;
   align-items: center;
   padding: 0 0 0 1rem;
-  /* border: 1px solid red; */
-
+  /* gap: 1rem; */
   @media only screen and (max-width: 992px) {
     padding: 0;
-    /* border: 1px solid red; */
   }
 `;
 
@@ -293,31 +296,28 @@ const ListStyled = styled(Link)`
   margin-right: 1rem;
   list-style: none;
   text-decoration: none;
-
-  color: rgb(17 17 17);
-  &:last-child {
-    margin-right: 0;
-  }
+  font-size: 1rem;
+  /* color: rgb(17 17 17); */
+  color: #fff4e4;
   @media only screen and (max-width: 992px) {
     display: none;
   }
 `;
 
 const LoginBtn = styled.button`
+  color: #f27e59;
   margin-right: 20px;
-  /* height: 2em; */
   font-size: 1rem;
   padding: 0.3rem 1rem;
   cursor: pointer;
   font-weight: 550;
   border-radius: 2px;
-  background-color: transparent;
-  border: 1px solid rgb(255 182 0);
-  /* 
-  color: rgb(255 182 0); */
+  background-color: #ffebd7;
+  transition: all 0.3s ease-in-out;
+  border: none;
   text-decoration: none;
   &:hover {
-    background-color: rgb(255 182 0);
+    transform: translateY(-8px);
     color: white;
   }
 `;
@@ -330,24 +330,33 @@ const LoginPage = styled.div`
   position: fixed;
   z-index: 99;
   background-color: rgba(0, 0, 0, 0.8);
-  /* cursor: zoom-out; */
+`;
+
+const InnerWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1vw;
+  max-width: 1560px;
+  width: 100%;
 `;
 
 const HeaderContainer = styled.div`
-  /* max-width: 1200px; */
-  width: 100%;
   display: flex;
-  align-items: center;
-  padding: 0 1rem;
-  background-color: rgb(255 234 182);
-  box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+  color: white;
+  background-color: #f27e59;
+  /* box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px; */
+  box-shadow: 0px -3px 16px -7px #ffffff;
   @media only screen and (max-width: 992px) {
     justify-content: space-between;
   }
 `;
 
 const LogoContainer = styled(Link)`
-  flex-grow: 1;
+  /* flex-grow: 1; */
   @media only screen and (max-width: 992px) {
     /* max-width: 200px; */
   }
@@ -356,7 +365,7 @@ const LogoContainer = styled(Link)`
 const LogoCtn = styled.img`
   max-width: 300px;
   @media only screen and (max-width: 992px) {
-    width: 200px;
+    max-width: 200px;
   }
 `;
 
@@ -367,7 +376,7 @@ const MobileMenu = styled.div`
   align-items: center;
   right: 0;
   top: 42px;
-  background-color: rgb(255 234 182);
+  background-color: rgb(255 228 207);
   font-size: 1rem;
   z-index: 999999;
   top: 0px;
@@ -415,6 +424,7 @@ const IconSet = styled.div`
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  /* padding: 0 1rem; */
   gap: 10px;
 `;
 
@@ -424,12 +434,15 @@ const ImgCtn = styled.img`
   border-radius: 50%;
 `;
 const iconStyle = {
-  width: "1.5rem",
-  height: "1.5rem",
+  width: "1.4rem",
+  height: "1.4rem",
+  margin: "0.5rem 0 ",
+  color: "#fff4e4",
 };
 
 const Close = styled(HiChevronDoubleRight)`
   ${iconStyle}
+
   display: flex;
   justify-content: start;
 `;
@@ -450,6 +463,7 @@ const MenuBurger = styled(HiMenu)`
   width: 1.4rem;
   height: 1.4rem;
   cursor: pointer;
+  color: #fff4e4;
   /* margin-right: 1rem; */
   display: none;
   @media only screen and (max-width: 992px) {

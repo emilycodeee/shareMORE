@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import GroupsCard from "../Home/components/GroupsCard";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Animated } from "react-animated-css";
 import algolia from "../../utils/algolia";
 // import algoliasearch from "algoliasearch";
 const MainCtn = styled.div`
@@ -175,28 +176,46 @@ const GroupsPage = () => {
       </TopCtn>
       <ContentCtn>
         <Side>
-          <ListStyle key={uuidv4()} onClick={handleCategory}>
-            全部
-          </ListStyle>
-          {categoryList.map((item, i) => (
-            <div key={uuidv4()}>
-              <ListStyle onClick={handleCategory}>{item.name}</ListStyle>
-              {item.subClasses.map((sitem, i) => (
-                <SubList
-                  key={uuidv4()}
-                  category={item.name}
-                  active={subClassesName}
-                  onClick={handleSubCategory}
-                >
-                  {sitem}
-                </SubList>
-              ))}
-            </div>
-          ))}
+          <Animated
+            animationIn="bounceInLeft"
+            animationOut="pulse"
+            animationInDuration="2000"
+            isVisible={true}
+          >
+            <ListStyle key={uuidv4()} onClick={handleCategory}>
+              全部
+            </ListStyle>
+
+            {categoryList.map((item, i) => (
+              <div key={uuidv4()}>
+                <ListStyle onClick={handleCategory}>{item.name}</ListStyle>
+                {item.subClasses.map((sitem, i) => (
+                  <SubList
+                    key={uuidv4()}
+                    category={item.name}
+                    active={subClassesName}
+                    onClick={handleSubCategory}
+                  >
+                    {sitem}
+                  </SubList>
+                ))}
+              </div>
+            ))}
+          </Animated>
         </Side>
+
         <Wrapper>
           {renderGroups.map((item) => {
-            return <GroupsCard item={item} key={item.groupID} />;
+            return (
+              <Animated
+                animationIn="bounceInLeft"
+                animationOut="pulse"
+                animationInDuration="2000"
+                isVisible={true}
+              >
+                <GroupsCard item={item} key={item.groupID} />
+              </Animated>
+            );
           })}
         </Wrapper>
       </ContentCtn>
