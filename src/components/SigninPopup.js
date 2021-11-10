@@ -5,10 +5,12 @@ import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
 import styled from "styled-components";
 import { TouchBallLoading } from "react-loadingg";
+import greenhouse from "../sources/greenhouse.gif";
+import growing from "../sources/growing.gif";
 
 const Container = styled.div`
   max-width: 800px;
-  width: 80%;
+  width: 70%;
   display: flex;
   justify-content: center;
   position: relative;
@@ -19,37 +21,52 @@ const Container = styled.div`
   outline: none;
   z-index: 99;
   border-radius: 10px;
-  /* 卷軸 */
   min-height: 150px;
-  max-height: calc(100vh - 240px);
-  overflow-y: auto;
-  scroll-behavior: smooth;
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+    /* border-radius: 0; */
+  }
 `;
 
 const AuthCtn = styled.div`
   width: 60%;
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
+  border: #dcdee1 1px solid;
   align-items: center;
-  max-width: 300px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   background-color: rgb(255, 255, 255);
   padding: 50px;
+  width: auto;
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top: 4px solid #f27e59;
+    /* border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0; */
+    /* display: none; */
+  }
 `;
 
 const Sider = styled.div`
-  padding: 0 10px;
+  padding: 0 1rem;
   width: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-  background-color: rgb(255 234 182);
-  /* width: 284px; */
-  padding: 10px;
+  background-color: #f27e59;
+  @media only screen and (max-width: 992px) {
+    /* width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0; */
+    display: none;
+  }
 `;
 
 const AuthButton = styled.button`
@@ -58,15 +75,12 @@ const AuthButton = styled.button`
   justify-content: center;
   cursor: pointer;
   width: 100%;
-  /* border: no。 */
+  border: #dcdee1 1px solid;
   height: 40px;
-  /* font-size: 14.98px; */
-  /* font-family: "GT Walsheim Pro", Arial, sans-serif; */
   font-weight: 700;
-  border-color: #394649;
-  /* border-style: solid; */
+
   border-radius: 4px;
-  /* letter-spacing: 0.2px; */
+  padding: 1rem;
   background-color: #fff;
   margin-bottom: 10px;
   &:hover {
@@ -85,38 +99,19 @@ const InputStyled = styled.input`
   padding: 0px 14px;
   border-radius: 4px;
   border: #dcdee1 1px solid;
-  width: auto;
-  /* height: 40px; */
-`;
-
-const Horizontal = styled.div`
-  height: 1px;
-  margin: 14px 0px;
-  border-color: #002333;
-  border-style: solid;
-  border-top-width: 1px;
-`;
-
-const Ptag = styled.p`
-  font-family: "GT Walsheim Pro", Arial, sans-serif;
-  background: rgb(255, 255, 255);
-  color: rgb(0, 35, 51);
-  display: block;
-  margin: -7px auto;
-  text-align: center;
-  width: 30px;
-  font-size: 13px;
-  font-weight: bold;
+  width: 100%;
+  box-shadow: inset 0 2px 4px 0 hsla(0, 0%, 0%, 0.08);
 `;
 
 const ShowSignUp = styled.button`
-  color: #3722d3;
+  color: #f27e59;
   font-size: 18px;
   background: none;
-  font-family: "GT Walsheim Pro", Arial, sans-serif;
+  margin-top: 2rem;
+  /* font-family: "GT Walsheim Pro", Arial, sans-serif; */
   font-weight: 700;
   border-style: none;
-  margin-bottom: 16px;
+  /* margin-bottom: 16px; */
   cursor: pointer;
 `;
 
@@ -125,6 +120,17 @@ const ErrorMsg = styled.p`
   color: red;
   font-size: 1rem;
   font-weight: 600;
+`;
+
+const Slogan = styled.h2`
+  margin: 0;
+  margin-bottom: 1rem;
+  color: #ffffff;
+`;
+
+const Tree = styled.img`
+  width: 4rem;
+  height: 4rem;
 `;
 
 const SigninPopup = () => {
@@ -159,12 +165,16 @@ const SigninPopup = () => {
   return (
     <Container>
       <Sider>
-        <h2>一起 走得更遠</h2>
-        <h4>Sign in to continue to your account.</h4>
+        <Slogan>一起 走得更遠</Slogan>
+        <Slogan>
+          TOGETHER <br />
+          WE ARE STRONGER.
+        </Slogan>
       </Sider>
       <AuthCtn>
         {!showMore && (
           <>
+            <Tree src={growing} />
             {isLoading && <TouchBallLoading />}
             <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
               <SocialIconCtn src={googleIcon} />
@@ -190,9 +200,7 @@ const SigninPopup = () => {
             />
             <AuthButton onClick={handleLogin}>登入</AuthButton>
             {message && <ErrorMsg>{message}</ErrorMsg>}
-            <Horizontal>
-              <Ptag>or</Ptag>
-            </Horizontal>
+
             <ShowSignUp
               onClick={() => {
                 setShowMore(!showMore);
@@ -204,6 +212,7 @@ const SigninPopup = () => {
         )}
         {showMore && (
           <>
+            <Tree src={growing} />
             {isLoading && <TouchBallLoading />}
             <InputStyled
               placeholder="請輸入使用者名稱"
@@ -226,9 +235,7 @@ const SigninPopup = () => {
             />
             <AuthButton onClick={handleRegister}>註冊</AuthButton>
             {message && <ErrorMsg>{message}</ErrorMsg>}
-            <Horizontal>
-              <Ptag>or</Ptag>
-            </Horizontal>
+
             <ShowSignUp
               onClick={() => {
                 setShowMore(!showMore);

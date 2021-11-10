@@ -318,7 +318,7 @@ const LoginBtn = styled.button`
   text-decoration: none;
   &:hover {
     transform: translateY(-8px);
-    color: white;
+    color: #ff511d;
   }
 `;
 
