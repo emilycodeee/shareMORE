@@ -7,16 +7,20 @@ import { v4 as uuidv4 } from "uuid";
 import { Animated } from "react-animated-css";
 import algolia from "../../utils/algolia";
 // import algoliasearch from "algoliasearch";
+
 const MainCtn = styled.div`
   max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  /* justify-content: center;
+  align-items: center; */
 `;
 
 const Wrapper = styled.div`
   display: grid;
-  width: 90%;
+  width: 80%;
   padding: 1em;
   align-items: flex-start;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -80,7 +84,7 @@ const Search = styled.input`
 `;
 
 const Side = styled.div`
-  width: 25%;
+  width: 20%;
 `;
 
 const TopCtn = styled.div`
@@ -176,46 +180,30 @@ const GroupsPage = () => {
       </TopCtn>
       <ContentCtn>
         <Side>
-          <Animated
-            animationIn="bounceInLeft"
-            animationOut="pulse"
-            animationInDuration="2000"
-            isVisible={true}
-          >
-            <ListStyle key={uuidv4()} onClick={handleCategory}>
-              全部
-            </ListStyle>
+          <ListStyle key={uuidv4()} onClick={handleCategory}>
+            全部
+          </ListStyle>
 
-            {categoryList.map((item, i) => (
-              <div key={uuidv4()}>
-                <ListStyle onClick={handleCategory}>{item.name}</ListStyle>
-                {item.subClasses.map((sitem, i) => (
-                  <SubList
-                    key={uuidv4()}
-                    category={item.name}
-                    active={subClassesName}
-                    onClick={handleSubCategory}
-                  >
-                    {sitem}
-                  </SubList>
-                ))}
-              </div>
-            ))}
-          </Animated>
+          {categoryList.map((item, i) => (
+            <div key={item.name}>
+              <ListStyle onClick={handleCategory}>{item.name}</ListStyle>
+              {item.subClasses.map((sitem, i) => (
+                <SubList
+                  key={item.name}
+                  category={item.name}
+                  active={subClassesName}
+                  onClick={handleSubCategory}
+                >
+                  {sitem}
+                </SubList>
+              ))}
+            </div>
+          ))}
         </Side>
 
         <Wrapper>
           {renderGroups.map((item) => {
-            return (
-              <Animated
-                animationIn="bounceInLeft"
-                animationOut="pulse"
-                animationInDuration="2000"
-                isVisible={true}
-              >
-                <GroupsCard item={item} key={item.groupID} />
-              </Animated>
-            );
+            return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>
       </ContentCtn>

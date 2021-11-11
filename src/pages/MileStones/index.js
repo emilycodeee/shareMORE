@@ -18,7 +18,7 @@ import CommentReply from "./components/CommentReply";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
 
 const Container = styled.div`
-  max-width: 800px;
+  width: 1000px;
   width: 100%;
   display: flex;
   margin: 0 auto;

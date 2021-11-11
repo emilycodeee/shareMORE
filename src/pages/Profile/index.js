@@ -141,60 +141,42 @@ const ProfilePage = () => {
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
+  //本頁id連動的user
   const currentUser = usersList?.find((item) => item.uid === userID);
+  const me = userID === userData?.uid;
 
-  const [myJoinGroups, setMyJoinGroups] = useState([]);
-  const [myCreateGroups, setMyCreateGroups] = useState([]);
-  // const [myGroupsObj, setMyGroupsObj] = useState({});
-  const [myMilestones, setMyMilestones] = useState([]);
+  console.log("currentUser", currentUser);
+  console.log("me", me);
+
+  const [userJoinGroups, setUserJoinGroups] = useState([]);
+  const [userCreateGroups, setUserCreateGroups] = useState([]);
+  const [userMilestones, setUserMilestones] = useState([]);
+
+  //我自己看到
   const [mySaveArticles, setMySaveArticles] = useState([]);
   const [selected, setSelected] = useState([]);
   const [showSetting, setShowSetting] = useState(false);
   const [active, setActive] = useState("我參加的社團");
-  // const [isOwner, setIsOwner] = useState(false);
+
   const isOwner = useRef(false);
   const defaultRender = useRef(true);
 
   useEffect(() => {
-    // if (groupsList) {
     const participate = groupsList?.filter((g) =>
-      g.membersList?.includes(userData?.uid)
+      g.membersList?.includes(userID)
     );
-    setMyJoinGroups(participate);
-    const owner = groupsList?.filter((g) => g.creatorID === userData?.uid);
-    setMyCreateGroups(owner);
+    setUserJoinGroups(participate);
+    const owner = groupsList?.filter((g) => g.creatorID === userID);
+    setUserCreateGroups(owner);
+    const userMile = articlesList.filter((a) => a.creatorID === userID);
 
-    const myMile = articlesList.filter((a) => a.creatorID === userData?.uid);
-    setMyMilestones(myMile);
+    setUserMilestones(userMile);
 
     const mySave = articlesList.filter((a) =>
       a.saveBy?.includes(userData?.uid)
     );
     const publicChecker = mySave.filter((a) => a.public === true);
     setMySaveArticles(publicChecker);
-    // }
-    // let isMounted = true;
-    // if (isMounted) {
-    //   firebase
-    //     .getMyGroupsObj(userID)
-    //     .then((res) => setMyGroupsObj(res))
-    //     .catch((err) => console.error(err));
-    //   firebase
-    //     .getMyMilestones(userID)
-    //     .then((res) => setMyMilestones(res))
-    //     .catch((err) => console.error(err));
-    //   firebase
-    //     .getMySaveArticles(userID)
-    //     .then((res) => {
-    //       console.log("mySaveArticles👱‍♂️", res);
-    //       const publicChecker = res.filter((a) => a.public === true);
-    //       setMySaveArticles(publicChecker);
-    //     })
-    //     .catch((err) => console.error(err));
-    // }
-    // return () => {
-    //   isMounted = false;
-    // };
   }, [articlesList, groupsList]);
 
   if (userData?.uid === userID) {
@@ -208,32 +190,29 @@ const ProfilePage = () => {
     switch (e.target.dataset.id) {
       case "part":
         setActive("我參加的社團");
-        setSelected(myJoinGroups);
+        setSelected(userJoinGroups);
         break;
       case "own":
         setActive("我創建的社團");
-        setSelected(myCreateGroups);
+        setSelected(userCreateGroups);
         break;
       case "stone":
         setActive("我的里程碑");
-        setSelected(myMilestones.filter((item) => item.public === true));
+        setSelected(userMilestones.filter((item) => item.public === true));
         break;
       case "save":
         setActive("我的收藏");
-        // console.log("mySaveArticles", mySaveArticles);
         setSelected(mySaveArticles);
         break;
       case "archive":
         setActive("封存");
-        // console.log("mySaveArticles", mySaveArticles);
-        setSelected(myMilestones.filter((item) => item.public === false));
+        setSelected(userMilestones.filter((item) => item.public === false));
         break;
       default:
-      // setSelected(myGroupsObj.participate);
     }
   };
 
-  const publicMilestone = myMilestones.filter(
+  const publicMilestone = userMilestones.filter(
     (item) => item.public === true
   ).length;
 
@@ -287,12 +266,12 @@ const ProfilePage = () => {
           <TagWrapper>
             <TagSet>
               <div>參加</div>
-              <div>{myJoinGroups.length}</div>
+              <div>{userJoinGroups.length}</div>
               <div>社群</div>
             </TagSet>
             <TagSet>
               <div>發起</div>
-              <div>{myCreateGroups.length}</div>
+              <div>{userCreateGroups.length}</div>
               <div>社群</div>
             </TagSet>
             <TagSet>
@@ -304,7 +283,7 @@ const ProfilePage = () => {
           {/* <div>
             <p>Follow me on popular social media sites.</p>
           </div> */}
-          {isOwner.current && (
+          {me && (
             <SettingBtn to={`/profile/${userID}/edit`}>個人頁面設定</SettingBtn>
           )}
         </div>
@@ -321,25 +300,38 @@ const ProfilePage = () => {
           <ListItem data-id="stone" active={active} onClick={handleChoose}>
             我的里程碑
           </ListItem>
-          <ListItem data-id="save" active={active} onClick={handleChoose}>
-            我的收藏
-          </ListItem>
-          <ListItem data-id="archive" active={active} onClick={handleChoose}>
-            封存
-          </ListItem>
+          {me && (
+            <>
+              <ListItem data-id="save" active={active} onClick={handleChoose}>
+                我的收藏
+              </ListItem>
+              <ListItem
+                data-id="archive"
+                active={active}
+                onClick={handleChoose}
+              >
+                封存
+              </ListItem>
+            </>
+          )}
           {/* <LinkStyle to={`/messages/${userID}`}>
             <ListItem>發訊息</ListItem>
           </LinkStyle> */}
         </ListCtn>
         <ContentCtn>
           {defaultRender.current
-            ? myJoinGroups?.map((item) => {
-                // console.log(selected);
-                return <ContentCards item={item} key={uuidv4()} />;
+            ? userJoinGroups?.map((item) => {
+                console.log("cccccccccccc", item);
+                return <ContentCards item={item} key={item.groupID} />;
               })
             : selected?.map((item) => {
-                console.log("ssssssssssssssss", selected);
-                return <ContentCards item={item} key={uuidv4()} />;
+                console.log("ssssssssssssssss", item);
+                return (
+                  <ContentCards
+                    item={item}
+                    key={item.milestoneID || item.groupID}
+                  />
+                );
               })}
         </ContentCtn>
       </ContentWrapper>

@@ -20,6 +20,7 @@ const CoverContainer = styled.div`
   background-size: cover;
   background-position: center;
   height: 50%;
+  /* border: 10px solid red; */
 `;
 
 const ContentContainer = styled.div`

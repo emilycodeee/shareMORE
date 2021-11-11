@@ -192,6 +192,9 @@ function App() {
         <Route path="/profile/:userID" exact>
           <ProfilePage />
         </Route>
+        {/* <Route path="/profile/:userID" exact>
+          <ProfilePage />
+        </Route> */}
         <Route path="/profile/:userID/edit" exact>
           <ProfileSetting />
         </Route>

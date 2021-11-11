@@ -50,12 +50,12 @@ const ListCtn = styled.div`
 
 const Wrapper = styled.div`
   display: grid;
-  width: 90%;
-  padding: 1em;
+  width: 80%;
+  /* padding: 1em; */
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 1.2rem;
-  grid-row-gap: 1.2rem;
+  grid-column-gap: 1.4rem;
+  grid-row-gap: 1.4rem;
 
   @media only screen and (max-width: 992px) {
     grid-template-columns: 1fr 1fr 1fr;
@@ -102,7 +102,7 @@ const LinkStyled = styled(Link)`
 const Slogan = styled.div`
   font-size: 1.5rem;
   font-weight: 600;
-  margin: 2rem;
+  margin: 3rem 0;
 `;
 
 const HomePage = ({ userList, groupList }) => {
@@ -136,8 +136,9 @@ const HomePage = ({ userList, groupList }) => {
             <Left>
               <MainText />
             </Left>
+            {/* options */}
             <TiltWrapper options={{ max: 25 }}>
-              <Img src={main} alt="@gouthamgtronics" />
+              <Img src={main} />
             </TiltWrapper>
           </InnerWrapper>
         </SecondWrapper>
@@ -147,9 +148,9 @@ const HomePage = ({ userList, groupList }) => {
           <CateBtn key="all" onClick={handleSelected}>
             全部
           </CateBtn>
-          {categoryList.map((item) => {
+          {categoryList.map((item, i) => {
             return (
-              <CateBtn key={item.name} onClick={handleSelected}>
+              <CateBtn key={i} onClick={handleSelected}>
                 {item.name}
               </CateBtn>
             );
@@ -161,22 +162,12 @@ const HomePage = ({ userList, groupList }) => {
 
         <Wrapper>
           {groupsIntro.slice(0, 8).map((item) => {
-            return (
-              // <Animated
-              //   animationIn="fadeInDown"
-              //   // animationOut="fadeOutDownBig"
-              //   animationInDuration="2000"
-              //   isVisible={true}
-              // >
-              <GroupsCard item={item} key={item.groupID} />
-              // </Animated>
-            );
+            return <GroupsCard item={item} key={item.groupID} />;
           })}
         </Wrapper>
 
         <LinkStyled to="/groups">查看更多</LinkStyled>
       </Section>
-      {/* <hr /> */}
       <Section>
         <Slogan>一起的日子 慶祝我們的里程碑</Slogan>
         <Wrapper>

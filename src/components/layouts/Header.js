@@ -36,17 +36,21 @@ const Header = () => {
   const actNotifications = () => {
     setShowNotification(!showNotification);
   };
-  // const convertTime =
+
+  console.log(
+    "notificationCtn",
+    notificationCtn.filter((d) => d.readed === false).length
+  );
 
   const getUserName = (uid) => {
     const user = usersList.find((p) => p.uid === uid);
-    console.log(user);
+
     return user.displayName;
   };
 
   const getGroupName = (gid) => {
     const group = groupsList.find((g) => g.groupID === gid);
-    console.log(group);
+
     return group.name;
   };
 
@@ -72,14 +76,12 @@ const Header = () => {
         const data = [];
         querySnapshot.forEach((doc) => {
           console.log("😍", doc.data());
-          const tinyArr = {};
           if (doc.data().docId?.includes("m-")) {
             console.log("有里程碑留言", doc.data().sender);
           } else if (doc.data().docId?.includes("g-")) {
             console.log("有社團留言", doc.data());
           }
           data.push(doc.data());
-          console.log(data);
         });
         setNotificationCtn(data);
       });
@@ -114,6 +116,9 @@ const Header = () => {
       </LoginPage>
     );
   }
+
+  const count = notificationCtn?.filter((d) => d.readed === false).length;
+
   return (
     <>
       <HeaderContainer>
@@ -132,8 +137,10 @@ const Header = () => {
                   <ImgCtn src={userAvatar} />
                 </ListStyled>
                 <IconSet>
-                  <Notifications onClick={actNotifications} />
-                  {/* <Count>1</Count> */}
+                  <NotifiSet>
+                    <Notifications onClick={actNotifications} />
+                    <Count count={count}>{count}</Count>
+                  </NotifiSet>
                   <MenuBurger onClick={() => setToggleMobile(!toggleMobile)} />
                   <LogoutBtn onClick={handleLogout} />
                 </IconSet>
@@ -179,8 +186,7 @@ const Header = () => {
                     <Dot status={msg.readed} data-id={msg.docId} />
                     你的社團
                     <BoldName data-id={msg.docId}>
-                      {" "}
-                      {getGroupName(msg.groupID)}{" "}
+                      {getGroupName(msg.groupID)}
                     </BoldName>
                     有新的入社申請
                   </NotifiLink>
@@ -196,8 +202,7 @@ const Header = () => {
                     <Dot status={msg.readed} data-id={msg.docId} />
                     你在
                     <BoldName data-id={msg.docId}>
-                      {" "}
-                      {getGroupName(msg.groupID)}{" "}
+                      {getGroupName(msg.groupID)}
                     </BoldName>
                     的社團申請已經通過囉
                   </NotifiLink>
@@ -227,10 +232,23 @@ const Header = () => {
 
 export default Header;
 
+const NotifiSet = styled.div`
+  position: relative;
+`;
+
 const Count = styled.div`
+  background-color: #f9c68f;
+  width: 15px;
+  height: 15px;
+  display: ${(props) => (props.count > 0 ? "flex" : "none")};
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
   position: absolute;
+  font-size: 0.5rem;
+
   bottom: 0;
-  right: 3px;
+  right: -4px;
 `;
 
 const Dot = styled.span`

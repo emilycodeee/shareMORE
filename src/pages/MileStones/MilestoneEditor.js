@@ -10,9 +10,8 @@ import { useSelector } from "react-redux";
 import Fireworks from "../../components/Fireworks";
 
 const ContainerStyled = styled.div`
-  /* border-radius: 20px; */
-  /* border: 1px solid #3e2914; */
-  max-width: 1000px;
+  width: 1000px;
+  width: 100%;
   display: flex;
   /* margin: 3rem 5rem; */
   padding: 3rem 5rem;

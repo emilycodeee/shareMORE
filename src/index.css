@@ -16,3 +16,13 @@ body {
   background-color: #fff4e4;
   /* color: rgb(17 17 17); */
 }
+
+.ql-editor {
+  font-size: 1rem;
+  /* background-color: #ffff00; */
+}
+
+.ql-editor .ql-video {
+  width: 80%;
+  height: 40%;
+}

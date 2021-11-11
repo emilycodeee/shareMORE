@@ -4,14 +4,15 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const CardContainer = styled(Link)`
+  /* width: 100%; */
   text-decoration: none;
   color: black;
   border-radius: 5px;
   height: 320px;
-  /* height: 100%; */
   position: relative;
   border-bottom: 4px solid #f27e59;
   box-shadow: 0px 2px 6px 0px #ffd3c6;
+  margin-bottom: 10px;
 `;
 
 const CoverContainer = styled.div`
@@ -19,6 +20,7 @@ const CoverContainer = styled.div`
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   height: 50%;
+  /* width: 100%; */
   background-size: cover;
   background-position: center;
 `;

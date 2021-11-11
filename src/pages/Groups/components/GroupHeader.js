@@ -10,101 +10,6 @@ import { BsFillFolderFill, BsPencilSquare, BsCheckLg } from "react-icons/bs";
 import { AiOutlineTrophy } from "react-icons/ai";
 import { GiBookshelf } from "react-icons/gi";
 import { RiShareForwardFill } from "react-icons/ri";
-const AvatarImg = styled.img`
-  height: 3rem;
-  width: 3rem;
-  border-radius: 50%;
-  box-shadow: 0px 2px 6px grey;
-`;
-
-const NameLogo = styled.input`
-  border: ${(props) => (props.actEdit ? "1px solid black" : " none")};
-  /* border: none; */
-  /* max-width: 1000px; */
-  /* align-self: cent。 */
-  font-weight: 550;
-  font-size: 2rem;
-  outline: none;
-  width: auto;
-  /* flex-grow: 1; */
-`;
-
-const Wrapper = styled.div`
-  padding: 0 2rem;
-  display: flex;
-  justify-content: end;
-`;
-
-const UlStyled = styled.ul`
-  display: flex;
-  align-items: center;
-`;
-
-const LiStyled = styled.li`
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 0.6rem 1rem;
-  height: auto;
-  display: inline-block;
-  text-decoration: none;
-  margin-right: 10px;
-  cursor: pointer;
-  border-radius: 40px;
-  border: 1px solid rgb(70 69 65);
-`;
-
-const LinkStyled = styled(Link)`
-  font-weight: 600;
-  color: black;
-  text-decoration: none;
-  font-size: 1rem;
-  padding: 0.6rem 1rem;
-  height: auto;
-  display: inline-block;
-  text-decoration: none;
-  margin-right: 10px;
-  border-radius: 40px;
-  border: 1px solid rgb(70 69 65);
-`;
-
-const LinkAvatar = styled(Link)`
-  padding: 0;
-  height: auto;
-  display: inline-block;
-  margin-right: 1rem;
-`;
-
-const Shield = styled.div`
-  width: 100vw;
-  height: 100vh;
-  top: 0px;
-  left: 0px;
-  position: fixed;
-  z-index: 99;
-  background-color: rgba(0, 0, 0, 0.8);
-`;
-
-const EditIcon = styled(BsPencilSquare)`
-  cursor: pointer;
-  margin-left: 1rem;
-  height: 1rem;
-  width: 1rem;
-`;
-
-const SubmitIcon = styled(BsCheckLg)`
-  cursor: pointer;
-  margin-left: 1rem;
-  height: 1rem;
-  width: 1rem;
-`;
-
-const TitleBar = styled.div`
-  margin: 0;
-  padding: 0;
-  display: flex;
-  /* flex-grow: 1; */
-  align-items: center;
-`;
 
 const GroupHeader = () => {
   const { groupID } = useParams();
@@ -241,13 +146,14 @@ const GroupHeader = () => {
   return (
     <Wrapper>
       <TitleBar>
-        <NameLogo
-          value={titleValue}
-          onChange={(e) => setTitleValue(e.target.value)}
-          readOnly={!actEdit}
-          actEdit={actEdit}
-          // placeholder={content.name}
-        />
+        {!actEdit && <NameLogo>{titleValue}</NameLogo>}
+        {actEdit && (
+          <NameInput
+            value={titleValue}
+            onChange={(e) => setTitleValue(e.target.value)}
+            actEdit={actEdit}
+          />
+        )}
         {checkOwner && !actEdit && (
           <EditIcon
             onClick={() => {
@@ -257,7 +163,7 @@ const GroupHeader = () => {
         )}
         {checkOwner && actEdit && <SubmitIcon onClick={submitTitle} />}
       </TitleBar>
-      {/* </NameLogo> */}
+
       <UlStyled>
         <LinkAvatar to={`/profile/${groupOwner?.uid}`}>
           <AvatarImg src={groupOwner?.avatar} />
@@ -318,3 +224,109 @@ const GroupHeader = () => {
 // };
 
 export default GroupHeader;
+
+const Wrapper = styled.div`
+  max-width: 1560px;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: end;
+`;
+
+const AvatarImg = styled.img`
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+  box-shadow: 0px 2px 6px grey;
+`;
+
+const NameLogo = styled.div`
+  /* border: none; */
+  /* max-width: 1000px; */
+  /* align-self: cent。 */
+  font-weight: 550;
+  font-size: 2rem;
+  outline: none;
+  width: auto;
+  /* flex-grow: 1; */
+`;
+const NameInput = styled.input`
+  /* border: none; */
+  /* max-width: 1000px; */
+  /* align-self: cent。 */
+  font-weight: 550;
+  font-size: 2rem;
+  outline: none;
+  width: auto;
+  /* flex-grow: 1; */
+`;
+
+const UlStyled = styled.ul`
+  display: flex;
+  align-items: center;
+`;
+
+const LiStyled = styled.li`
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
+  height: auto;
+  display: inline-block;
+  text-decoration: none;
+  margin-right: 10px;
+  cursor: pointer;
+  border-radius: 40px;
+  border: 1px solid rgb(70 69 65);
+`;
+
+const LinkStyled = styled(Link)`
+  font-weight: 600;
+  color: black;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.6rem 1rem;
+  height: auto;
+  display: inline-block;
+  text-decoration: none;
+  margin-right: 10px;
+  border-radius: 40px;
+  border: 1px solid rgb(70 69 65);
+`;
+
+const LinkAvatar = styled(Link)`
+  padding: 0;
+  height: auto;
+  display: inline-block;
+  margin-right: 1rem;
+`;
+
+const Shield = styled.div`
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  position: fixed;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.8);
+`;
+
+const EditIcon = styled(BsPencilSquare)`
+  cursor: pointer;
+  margin-left: 1rem;
+  height: 1rem;
+  width: 1rem;
+`;
+
+const SubmitIcon = styled(BsCheckLg)`
+  cursor: pointer;
+  margin-left: 1rem;
+  height: 1rem;
+  width: 1rem;
+`;
+
+const TitleBar = styled.div`
+  margin: 0;
+  padding: 0;
+  display: flex;
+  /* flex-grow: 1; */
+  align-items: center;
+`;
