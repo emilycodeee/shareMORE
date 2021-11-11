@@ -18,7 +18,7 @@ import CommentReply from "./components/CommentReply";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
 
 const Container = styled.div`
-  max-width: 800px;
+  width: 1000px;
   width: 100%;
   display: flex;
   margin: 0 auto;
@@ -38,9 +38,10 @@ const TopCover = styled.div`
 
 const Wrapper = styled.div`
   margin: 30px 10px;
-  border-radius: 30px;
+  border-radius: 4px;
   padding: 30px;
-  border: 1px solid #3e2914;
+  /* border: 1px solid #3e2914; */
+  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
 `;
 
 const SideSetting = styled.div`
@@ -53,7 +54,7 @@ const SideSetting = styled.div`
   margin-top: 30px;
   height: 600px;
   border: 1px solid #d1cbcb;
-  border-radius: 25px;
+  border-radius: 4px;
   position: sticky;
   top: 20px;
   left: 0;
@@ -82,8 +83,8 @@ const Count = styled.div`
 `;
 
 const Avatar = styled.img`
-  width: 5rem;
-  height: 5rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   margin: 20px 0;
 `;
@@ -261,7 +262,7 @@ const MilestonePage = () => {
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const userData = useSelector((state) => state.userData);
-  const currentUser = usersList.find((item) => item.uid === userData.uid);
+  const currentUser = usersList.find((item) => item.uid === userData?.uid);
   const root = window.location.host;
   const pathname = useLocation().pathname;
 
@@ -282,6 +283,11 @@ const MilestonePage = () => {
     };
 
     firebase.sendMilestoneComment(milestoneID, data).then(() => {
+      firebase.sendMilestoneNotification(
+        milestoneID,
+        authorData?.uid,
+        userData.uid
+      );
       setCmtValue("");
     });
   };
@@ -314,10 +320,10 @@ const MilestonePage = () => {
   }, []);
 
   useEffect(() => {
-    if (content.creatorID) {
+    if (content?.creatorID) {
       setPublicStatus(content.public);
 
-      if (!content.public && userData?.uid !== content.creatorID) {
+      if (!content.public && userData?.uid !== content?.creatorID) {
         history.push("/");
       }
     }

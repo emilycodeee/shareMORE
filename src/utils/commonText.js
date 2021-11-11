@@ -25,3 +25,25 @@ export const convertTime = (creationTime) => {
   const time = new Date(creationTime?.toDate()).toLocaleString("zh-TW");
   return time;
 };
+
+export const arrCaculator = (arr) => {
+  console.log(arr);
+  const planObj = arr.reduce((obj, k) => {
+    if (k in obj) {
+      obj[k]++;
+    } else {
+      obj[k] = 1;
+    }
+    return obj;
+  }, {});
+
+  let max = 0;
+  let curUid = "";
+  for (let k in planObj) {
+    if (planObj[k] > max) {
+      max = planObj[k];
+      curUid = k;
+    }
+  }
+  return { userID: curUid, point: max };
+};

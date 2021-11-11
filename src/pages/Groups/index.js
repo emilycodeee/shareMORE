@@ -16,6 +16,8 @@ import {
   BsFillCheckSquareFill,
 } from "react-icons/bs";
 
+import { query, collection, orderBy, onSnapshot } from "firebase/firestore";
+
 import { useSelector } from "react-redux";
 import SimpleEditor from "../../components/SimpleEditor";
 
@@ -37,13 +39,15 @@ const MemberContainer = styled.div`
 `;
 
 const TopCover = styled.div`
-  border-radius: 30px;
+  /* width: 1580px; */
+  border-radius: 10px;
   opacity: 0.8;
   margin-bottom: 0.8rem;
+  width: 100%;
   height: 300px;
   background-size: cover;
   background-position: center;
-  box-shadow: 0px 2px 5px grey;
+  /* box-shadow: 0px 2px 5px grey; */
 `;
 
 const LabelStyled = styled.label`
@@ -72,12 +76,9 @@ const ContentCtn = styled.textarea`
 `;
 
 const Wrapper = styled.div`
-  max-width: 900px;
+  max-width: 1560px;
+  max-width: 1000px;
   margin: 0 auto;
-  margin-top: 30px;
-  border-radius: 30px;
-  padding: 30px;
-  border: 1px solid #3e2914;
 `;
 
 const Text = styled.div`
@@ -117,8 +118,6 @@ const EditImage = styled(BsFillCameraFill)`
   bottom: -20px;
   right: 0;
   cursor: pointer;
-
-  /* background-color: white; */
 `;
 
 const SaveImage = styled(BsFillCheckSquareFill)`
@@ -128,8 +127,6 @@ const SaveImage = styled(BsFillCheckSquareFill)`
   bottom: -20px;
   right: 0;
   cursor: pointer;
-
-  /* background-color: white; */
 `;
 
 const ImgWrapper = styled.div`
@@ -143,14 +140,12 @@ const DivCtn = styled.div`
   position: absolute;
   bottom: -20px;
   right: 0;
-  /* background-color: red; */
-  /* position: relative; */
 `;
 
 const GroupPage = () => {
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
-
+  const groupsList = useSelector((state) => state.groupsList);
   const { groupID } = useParams();
   const [showBtn, setShowBtn] = useState(false);
   const [content, setContent] = useState({});
@@ -169,21 +164,47 @@ const GroupPage = () => {
   const [imageCover, setImageCover] = useState("");
 
   useEffect(() => {
-    firebase
-      .getTopLevelContent("groups", groupID)
-      .then((res) => {
-        setContent(res);
-        setAboutValue(res.introduce);
-        setDateValue(res.goalDate);
-        setGoal(res.goal);
-        setImageCover(res.coverImage);
-      })
-      .catch((err) => console.log(err));
-    firebase.postsListener(groupID, setRenderPost);
-    firebase.getMembersList(groupID, setRenderMember);
-  }, []);
+    const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
 
-  // dateCounter(dateValue);
+    // if (isMounted) {
+    if (currentGroupData) {
+      setContent(currentGroupData);
+      setAboutValue(currentGroupData.introduce);
+      setDateValue(currentGroupData.goalDate);
+      setGoal(currentGroupData.goal);
+      setImageCover(currentGroupData.coverImage);
+      // setRenderMember(currentGroupData.membersList);
+    }
+
+    const postQ = query(
+      collection(firebase.db, "groups", groupID, "posts"),
+      orderBy("creationTime", "desc")
+    );
+    const postUnsubscribe = onSnapshot(postQ, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
+      });
+      setRenderPost(data);
+    });
+
+    const memberQ = query(
+      collection(firebase.db, "groups", groupID, "members"),
+      orderBy("joinTime", "desc")
+    );
+    const memberUnsubscribe = onSnapshot(memberQ, (querySnapshot) => {
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push(doc.data());
+      });
+      setRenderMember(data);
+    });
+
+    return () => {
+      postUnsubscribe();
+      memberUnsubscribe();
+    };
+  }, [groupsList]);
 
   const postHandler = () => {
     const data = {
@@ -228,6 +249,7 @@ const GroupPage = () => {
     (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
   const checkOwner = content.creatorID === userData?.uid;
+
   return (
     <Wrapper>
       <ImgWrapper>
@@ -248,7 +270,7 @@ const GroupPage = () => {
         )}
         {checkOwner && actEditImage && <SaveImage onClick={handleSubmitImg} />}
       </ImgWrapper>
-      <GroupHeader content={content} stationHead={stationHead} />
+      <GroupHeader />
       <SectionStyled>
         <LabelStyled>學習夥伴</LabelStyled>
         <MemberContainer>
@@ -273,12 +295,15 @@ const GroupPage = () => {
           )}
           {checkOwner && actEdit && <BsCheckLg onClick={handleSubmit} />}
         </LabelStyled>
-        <ContentCtn
-          actEdit={actEdit}
-          readOnly={!actEdit}
-          value={aboutValue}
-          onChange={(e) => setAboutValue(e.target.value)}
-        />
+        {actEdit && (
+          <ContentCtn
+            actEdit={actEdit}
+            readOnly={!actEdit}
+            value={aboutValue}
+            onChange={(e) => setAboutValue(e.target.value)}
+          />
+        )}
+        {!actEdit && <div>{aboutValue}</div>}
       </SectionStyled>
       <SectionStyled>
         <GoalDate>

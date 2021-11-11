@@ -7,22 +7,30 @@ import Select from "react-select";
 import Switch from "../../components/Switch";
 import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Fireworks from "../../components/Fireworks";
 
-// import * as firebase from "../../utils/firebase";
 const ContainerStyled = styled.div`
-  border-radius: 20px;
-  border: 1px solid #3e2914;
+  width: 1000px;
+  width: 100%;
   display: flex;
-  margin: 3rem 5rem;
+  /* margin: 3rem 5rem; */
   padding: 3rem 5rem;
+  margin: 0 auto;
+  @media only screen and (max-width: 992px) {
+    padding: 1rem 2rem;
+  }
 `;
 
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 70%;
+
+  /* background-color: salmon; */
 `;
 
 const SideSetting = styled.div`
+  width: 30%;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -30,17 +38,24 @@ const SideSetting = styled.div`
 `;
 
 const LabelCtn = styled.label`
+  padding: 10px 0 0 8px;
   font-size: 1.1rem;
   font-weight: 550;
   margin-right: 10px;
 `;
 
 const InputCtn = styled.input`
-  border-radius: 10px;
+  width: 100%;
   padding: 3px 10px;
   font-size: 1.2rem;
   margin: 1rem 0;
   border: 1px solid #b5b2b0;
+  /* border: 1px solid #b5b2b0; */
+`;
+
+const InputWrapper = styled.div`
+  border-radius: 4px;
+  padding: 8px;
 `;
 
 const UploadBtn = styled.label`
@@ -53,6 +68,7 @@ const SubmitBtn = styled.button`
   margin: 0 auto;
   padding: 10px;
   border-radius: 10px;
+  border: none;
 `;
 
 const SwitchCtn = styled.div`
@@ -70,7 +86,7 @@ const SettingLb = styled.label`
 `;
 
 const PreViewCtn = styled.img`
-  width: 300px;
+  width: 100%;
   margin: 10px 0;
 `;
 
@@ -86,7 +102,7 @@ const SettingWrapper = styled.div`
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #b5b2b0;
-  border-radius: 10px;
+  border-radius: 4px;
 `;
 
 const Introduce = styled.textarea`
@@ -117,47 +133,59 @@ const MilestoneEditor = () => {
   const [check, setCheck] = useState(true);
   const [originLabel, setOriginLabel] = useState("");
   const [previewUrl, setPreviewUrl] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage.png?alt=media&token=7b4118c2-46f8-41e9-a5de-de954c4aeb48"
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1"
   );
   // init
   const editMode = useRef(false);
   useEffect(() => {
-    if (!userData) {
-      history.push("/");
-    }
-    if (userData) {
-      firebase.getMyGroupsName(userData?.uid).then((res) => {
-        setgroupsName(res);
+    let isMounted = true;
+    if (isMounted) {
+      if (!userData) {
+        history.push("/");
+      }
+      if (userData) {
+        firebase.getMyGroupsName(userData?.uid).then((res) => {
+          setgroupsName(res);
 
-        if (res.length === 0) {
-          alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
-          history.push("/");
-        }
-      });
+          if (res.length === 0) {
+            alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
+            history.push("/");
+          }
+        });
+      }
     }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
-    if (milestoneID) {
-      firebase.getMilestone("articles", milestoneID).then((res) => {
-        setTitle(res.title);
-        setIntroduce(res.introduce);
-        setOriginLabel(
-          groupsList.find((item) => item.groupID === res.groupID)?.name
-        );
-        setSelected(res.groupID);
-        setValue(res.content);
-        setCheck(res.public);
-        setOriginContent(res);
-        console.log(res.coverImage);
-        setPreviewUrl(res.coverImage);
-        editMode.current = true;
-      });
+    let isMounted = true;
+    if (isMounted) {
+      if (milestoneID) {
+        firebase.getMilestone("articles", milestoneID).then((res) => {
+          setTitle(res.title);
+          setIntroduce(res.introduce);
+          setOriginLabel(
+            groupsList.find((item) => item.groupID === res.groupID)?.name
+          );
+          setSelected(res.groupID);
+          setValue(res.content);
+          setCheck(res.public);
+          setOriginContent(res);
+          console.log(res.coverImage);
+          setPreviewUrl(res.coverImage);
+          editMode.current = true;
+        });
+      }
     }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // if (groupsName)
-  console.log("editModeeditModeeditModel", editMode);
+  // console.log("editModeeditModeeditModel", editMode);
   const userData = useSelector((state) => state.userData);
 
   const editorHandler = (e) => {
@@ -215,11 +243,13 @@ const MilestoneEditor = () => {
     <ContainerStyled>
       <MainContainer>
         <LabelCtn>分享新的里程碑</LabelCtn>
-        <InputCtn
-          placeholder="請輸入標題..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <InputWrapper>
+          <InputCtn
+            placeholder="請輸入標題..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </InputWrapper>
         <WrapperStyled>
           <RichTextEditor value={value} editorHandler={editorHandler} />
         </WrapperStyled>
@@ -259,6 +289,7 @@ const MilestoneEditor = () => {
           </UploadBtn>
         </SettingWrapper>
         <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
+        {/* <Fireworks /> */}
       </SideSetting>
     </ContainerStyled>
   );

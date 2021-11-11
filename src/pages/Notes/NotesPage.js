@@ -99,27 +99,35 @@ const NotesPage = () => {
   const groupsList = useSelector((state) => state.groupsList);
   const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
-  const currentGroupData = groupsList.find((item) => item.groupID === groupID);
+  const currentGroupData = groupsList.find((item) => item?.groupID === groupID);
   let emptyText = "目前尚未建立社群筆記";
-  const checkGroupCreator = currentGroupData.creatorID === userData.uid;
+  const checkGroupCreator = currentGroupData?.creatorID === userData?.uid;
   console.log(currentGroupData);
 
   useEffect(() => {
-    if (endpoint.includes("notes")) {
-      console.log("你在筆記葉");
-      firebase
-        .getGroupNotes("groups", groupID, "notes")
-        .then((res) => setContentsList(res))
-        .catch((err) => console.log(err));
-    } else if (endpoint.includes("milestones")) {
-      firebase.getGroupMilestones(groupID).then((res) => {
-        const filterPublic = res.filter((item) => {
-          return item.public === true;
+    let isMounted = true;
+
+    if (isMounted) {
+      if (endpoint.includes("notes")) {
+        console.log("你在筆記葉");
+        firebase
+          .getGroupNotes("groups", groupID, "notes")
+          .then((res) => setContentsList(res))
+          .catch((err) => console.log(err));
+      } else if (endpoint.includes("milestones")) {
+        firebase.getGroupMilestones(groupID).then((res) => {
+          const filterPublic = res.filter((item) => {
+            return item.public === true;
+          });
+          setContentsList(filterPublic);
+          emptyText = "目前尚未存在與社團相關的公開里程碑";
         });
-        setContentsList(filterPublic);
-        emptyText = "目前尚未存在與社團相關的公開里程碑";
-      });
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
@@ -166,7 +174,7 @@ const NotesPage = () => {
             <Content>
               <TitleStyle>{item.title}</TitleStyle>
               <TimeTag>
-                {usersList.find((p) => p.uid === item.creatorID).displayName}
+                {usersList.find((p) => p.uid === item.creatorID)?.displayName}
               </TimeTag>
               <TimeTag>{getTime(item)}</TimeTag>
               <TextTag>{item.introduce}</TextTag>

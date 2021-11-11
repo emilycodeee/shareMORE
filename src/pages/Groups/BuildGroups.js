@@ -8,20 +8,29 @@ import { useHistory } from "react-router-dom";
 import { initText } from "../../utils/commonText";
 import { useSelector, useDispatch } from "react-redux";
 import { getGroupsList } from "../../redux/actions";
+
 const MainContainer = styled.div`
-  border-radius: 20px;
-  border: 1px solid #3e2914;
+  /* border-radius: 20px;
+  border: 1px solid #3e2914; */
   display: flex;
   flex-direction: column;
 
   margin: 3rem 5rem;
   padding: 3rem 5rem;
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+  }
 `;
 
 const LabelCtn = styled.label`
   font-size: 1.1rem;
   font-weight: 550;
   margin-right: 10px;
+  margin-bottom: 10px;
+  @media only screen and (max-width: 600px) {
+    font-size: 0.8rem;
+    margin-right: 0;
+  }
 `;
 
 const LabelWrapper = styled.div`
@@ -29,6 +38,10 @@ const LabelWrapper = styled.div`
   flex-wrap: nowrap;
   align-items: center;
   margin-left: 1rem;
+  @media only screen and (max-width: 600px) {
+    flex-wrap: wrap;
+    /* flex-direction: column; */
+  }
 `;
 
 const Field = styled.div`
@@ -42,7 +55,7 @@ const InputCtn = styled.input`
   flex-grow: 1;
   resize: none;
   height: 2rem;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 3px 10px;
   font-size: 1.2rem;
   border: 1px solid #b5b2b0;
@@ -50,7 +63,7 @@ const InputCtn = styled.input`
 
 const TextareaCtn = styled.textarea`
   flex-grow: 1;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid #b5b2b0;
   padding: 10px;
 `;
@@ -66,6 +79,10 @@ const Slogan = styled.div`
   font-weight: 550;
   font-size: 2rem;
   margin-bottom: 3rem;
+  @media only screen and (max-width: 600px) {
+    font-size: 1.2rem;
+    /* flex-direction: column; */
+  }
 `;
 
 const UploadBtn = styled.label`
@@ -86,6 +103,7 @@ const ImgField = styled.div`
 
 const SubmitBtn = styled.button`
   padding: 10px;
+  border: none;
 `;
 
 const BuildGroups = () => {
@@ -110,19 +128,25 @@ const BuildGroups = () => {
   const [introduce, setIntroduce] = useState("");
 
   useEffect(() => {
-    const subCategoryObj = categoryList.find(
-      (item) => item.name === selectedCategory
-    );
-    // console.log(subCategoryObj);
-    const subCategoryOpt = subCategoryObj?.subClasses.map((item) => {
-      return { value: item, label: item };
-    });
-    setSubClassesName(subCategoryOpt);
+    let isMounted = true;
+    if (isMounted) {
+      const subCategoryObj = categoryList.find(
+        (item) => item.name === selectedCategory
+      );
+      // console.log(subCategoryObj);
+      const subCategoryOpt = subCategoryObj?.subClasses.map((item) => {
+        return { value: item, label: item };
+      });
+      setSubClassesName(subCategoryOpt);
+    }
+    return () => {
+      isMounted = false;
+    };
   }, [selectedCategory]);
 
   const previewImg = file
     ? URL.createObjectURL(file)
-    : "https://www.leadershipmartialartsct.com/wp-content/uploads/2017/04/default-image.jpg";
+    : "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
 
   const handleSubmit = () => {
     if (goal.length === 0 || name.length === 0 || goalDate.length === 0) {
@@ -147,10 +171,10 @@ const BuildGroups = () => {
       public: true,
     };
     firebase.createGroup(data, file).then(() => {
-      firebase
-        .getTotalDocList("groups")
-        .then((res) => d(getGroupsList(res)))
-        .catch((err) => console.log(err));
+      // firebase
+      //   .getTotalDocSortList("groups")
+      //   .then((res) => d(getGroupsList(res)))
+      //   .catch((err) => console.log(err));
       alert("新社團建立成功");
       history.push("/");
     });

@@ -1,13 +1,237 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import ApplicationPopup from "./ApplicationPopup";
+// import BookApplicationPopup from "./BookApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
 import { BsFillFolderFill, BsPencilSquare, BsCheckLg } from "react-icons/bs";
 import { AiOutlineTrophy } from "react-icons/ai";
+import { GiBookshelf } from "react-icons/gi";
 import { RiShareForwardFill } from "react-icons/ri";
+
+const GroupHeader = () => {
+  const { groupID } = useParams();
+  const userData = useSelector((state) => state.userData);
+  const usersList = useSelector((state) => state.usersList);
+  const groupsList = useSelector((state) => state.groupsList);
+  const [showApplication, setShowApplication] = useState(false);
+  const [showBookApply, setShowBookApply] = useState(false);
+  const [applicationData, setApplicationData] = useState({});
+  const [bookListData, setBookListData] = useState([]);
+  const [appliedData, setAppliedData] = useState("");
+  const [titleValue, setTitleValue] = useState("");
+  const [actEdit, setActEdit] = useState(false);
+  const [groupOwner, setGroupOwner] = useState({});
+  const [content, setContent] = useState({});
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted) {
+      firebase.getTotalApplicationList(groupID, setApplicationData);
+      firebase.getBookApplication(groupID, setBookListData);
+      const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
+
+      setContent(currentGroupData);
+      if (currentGroupData) {
+        setTitleValue(currentGroupData?.name);
+        const owner = usersList.find(
+          (p) => p.uid === currentGroupData.creatorID
+        );
+        setGroupOwner(owner);
+      }
+      // console.log("content", content);
+      // if (content) setTitleValue(content?.name);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [groupsList]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted) {
+      const data = applicationData.data?.find(
+        (each) => each.applicantID === userData?.uid
+      );
+      if (data) {
+        setAppliedData(data);
+      }
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [applicationData]);
+  console.log(applicationData);
+  const root = window.location.host;
+  const pathname = useLocation().pathname;
+
+  const handleApplicationBtn = () => {
+    if (userData === null) {
+      alert("請先登入或加入會員");
+      return;
+    }
+    setShowApplication(!showApplication);
+  };
+
+  let checkMember, checkOwner, checkGeneralMember;
+
+  const checkStatus = () => {
+    let isMounted = true;
+
+    if (isMounted) {
+      checkMember =
+        (userData !== null && content?.membersList?.includes(userData?.uid)) ||
+        content?.creatorID === userData?.uid;
+      checkOwner = content?.creatorID === userData?.uid;
+      checkGeneralMember =
+        userData !== null && content?.membersList?.includes(userData?.uid);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  };
+  checkStatus();
+
+  const submitTitle = () => {
+    setActEdit(false);
+    const data = {
+      name: titleValue,
+    };
+    firebase.editGroupData(data, content.groupID);
+  };
+
+  if (showApplication) {
+    return (
+      <Shield
+        data-target="shield"
+        onClick={(e) => {
+          e.target.dataset.target === "shield" &&
+            setShowApplication(!showApplication);
+        }}
+      >
+        <ApplicationPopup
+          appliedData={appliedData}
+          groupData={content}
+          applicationData={applicationData}
+        />
+      </Shield>
+    );
+  }
+
+  // if (showBookApply) {
+  //   return (
+  //     <Shield
+  //       data-target="shield"
+  //       onClick={(e) => {
+  //         e.target.dataset.target === "shield" &&
+  //           setShowBookApply(!showBookApply);
+  //       }}
+  //     >
+  //       {/* <BookApplicationPopup
+  //         bookListData={bookListData}
+  //         // appliedData={appliedData}
+  //         // groupData={content}
+  //         // applicationData={applicationData}
+  //       /> */}
+  //     </Shield>
+  //   );
+  // }
+
+  // console.log(applicationData);
+  return (
+    <Wrapper>
+      <TitleBar>
+        {!actEdit && <NameLogo>{titleValue}</NameLogo>}
+        {actEdit && (
+          <NameInput
+            value={titleValue}
+            onChange={(e) => setTitleValue(e.target.value)}
+            actEdit={actEdit}
+          />
+        )}
+        {checkOwner && !actEdit && (
+          <EditIcon
+            onClick={() => {
+              setActEdit(!actEdit);
+            }}
+          />
+        )}
+        {checkOwner && actEdit && <SubmitIcon onClick={submitTitle} />}
+      </TitleBar>
+
+      <UlStyled>
+        <LinkAvatar to={`/profile/${groupOwner?.uid}`}>
+          <AvatarImg src={groupOwner?.avatar} />
+        </LinkAvatar>
+        <LiStyled
+          onClick={() => {
+            navigator.clipboard.writeText(root + pathname);
+            alert(`複製連結成功！`);
+          }}
+        >
+          <RiShareForwardFill />
+        </LiStyled>
+        <LinkStyled to={`${pathname}/bookshelf`}>
+          <GiBookshelf />
+        </LinkStyled>
+        {checkMember && (
+          <>
+            <LinkStyled to={`${pathname}/milestones`}>
+              <AiOutlineTrophy />
+            </LinkStyled>
+            <LinkStyled to={`${pathname}/notes`}>
+              <BsFillFolderFill />
+            </LinkStyled>
+          </>
+        )}
+
+        {content?.creatorID === userData?.uid && (
+          <>
+            <LiStyled
+              setShowApplication={setShowApplication}
+              onClick={() => {
+                setShowApplication(!showApplication);
+              }}
+            >
+              待審申請
+              <span>{applicationData?.count}</span>
+            </LiStyled>
+            {/* <LiStyled
+              // setShowApplication={setShowApplication}
+              onClick={() => {
+                setShowBookApply(!showBookApply);
+              }}
+            >
+              待審書單
+              <span>{bookListData?.count}</span>
+            </LiStyled> */}
+          </>
+        )}
+        {!checkGeneralMember && !checkOwner && (
+          <LiStyled onClick={handleApplicationBtn}>
+            {appliedData ? "等候審核" : "申請加入"}
+          </LiStyled>
+        )}
+      </UlStyled>
+    </Wrapper>
+  );
+};
+// };
+
+export default GroupHeader;
+
+const Wrapper = styled.div`
+  max-width: 1560px;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: end;
+`;
+
 const AvatarImg = styled.img`
   height: 3rem;
   width: 3rem;
@@ -15,9 +239,9 @@ const AvatarImg = styled.img`
   box-shadow: 0px 2px 6px grey;
 `;
 
-const NameLogo = styled.input`
-  border: ${(props) => (props.actEdit ? "1px solid black" : " none")};
+const NameLogo = styled.div`
   /* border: none; */
+  /* max-width: 1000px; */
   /* align-self: cent。 */
   font-weight: 550;
   font-size: 2rem;
@@ -25,11 +249,15 @@ const NameLogo = styled.input`
   width: auto;
   /* flex-grow: 1; */
 `;
-
-const Wrapper = styled.div`
-  padding: 0 2rem;
-  display: flex;
-  justify-content: end;
+const NameInput = styled.input`
+  /* border: none; */
+  /* max-width: 1000px; */
+  /* align-self: cent。 */
+  font-weight: 550;
+  font-size: 2rem;
+  outline: none;
+  width: auto;
+  /* flex-grow: 1; */
 `;
 
 const UlStyled = styled.ul`
@@ -99,144 +327,6 @@ const TitleBar = styled.div`
   margin: 0;
   padding: 0;
   display: flex;
-  flex-grow: 1;
+  /* flex-grow: 1; */
   align-items: center;
 `;
-
-const GroupHeader = ({ content, stationHead }) => {
-  const userData = useSelector((state) => state.userData);
-  // const usersList = useSelector((state) => state.usersList);
-  const groupsList = useSelector((state) => state.groupsList);
-  const [showApplication, setShowApplication] = useState(false);
-  const [applicationData, setApplicationData] = useState({});
-
-  const [appliedData, setAppliedData] = useState("");
-  const [titleValue, setTitleValue] = useState("");
-  const [actEdit, setActEdit] = useState(false);
-  // const checkGroupOwner = content.creatorID === userData?.uid;
-  useEffect(() => {
-    if (content.groupID) {
-      firebase.getTotalApplicationList(content.groupID, setApplicationData);
-    }
-    setTitleValue(content.name);
-  }, [content]);
-
-  useEffect(() => {
-    const data = applicationData.data?.find(
-      (each) => each.applicantID === userData?.uid
-    );
-    if (data) {
-      setAppliedData(data);
-    }
-  }, [applicationData]);
-
-  const root = window.location.host;
-  const pathname = useLocation().pathname;
-
-  const handleApplicationBtn = () => {
-    if (userData === null) {
-      alert("請先登入或加入會員");
-      return;
-    }
-    setShowApplication(!showApplication);
-  };
-
-  const checkMember =
-    (userData !== null && content?.membersList?.includes(userData?.uid)) ||
-    content?.creatorID === userData?.uid;
-  const checkOwner = content.creatorID === userData?.uid;
-  const checkGeneralMember =
-    userData !== null && content?.membersList?.includes(userData?.uid);
-
-  const submitTitle = () => {
-    setActEdit(false);
-    const data = {
-      name: titleValue,
-    };
-    firebase.editGroupData(data, content.groupID);
-  };
-
-  if (showApplication) {
-    return (
-      <Shield
-        data-target="shield"
-        onClick={(e) => {
-          e.target.dataset.target === "shield" &&
-            setShowApplication(!showApplication);
-        }}
-      >
-        <ApplicationPopup
-          appliedData={appliedData}
-          groupData={content}
-          applicationData={applicationData}
-        />
-      </Shield>
-    );
-  }
-
-  return (
-    <Wrapper>
-      <TitleBar>
-        <NameLogo
-          value={titleValue}
-          onChange={(e) => setTitleValue(e.target.value)}
-          readOnly={!actEdit}
-          actEdit={actEdit}
-          // placeholder={content.name}
-        />
-        {checkOwner && !actEdit && (
-          <EditIcon
-            onClick={() => {
-              setActEdit(!actEdit);
-            }}
-          />
-        )}
-        {checkOwner && actEdit && <SubmitIcon onClick={submitTitle} />}
-      </TitleBar>
-      {/* </NameLogo> */}
-      <UlStyled>
-        <LinkAvatar to={`/profile/${stationHead?.uid}`}>
-          <AvatarImg src={stationHead?.avatar} />
-        </LinkAvatar>
-        <LiStyled
-          onClick={() => {
-            navigator.clipboard.writeText(root + pathname);
-            alert(`複製連結成功！`);
-          }}
-        >
-          <RiShareForwardFill />
-        </LiStyled>
-        {checkMember && (
-          <>
-            <LinkStyled to={`${pathname}/milestones`}>
-              <AiOutlineTrophy />
-            </LinkStyled>
-            <LinkStyled to={`${pathname}/notes`}>
-              <BsFillFolderFill />
-            </LinkStyled>
-          </>
-        )}
-
-        {content.creatorID === userData?.uid && (
-          <LiStyled
-            setShowApplication={setShowApplication}
-            onClick={() => {
-              setShowApplication(!showApplication);
-            }}
-          >
-            待審申請
-            <span>{applicationData?.count}</span>
-          </LiStyled>
-        )}
-        {!checkGeneralMember && !checkOwner && (
-          <LiStyled onClick={handleApplicationBtn}>
-            {appliedData ? "等候審核" : "申請加入"}
-          </LiStyled>
-        )}
-      </UlStyled>
-    </Wrapper>
-  );
-};
-// };
-
-export default GroupHeader;

@@ -4,30 +4,36 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const CardContainer = styled(Link)`
+  /* width: 100%; */
   text-decoration: none;
   color: black;
-  box-shadow: 0 2px 10px #a2a2a2;
-  border-radius: 10px;
+  border-radius: 5px;
+  height: 320px;
+  position: relative;
+  border-bottom: 4px solid #f27e59;
+  box-shadow: 0px 2px 6px 0px #ffd3c6;
   margin-bottom: 10px;
-  height: 280px;
-  overflow: hidden;
 `;
 
 const CoverContainer = styled.div`
   background-image: url(${(props) => props.item.coverImage});
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  height: 150px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  height: 50%;
+  /* width: 100%; */
   background-size: cover;
   background-position: center;
 `;
 
 const ContentContainer = styled.div`
+  height: 50%;
   padding: 1rem;
+  background-color: #fff;
 `;
 
 const TitleContainer = styled.div`
-  font-weight: 550;
+  font-weight: 600;
+  font-size: 1.2rem;
   margin-bottom: 10px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -48,11 +54,12 @@ const TextContainer = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.8rem;
 `;
 
 const SubTitle = styled.div`
   font-weight: 550;
-  color: rgb(255 182 0);
+  color: #f27e59;
   margin-bottom: 10px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -78,10 +85,11 @@ const Card = ({ item }) => {
 
   return (
     <CardContainer to={url}>
+      <Avatar src={currentCreator?.avatar} />
       <CoverContainer item={item}></CoverContainer>
       <ContentContainer>
         <TitleContainer>{item.title}</TitleContainer>
-        <Author>{`by${currentCreator?.displayName} `}</Author>
+        <Author>{`by ${currentCreator?.displayName} `}</Author>
         <SubTitle>{`啟發自：${currentGroup?.name}`}</SubTitle>
         <TextContainer>{item.introduce}</TextContainer>
       </ContentContainer>
@@ -90,3 +98,15 @@ const Card = ({ item }) => {
 };
 
 export default Card;
+
+const Avatar = styled.img`
+  width: 60px;
+  height: 60px;
+  background-color: rgb(65, 36, 3);
+  position: absolute;
+  top: -30px;
+  left: 20%;
+  border: 2px solid #fff;
+  transform: translateX(-50%);
+  border-radius: 50%;
+`;

@@ -9,20 +9,35 @@ import generateText from "../../utils/commonText";
 import { useSelector } from "react-redux";
 
 const ContainerStyled = styled.div`
-  border-radius: 20px;
+  /* border-radius: 20px;
   border: 1px solid #3e2914;
   display: flex;
   margin: 3rem 5rem;
+  padding: 3rem 5rem; */
+  max-width: 1000px;
+  display: flex;
+  /* margin: 3rem 5rem; */
   padding: 3rem 5rem;
+  margin: 0 auto;
+  @media only screen and (max-width: 992px) {
+    padding: 1rem 2rem;
+  }
 `;
 
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 70%;
 `;
 
 const InputCtn = styled.input`
-  border-radius: 10px;
+  /* border-radius: 10px;
+  padding: 3px 10px;
+  font-size: 1.2rem;
+  margin: 1rem 0;
+  border: 1px solid #b5b2b0; */
+
+  width: 100%;
   padding: 3px 10px;
   font-size: 1.2rem;
   margin: 1rem 0;
@@ -30,14 +45,30 @@ const InputCtn = styled.input`
 `;
 
 const SideSetting = styled.div`
+  /* padding: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  border-radius: 10px; */
+  width: 30%;
   padding: 10px;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  border-radius: 10px;
-  border: 1px solid rgb(219, 216, 214);
+  /* border: 1px solid #b5b2b0; */
   /* align-items: center;
   justify-content: center; */
+`;
+
+const SettingWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #b5b2b0;
+  border-radius: 4px;
 `;
 
 const EditorArea = styled.div`
@@ -70,7 +101,8 @@ const Introduce = styled.textarea`
   border: none;
   background-color: #f5f5f5;
   padding: 10px;
-  resize: none;
+  height: 4rem;
+  overflow-y: auto;
   margin: 10px;
   /* width: 300px; */
 `;
@@ -90,7 +122,7 @@ const NotesEditorPage = () => {
   const [introduce, setIntroduce] = useState("");
   const [originContent, setOriginContent] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage.png?alt=media&token=7b4118c2-46f8-41e9-a5de-de954c4aeb48"
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1"
   );
   const editMode = useRef(false);
   const editorHandler = (e) => {
@@ -98,26 +130,34 @@ const NotesEditorPage = () => {
   };
   console.log(value);
   useEffect(() => {
-    if (pathname.includes("edit")) {
-      firebase
-        .getGroupsNoteContent("groups", groupID, "notes", postID)
-        .then((res) => {
-          setTitle(res.title);
-          setValue(res.content);
-          setIntroduce(res.introduce);
-          setPreviewUrl(res.coverImage);
-          setOriginContent(res);
-          editMode.current = true;
-          console.log(res);
-        })
-        .catch((err) => console.log(err));
-    } else if (postID) {
-      firebase.getRawGroupNotes(groupID, postID).then((res) => {
-        const { mainPost, comments } = res;
-        const html = generateText(mainPost, comments);
-        setValue(html);
-      });
+    let isMounted = true;
+
+    if (isMounted) {
+      if (pathname.includes("edit")) {
+        firebase
+          .getGroupsNoteContent("groups", groupID, "notes", postID)
+          .then((res) => {
+            setTitle(res.title);
+            setValue(res.content);
+            setIntroduce(res.introduce);
+            setPreviewUrl(res.coverImage);
+            setOriginContent(res);
+            editMode.current = true;
+            console.log(res);
+          })
+          .catch((err) => console.log(err));
+      } else if (postID) {
+        firebase.getRawGroupNotes(groupID, postID).then((res) => {
+          const { mainPost, comments } = res;
+          const html = generateText(mainPost, comments);
+          setValue(html);
+        });
+      }
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleSubmit = () => {
@@ -167,22 +207,22 @@ const NotesEditorPage = () => {
   // console.log(groupID, postID);
 
   return (
-    <div>
-      <ContainerStyled>
-        <MainContainer>
-          <LabelCtn>建立社群筆記</LabelCtn>
-          <div>※將留言串收藏為筆記後，該筆留言串將從留言板刪除。</div>
-          <InputCtn
-            placeholder="請輸入標題..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <EditorArea>
-            <RichTextEditor value={value} editorHandler={editorHandler} />
-          </EditorArea>
-        </MainContainer>
-        <SideSetting>
-          <SideLabel>筆記文章設定</SideLabel>
+    <ContainerStyled>
+      <MainContainer>
+        <LabelCtn>建立社群筆記</LabelCtn>
+
+        <InputCtn
+          placeholder="請輸入標題..."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <EditorArea>
+          <RichTextEditor value={value} editorHandler={editorHandler} />
+        </EditorArea>
+      </MainContainer>
+      <SideSetting>
+        <SideLabel>筆記文章設定</SideLabel>
+        <SettingWrapper>
           <Introduce
             value={introduce}
             placeholder="請輸入文章摘要"
@@ -197,14 +237,18 @@ const NotesEditorPage = () => {
             }}
           />
           <UploadBtn htmlFor="upload-img">
-            <img src={previewImg} style={{ width: "300px" }} />
+            <PreViewCtn src={previewImg} />
           </UploadBtn>
-
-          <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
-        </SideSetting>
-      </ContainerStyled>
-    </div>
+        </SettingWrapper>
+        <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
+      </SideSetting>
+    </ContainerStyled>
   );
 };
 
 export default NotesEditorPage;
+
+const PreViewCtn = styled.img`
+  width: 100%;
+  margin: 10px 0;
+`;

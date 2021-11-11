@@ -23,7 +23,7 @@ const Container = styled.div`
 const MainCtn = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   width: 70%;
   height: 500px;
   border-top-right-radius: 10px;
