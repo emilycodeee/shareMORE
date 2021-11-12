@@ -29,6 +29,7 @@ const Wrapper = styled.div`
   /* padding: 0px 0px 20px; */
   padding: 2rem;
   max-height: calc(100vh - 240px);
+  border-top: 8px solid #f27e59;
   overflow-y: auto;
   scroll-behavior: smooth;
 `;

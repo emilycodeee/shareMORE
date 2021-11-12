@@ -12,12 +12,22 @@ import { useSelector } from "react-redux";
 
 const Wrapper = styled.div`
   margin: 0 auto;
-
-  border-radius: 10px;
-  background-color: #f5f5f5;
-  margin: 1rem 0;
-  padding: 1rem 1rem;
+  padding: 0.8rem 0.8rem 0.3rem 0.8rem;
   position: relative;
+  border-bottom: 1px solid #fffdfd;
+`;
+const PostArea = styled.textarea`
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  padding: 1rem 1.5rem;
+  margin: 0.8rem 1rem;
+  border-radius: 4px;
+  background-color: gray;
+  box-shadow: 0px 1px 5px -3px rgb(132 131 126 / 20%);
+  background-color: #fffdfd;
+  border: none;
+  outline: none;
+  color: black;
 `;
 
 const AvatarCtn = styled.img`
@@ -40,7 +50,15 @@ const UserDetail = styled.div`
 `;
 
 const Pstyled = styled.div`
+  color: black;
   font-size: 14px;
+  font-weight: 550;
+`;
+
+const DateStyled = styled.div`
+  color: rgba(117, 117, 117);
+  font-size: 14px;
+  /* font-weight: 600; */
 `;
 
 const IconWrapper = styled.div`
@@ -60,10 +78,9 @@ const IconDiv = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 10px;
   padding: 5px;
   &:hover {
-    background-color: white;
+    background-color: #fffdfd;
   }
 `;
 
@@ -83,6 +100,7 @@ const DropDown = styled.div`
   flex-direction: column;
   align-items: center;
   position: absolute;
+
   top: 2.5rem;
   right: 0;
   z-index: 99;
@@ -92,11 +110,12 @@ const MoreBtn = styled.div`
   cursor: pointer;
   width: 6rem;
   text-align: center;
-  background-color: #e5e5e5;
-  font-weight: 550;
+  background-color: #fff4e4;
+  font-weight: 500;
   padding: 0.5rem 0.2rem;
+  box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
   &:hover {
-    background-color: #eeeeee;
+    font-weight: 600;
   }
 `;
 
@@ -112,21 +131,9 @@ const CommentCtn = styled.div`
   flex-direction: column;
 `;
 
-const PostArea = styled.textarea`
-  margin-top: 0.5rem;
-  font-size: 1rem;
-  padding: 1rem 1.5rem;
-  border-radius: 10px;
-  background-color: #eeeeee;
-  border: none;
-  outline: none;
-  color: black;
-`;
-
 const ButtonSet = styled.div`
   display: flex;
   justify-content: end;
-  margin-top: 0.5rem;
 `;
 
 const LinkStyle = styled(Link)`
@@ -135,25 +142,36 @@ const LinkStyle = styled(Link)`
 `;
 
 const ButtonStyled = styled.button`
-  padding: 8px 12px;
-  margin-left: 10px;
-  display: flex;
-  justify-content: end;
-  border: none;
-  border-radius: 10px;
+  cursor: pointer;
+  width: 60px;
+  height: 30px;
+  background-color: #fff4e4;
+  font-weight: 600;
   outline: none;
+  border: 1px solid #f27e59;
+  border-radius: 3px;
+  color: #f27e59;
+  font-size: 10px;
+  margin: 0.5rem;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
 `;
 
 const ContentArea = styled.div`
   line-height: 1.4rem;
+  padding: 0.5rem 0.5rem;
 `;
 
 const EditContentArea = styled.textarea`
   width: 100%;
-  padding: 2px 5px;
-  outline: none;
   margin-left: 1rem;
-  resize: none;
+  border-radius: 4px;
+  background-color: #fffdfd;
+  border: none;
+  outline: none;
+  padding: 0.5rem 0.5rem;
   height: auto;
 `;
 
@@ -167,11 +185,20 @@ const EditSubmitBtn = styled.button`
   cursor: pointer;
   width: 60px;
   height: 30px;
-  background-color: #eeeeee;
+  background-color: #fff4e4;
+  font-weight: 600;
+
   outline: none;
-  border: 1px solid rgb(203, 195, 194);
+  border: 1px solid #f27e59;
+  border-radius: 3px;
+  color: #f27e59;
+  /* border: 1px solid rgb(203, 195, 194); */
   font-size: 10px;
   margin-left: 0.5rem;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
 `;
 
 const PostContainer = ({ item, content }) => {
@@ -238,15 +265,15 @@ const PostContainer = ({ item, content }) => {
 
   const checkGroupOwner = content?.creatorID === userData?.uid;
   return (
-    <div>
+    <OuterWrapper>
       <Wrapper>
         <UserWrapper>
           <AvatarCtn src={postSender?.avatar} />
           <UserDetail>
             <Pstyled>{postSender?.displayName}</Pstyled>
-            <Pstyled>
+            <DateStyled>
               {item.creationTime?.toDate().toLocaleString("zh-TW")}
-            </Pstyled>
+            </DateStyled>
           </UserDetail>
 
           {(checkPostSender || checkGroupOwner) && (
@@ -270,7 +297,7 @@ const PostContainer = ({ item, content }) => {
             {checkGroupOwner && (
               <MoreBtn>
                 <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
-                  設為精選筆記
+                  設為筆記
                 </LinkStyle>
               </MoreBtn>
             )}
@@ -328,7 +355,7 @@ const PostContainer = ({ item, content }) => {
               onChange={(e) => {
                 setTextValue(e.target.value);
               }}
-              placeholder="留言..."
+              placeholder="留下回覆吧..."
             />
 
             {showBtn && (
@@ -347,8 +374,13 @@ const PostContainer = ({ item, content }) => {
           </CommentCtn>
         </div>
       )}
-    </div>
+    </OuterWrapper>
   );
 };
 
 export default PostContainer;
+
+const OuterWrapper = styled.div`
+  background-color: rgba(255, 244, 228, 0.5);
+  margin-top: 10px;
+`;

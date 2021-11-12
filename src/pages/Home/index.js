@@ -83,7 +83,7 @@ const Section = styled.div`
 const LinkStyled = styled(Link)`
   margin-top: 1rem;
   text-decoration: none;
-  font-size: 1.3vw;
+  font-size: 1.3rem;
   font-weight: 600;
   background: #f27e59;
   border: none;
@@ -169,7 +169,7 @@ const HomePage = ({ userList, groupList }) => {
         <LinkStyled to="/groups">查看更多</LinkStyled>
       </Section>
       <Section>
-        <Slogan>一起的日子 慶祝我們的里程碑</Slogan>
+        <Slogan>一起的日子 分享我們的學習成果</Slogan>
         <Wrapper>
           {filterPublicArticles.slice(0, 8).map((item) => {
             return (
@@ -240,7 +240,7 @@ const InnerWrapper = styled.div`
 
 const CateBtn = styled.div`
   text-decoration: none;
-  font-size: 1.3vw;
+  font-size: 1.3rem;
   font-weight: 600;
   background: #f27e59;
   border: none;

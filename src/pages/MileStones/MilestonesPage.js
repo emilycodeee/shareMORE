@@ -467,7 +467,7 @@ const Golden = styled.div`
 
 const GoldenCtn = styled.div`
   width: 100%;
-  background-color: #fff3d6;
+  background-color: #fffdfd;
   /* border: 1px solid red; */
   display: flex;
   flex-direction: column;
@@ -504,8 +504,8 @@ const SubTitle = styled.p`
 `;
 
 const SubTitleLink = styled(SubTitle)`
-  color: rgb(255 182 0);
-  font-weight: 500;
+  color: rgb(242 126 89);
+  font-weight: 600;
   cursor: pointer;
 `;
 

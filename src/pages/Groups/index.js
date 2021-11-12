@@ -6,18 +6,13 @@ import HtmlParser from "react-html-parser";
 import styled from "styled-components";
 import PostContainer from "./components/PostContainer";
 import GroupHeader from "./components/GroupHeader";
-import fish from "../../sources/fish.png";
 import MemberAvatar from "./components/MemberAvatar";
 import { dateCounter } from "../../utils/commonText";
-import {
-  BsPencilSquare,
-  BsCheckLg,
-  BsFillCameraFill,
-  BsFillCheckSquareFill,
-} from "react-icons/bs";
-
+import { BsPencilSquare, BsCheckLg } from "react-icons/bs";
+import BestBoard from "./components/BestBoard";
+import { AiOutlineCrown } from "react-icons/ai";
 import { query, collection, orderBy, onSnapshot } from "firebase/firestore";
-
+import Slider from "react-slick";
 import { useSelector } from "react-redux";
 import SimpleEditor from "../../components/SimpleEditor";
 
@@ -27,62 +22,29 @@ const SectionStyled = styled.section`
   margin-bottom: 1rem;
 `;
 
-const MemberContainer = styled.div`
-  min-height: 35px;
-  box-shadow: 2px 2px 3px #d1cbcb;
-  border-radius: 20px;
-  border: 1px solid #d1cbcb;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: start;
-  padding: 0.6rem;
-`;
-
-const TopCover = styled.div`
-  /* width: 1580px; */
-  border-radius: 10px;
-  opacity: 0.8;
-  margin-bottom: 0.8rem;
-  width: 100%;
-  height: 300px;
-  background-size: cover;
-  background-position: center;
-  /* box-shadow: 0px 2px 5px grey; */
-`;
-
 const LabelStyled = styled.label`
   font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 2px;
-  padding: 10px;
+  letter-spacing: 1px;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: center;
 `;
 
 const ContentStyled = styled.div`
   line-height: 1.5rem;
-  box-shadow: 2px 2px 3px #d1cbcb;
-  border-radius: 20px;
   border: 1px solid #d1cbcb;
   padding: 1rem;
 `;
 
 const ContentCtn = styled.textarea`
-  line-height: 1.5rem;
   box-shadow: 2px 2px 3px #d1cbcb;
-  border-radius: 20px;
+  border-radius: 4px;
+  height: 15vh;
   outline: none;
   padding: 1rem;
   border: ${(props) =>
     props.actEdit ? " 1px solid black" : " 1px solid #d1cbcb"};
-`;
-
-const Wrapper = styled.div`
-  max-width: 1560px;
-  max-width: 1000px;
-  margin: 0 auto;
-`;
-
-const Text = styled.div`
-  align-self: center;
 `;
 
 const PostArea = styled.textarea`
@@ -90,56 +52,50 @@ const PostArea = styled.textarea`
   border: none;
   outline: none;
   font-size: 1rem;
-  padding: 1rem 1.5rem;
-  border-radius: 10px;
-  background-color: #eeeeee;
+  padding: 1rem 1rem;
+  border-radius: 4px;
   color: black;
+  background-color: #fff4e4;
 `;
 
 const PostBtn = styled.button`
   margin-top: 0.5rem;
+  font-weight: 600;
+  padding: 0;
+  width: 3rem;
   height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  border-radius: 10px;
-  border: none;
-  border-radius: 10px;
+  align-self: flex-end;
+  border-radius: 3px;
+  border: 1px solid #f27e59;
+  color: #f27e59;
+  background-color: transparent;
   outline: none;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
 `;
 
 const GoalDate = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-direction: co;
 `;
 
-const EditImage = styled(BsFillCameraFill)`
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  bottom: -20px;
-  right: 0;
-  cursor: pointer;
-`;
-
-const SaveImage = styled(BsFillCheckSquareFill)`
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  bottom: -20px;
-  right: 0;
-  cursor: pointer;
-`;
-
-const ImgWrapper = styled.div`
-  position: relative;
-`;
-
-const DivCtn = styled.div`
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid red;
-  position: absolute;
-  bottom: -20px;
-  right: 0;
+const StyledSlider = styled(Slider)`
+  width: 100%;
+  .slick-list {
+    width: 100%;
+    padding: 0 !important;
+  }
+  .slick-prev:before,
+  .slick-next:before {
+    color: black;
+  }
 `;
 
 const GroupPage = () => {
@@ -163,17 +119,23 @@ const GroupPage = () => {
   const [goal, setGoal] = useState("");
   const [imageCover, setImageCover] = useState("");
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+  };
+
   useEffect(() => {
     const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
 
-    // if (isMounted) {
     if (currentGroupData) {
       setContent(currentGroupData);
       setAboutValue(currentGroupData.introduce);
       setDateValue(currentGroupData.goalDate);
       setGoal(currentGroupData.goal);
       setImageCover(currentGroupData.coverImage);
-      // setRenderMember(currentGroupData.membersList);
     }
 
     const postQ = query(
@@ -220,8 +182,9 @@ const GroupPage = () => {
   const stationHead = usersList.find(
     (item) => item?.uid === content?.creatorID
   );
+  console.log("😛stationHead", stationHead);
 
-  const dateText = ` 預計完成日：${dateValue}，還有
+  const dateText = `${dateValue}，還有
             ${dateCounter(dateValue)} 天`;
 
   const handleSubmit = () => {
@@ -236,23 +199,14 @@ const GroupPage = () => {
     firebase.editGroupData(data, content.groupID);
   };
 
-  const handleSubmitImg = () => {
-    setActEditImage(!actEditImage);
-    firebase
-      .editGroupImage(file, content.groupID)
-      .then(() => alert("修改成功"));
-  };
-
-  const previewImg = file ? URL.createObjectURL(file) : imageCover;
-
   const checkMember =
     (userData !== null && content?.membersList?.includes(userData?.uid)) ||
     content?.creatorID === userData?.uid;
   const checkOwner = content.creatorID === userData?.uid;
 
   return (
-    <Wrapper>
-      <ImgWrapper>
+    <>
+      {/* <ImgWrapper>
         <input
           type="file"
           id="uploadImg"
@@ -269,105 +223,244 @@ const GroupPage = () => {
           </DivCtn>
         )}
         {checkOwner && actEditImage && <SaveImage onClick={handleSubmitImg} />}
-      </ImgWrapper>
+      </ImgWrapper> */}
       <GroupHeader />
-      <SectionStyled>
-        <LabelStyled>學習夥伴</LabelStyled>
-        <MemberContainer>
-          {renderMember.length === 0 && (
-            <Text>再等一下，夥伴們正在火速趕來中</Text>
-          )}
-          {/* src={fish} */}
-          {renderMember.map((item) => (
-            <MemberAvatar key={item.memberID} data={item} />
-          ))}
-        </MemberContainer>
-      </SectionStyled>
-      <SectionStyled>
-        <LabelStyled>
-          關於我們
-          {checkOwner && !actEdit && (
-            <BsPencilSquare
-              onClick={() => {
-                setActEdit(!actEdit);
-              }}
-            />
-          )}
-          {checkOwner && actEdit && <BsCheckLg onClick={handleSubmit} />}
-        </LabelStyled>
-        {actEdit && (
-          <ContentCtn
-            actEdit={actEdit}
-            readOnly={!actEdit}
-            value={aboutValue}
-            onChange={(e) => setAboutValue(e.target.value)}
-          />
-        )}
-        {!actEdit && <div>{aboutValue}</div>}
-      </SectionStyled>
-      <SectionStyled>
-        <GoalDate>
-          <LabelStyled>
-            學習目標
-            {checkOwner && !actEditGoal && (
-              <BsPencilSquare
-                onClick={() => {
-                  setActEditGoal(!actEditGoal);
-                }}
+      <Wrapper>
+        <MobileBlock>
+          {/* <BestBoard /> */}
+          <LabelStyled>學習夥伴</LabelStyled>
+          <MemberContainer>
+            {/* <StyledSlider {...settings}> */}
+            <HeadDiv>
+              <HeadAvatar src={stationHead?.avatar} />
+              <Crown />
+            </HeadDiv>
+
+            {renderMember.map((item) => (
+              <MemberAvatar key={item.memberID} data={item} />
+            ))}
+            {/* </StyledSlider> */}
+          </MemberContainer>
+        </MobileBlock>
+        <MainBlock>
+          <SectionStyled>
+            <LabelStyled>
+              關於我們
+              {checkOwner && !actEdit && (
+                <BsPencilSquare
+                  onClick={() => {
+                    setActEdit(!actEdit);
+                  }}
+                />
+              )}
+              {checkOwner && actEdit && <BsCheckLg onClick={handleSubmit} />}
+            </LabelStyled>
+            {actEdit && (
+              <ContentCtn
+                actEdit={actEdit}
+                readOnly={!actEdit}
+                value={aboutValue}
+                onChange={(e) => setAboutValue(e.target.value)}
               />
             )}
-            {checkOwner && actEditGoal && <BsCheckLg onClick={handleSubmit} />}
-          </LabelStyled>
-          <LabelStyled>
-            {dateText}
+            {!actEdit && <div>{aboutValue}</div>}
+          </SectionStyled>
+          <SectionStyled>
+            {/* <GoalDate> */}
+            <LabelStyled>
+              學習目標
+              {checkOwner && !actEditGoal && (
+                <BsPencilSquare
+                  onClick={() => {
+                    setActEditGoal(!actEditGoal);
+                  }}
+                />
+              )}
+              {checkOwner && actEditGoal && (
+                <BsCheckLg onClick={handleSubmit} />
+              )}
+            </LabelStyled>
 
-            {checkOwner && !actEditDate && (
-              <BsPencilSquare
-                onClick={() => {
-                  setActEditDate(!actEditDate);
-                }}
-              />
+            {/* </GoalDate> */}
+            {!actEditGoal && (
+              <ContentStyled className="ql-editor">
+                {HtmlParser(goal)}
+              </ContentStyled>
             )}
-          </LabelStyled>
-          {checkOwner && actEditDate && (
-            <div>
-              <input
-                type="date"
-                onChange={(e) => setDateValue(e.target.value)}
+            {actEditGoal && <SimpleEditor goal={goal} setGoal={setGoal} />}
+          </SectionStyled>
+          <SectionStyled>
+            <LabelStyled>
+              預計完成日：
+              {!actEditDate && dateText}
+              {checkOwner && !actEditDate && (
+                <BsPencilSquare
+                  onClick={() => {
+                    setActEditDate(!actEditDate);
+                  }}
+                />
+              )}
+            </LabelStyled>
+            {checkOwner && actEditDate && (
+              <div>
+                <input
+                  type="date"
+                  onChange={(e) => setDateValue(e.target.value)}
+                />
+                <BsCheckLg onClick={handleSubmit} />
+              </div>
+            )}
+          </SectionStyled>
+          {checkMember && (
+            <SectionStyled>
+              <PostArea
+                value={textValue}
+                placeholder="開始新的討論吧..."
+                onFocus={() => {
+                  setShowBtn(true);
+                }}
+                onChange={(e) => setTextValue(e.target.value)}
               />
-              <BsCheckLg onClick={handleSubmit} />
-            </div>
-          )}
-        </GoalDate>
-        {!actEditGoal && (
-          <ContentStyled className="ql-editor">
-            {HtmlParser(goal)}
-          </ContentStyled>
-        )}
-        {actEditGoal && <SimpleEditor goal={goal} setGoal={setGoal} />}
-      </SectionStyled>
-      <hr />
-      {checkMember && (
-        <SectionStyled>
-          <PostArea
-            value={textValue}
-            placeholder="想討論什麼嗎..."
-            onFocus={() => {
-              setShowBtn(true);
-            }}
-            onChange={(e) => setTextValue(e.target.value)}
-          />
-          {showBtn && <PostBtn onClick={postHandler}>留言</PostBtn>}
+              {showBtn && <PostBtn onClick={postHandler}>留言</PostBtn>}
 
-          {renderPost?.map((item) => {
-            return (
-              <PostContainer key={item.postID} item={item} content={content} />
-            );
-          })}
-        </SectionStyled>
-      )}
-    </Wrapper>
+              {renderPost?.map((item) => {
+                return (
+                  <PostContainer
+                    key={item.postID}
+                    item={item}
+                    content={content}
+                  />
+                );
+              })}
+            </SectionStyled>
+          )}
+        </MainBlock>
+        <SideBlock>
+          <BestBoard />
+          <LabelStyled>學習夥伴</LabelStyled>
+          <MemberContainer>
+            {/* <StyledSlider {...settings}> */}
+            <HeadDiv>
+              <HeadAvatar src={stationHead?.avatar} />
+              <Crown />
+            </HeadDiv>
+
+            {renderMember.map((item) => (
+              <MemberAvatar key={item.memberID} data={item} />
+            ))}
+            {/* </StyledSlider> */}
+          </MemberContainer>
+          <LabelStyled>社群類別</LabelStyled>
+          <CateTag>
+            <TagStyle>{content.category}</TagStyle>
+            <TagStyle>{content.subClass}</TagStyle>
+          </CateTag>
+        </SideBlock>
+      </Wrapper>
+    </>
   );
 };
 
 export default GroupPage;
+
+const TagStyle = styled.div`
+  background-color: rgba(255, 244, 228);
+  padding: 8px 16px;
+  border-radius: 100px;
+  box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
+`;
+
+const CateTag = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const HeadDiv = styled.div`
+  position: relative;
+`;
+
+const FolderIcon = {
+  width: "1.2rem",
+  height: " 1.2rem",
+  color: "white",
+};
+
+const Crown = styled(AiOutlineCrown)`
+  ${FolderIcon}
+  width: 1.3rem;
+  height: 1.3rem;
+  position: absolute;
+  top: 0;
+  right: -3px;
+  transform: rotate(5deg);
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+  display: none;
+`;
+
+const MainBlock = styled.div`
+  width: 60%;
+  padding: 0 3%;
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+  }
+`;
+
+const SideBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid rgba(230, 230, 230, 1);
+  width: 40%;
+  margin-bottom: 2rem;
+  padding: 0 3%;
+  @media only screen and (max-width: 992px) {
+    display: none;
+  }
+`;
+
+const MobileBlock = styled.div`
+  display: none;
+  @media only screen and (max-width: 992px) {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 0 3%;
+  }
+`;
+
+const Wrapper = styled.div`
+  border-radius: 4px;
+  max-width: 1560px;
+  width: 80%;
+  /* padding: 0 3rem; */
+  margin: 0 auto;
+  margin-bottom: 1.5rem;
+  display: flex;
+  background-color: #fff;
+  padding: 1rem 0;
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+  }
+`;
+
+const HeadAvatar = styled.img`
+  border-radius: 50%;
+  height: 2rem;
+  width: 2rem;
+  margin: 5px;
+  border-radius: 50%;
+  border: 2px solid #f27e59;
+  box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0px 17px 16px -11px #ffae96; */
+`;
+
+const MemberContainer = styled.div`
+  width: 100%;
+  min-height: 35px;
+  box-shadow: 1px 1px 1px #d1cbc6;
+  border-radius: 4px;
+  border: 1px solid #d1cbcb;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  margin-bottom: 1rem;
+`;

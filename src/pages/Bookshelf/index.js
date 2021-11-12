@@ -9,16 +9,24 @@ import { useSelector } from "react-redux";
 import SearchBook from "./component/SearchBook";
 import * as firebase from "../../utils/firebase";
 import BookContent from "./component/BookContnet";
+import GroupHeader from "../Groups/components/GroupHeader";
 import { JumpCircleLoading } from "react-loadingg";
+// import GroupHeader from "../Groups/components/GroupHeader";
 
 const Wrapper = styled.div`
-  /* max-width: 1000px; */
-  width: 100%;
+  border-radius: 4px;
+  max-width: 1560px;
+  width: 80%;
+  /* padding: 0 3rem; */
   margin: 0 auto;
+  margin-bottom: 1.5rem;
   display: flex;
+  background-color: #fff;
+  padding: 1rem 0;
   flex-direction: column;
-
-  justify-content: center;
+  /* @media only screen and (max-width: 992px) {
+    flex-direction: column;
+  } */
 `;
 
 const typing = keyframes`
@@ -82,15 +90,30 @@ const DeleteIcon = styled(AiOutlineClose)`
 `;
 
 const SerchButton = styled.button`
+  /* display: flex; */
+  border-radius: 4px;
+  /* padding: 0.3rem 0.4rem; */
+
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  /* -webkit-text-decoration: none; */
+  text-decoration: none;
+  cursor: pointer;
+  color: #f27e59;
+
   width: 80%;
   margin: 0 auto;
   margin-bottom: 20px;
   border: none;
   padding: 0.6rem;
   cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
   &:hover {
-    background-color: transparent;
-    border: 1px solid #d1cbcb;
+    background-color: #f27e59;
+    color: #fff;
   }
 `;
 
@@ -121,8 +144,6 @@ const Bookshelf = () => {
   };
 
   useEffect(() => {
-    // let isMounted = true;
-    // if (isMounted) {
     const groupDetail = groupsList.find((g) => g.groupID === groupID);
 
     const checkMembership =
@@ -132,24 +153,11 @@ const Bookshelf = () => {
 
     const groupOwner = groupDetail?.creatorID === userData?.uid;
     setIsOwner(groupOwner);
-    // }
-    // return () => {
-    //   isMounted = false;
-    // };
   }, [groupsList]);
 
-  // console.log(groupDetail);
-  // console.log(currentUserDetail);
-
   const getRecommender = (uid) => {
-    // let isMounted = true;
-    // if (isMounted) {
     const currentUserDetail = usersList.find((p) => p.uid === uid);
     return currentUserDetail;
-    // }
-    // return () => {
-    //   isMounted = false;
-    // };
   };
 
   useEffect(() => {
@@ -175,91 +183,94 @@ const Bookshelf = () => {
   }, []);
 
   return (
-    <Wrapper>
-      <TopCover style={{ backgroundImage: `url(${bookshelf})` }}>
-        <Run>找書更方便！一起建立社團書櫃！</Run>
-      </TopCover>
-      {isLoading && <JumpCircleLoading />}
-      {isInsider && (
-        <SerchButton
-          onClick={() => {
-            setShowSearchPage(true);
-          }}
-        >
-          推薦選書
-          <GiNotebook />
-        </SerchButton>
-      )}
+    <>
+      <GroupHeader />
+      <Wrapper>
+        {/* <TopCover style={{ backgroundImage: `url(${bookshelf})` }}>
+          <Run>找書更方便！一起建立社團書櫃！</Run>
+        </TopCover> */}
+        {isLoading && <JumpCircleLoading />}
+        {isInsider && (
+          <SerchButton
+            onClick={() => {
+              setShowSearchPage(true);
+            }}
+          >
+            推薦選書
+            <GiNotebook />
+          </SerchButton>
+        )}
 
-      {showSearchPage && (
-        <PageShield
-          data-target="shield"
-          onClick={(e) => {
-            e.target.dataset.target === "shield" &&
-              setShowSearchPage(!showSearchPage);
-          }}
-        >
-          <SearchBook />
-        </PageShield>
-      )}
-      {renderBookData.length === 0 && <div>社群書櫃目前還空空的</div>}
+        {showSearchPage && (
+          <PageShield
+            data-target="shield"
+            onClick={(e) => {
+              e.target.dataset.target === "shield" &&
+                setShowSearchPage(!showSearchPage);
+            }}
+          >
+            <SearchBook />
+          </PageShield>
+        )}
+        {renderBookData.length === 0 && <div>社群書櫃目前還空空的</div>}
 
-      <ShelfWrapper>
-        {renderBookData.map((b) => {
-          return (
-            <BookItem key={b.groupBookID}>
-              {isOwner && (
-                <DeleteIcon
-                  onClick={handleDeleteBook}
-                  data-bookid={b.groupBookID}
-                />
-              )}
-              <SelectedBook
-                key={b.groupBookID}
-                onClick={() => {
-                  setShowBookContent(true);
-                  setBookContent(b);
-                }}
-              >
-                <div>
-                  <BookImage src={b.volumeInfo.imageLinks.thumbnail} />
-                </div>
-                <div>
+        <ShelfWrapper>
+          {renderBookData.map((b) => {
+            return (
+              <BookItem key={b.groupBookID}>
+                {isOwner && (
+                  <DeleteIcon
+                    onClick={handleDeleteBook}
+                    data-bookid={b.groupBookID}
+                  />
+                )}
+                <SelectedBook
+                  key={b.groupBookID}
+                  onClick={() => {
+                    setShowBookContent(true);
+                    setBookContent(b);
+                  }}
+                >
                   <div>
-                    <BookTitle>{b.volumeInfo.title}</BookTitle>
-                    <BookAuthor>
-                      作者/譯者：{b.volumeInfo.authors?.join(",")}
-                    </BookAuthor>
+                    <BookImage src={b.volumeInfo.imageLinks.thumbnail} />
                   </div>
+                  <div>
+                    <div>
+                      <BookTitle>{b.volumeInfo.title}</BookTitle>
+                      <BookAuthor>
+                        作者/譯者：{b.volumeInfo.authors?.join(",")}
+                      </BookAuthor>
+                    </div>
+                  </div>
+                </SelectedBook>
+                <div>
+                  <RecommenderDetail>
+                    <Avatar src={getRecommender(b.groupSharerUid)?.avatar} />
+                    <p>{getRecommender(b.groupSharerUid)?.displayName} 說：</p>
+                  </RecommenderDetail>
+                  <RecommendText>{b.recReason}</RecommendText>
                 </div>
-              </SelectedBook>
-              <div>
-                <RecommenderDetail>
-                  <Avatar src={getRecommender(b.groupSharerUid)?.avatar} />
-                  <p>{getRecommender(b.groupSharerUid)?.displayName} 說：</p>
-                </RecommenderDetail>
-                <RecommendText>{b.recReason}</RecommendText>
-              </div>
-            </BookItem>
-          );
-        })}
-      </ShelfWrapper>
+              </BookItem>
+            );
+          })}
+        </ShelfWrapper>
 
-      {showBookContent && (
-        <PageShield
-          data-target="shield-content"
-          onClick={(e) => {
-            e.target.dataset.target === "shield-content" &&
-              setShowBookContent(!showBookContent);
-          }}
-        >
-          <BookContent
-            bookContent={bookContent}
-            setShowBookContent={setShowBookContent}
-          />
-        </PageShield>
-      )}
-    </Wrapper>
+        {showBookContent && (
+          <PageShield
+            data-target="shield-content"
+            onClick={(e) => {
+              e.target.dataset.target === "shield-content" &&
+                setShowBookContent(!showBookContent);
+            }}
+          >
+            <BookContent
+              bookContent={bookContent}
+              setShowBookContent={setShowBookContent}
+            />
+          </PageShield>
+        )}
+      </Wrapper>
+    </>
   );
 };
 
@@ -291,7 +302,7 @@ const RecommendText = styled.div`
   line-height: 1.3rem;
   margin-top: 0.5rem;
   text-align: start;
-  background-color: #f7f5f5;
+  background-color: rgba(255, 244, 228);
   padding: 0.5rem;
   border-radius: 3px;
 `;

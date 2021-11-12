@@ -6,13 +6,14 @@ import { getGroupsList } from "../../../redux/actions";
 import { Link } from "react-router-dom";
 
 const RecApplication = styled.div`
+  width: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
-  /* background-color: red; */
   padding: 10px;
   margin-bottom: 1rem;
   border: 1px solid #d1cbcb;
-  border-radius: 25px;
+  border-radius: 4px;
 `;
 
 const Avatar = styled.img`
@@ -35,16 +36,26 @@ const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: end;
+  gap: 10px;
 `;
 
 const Button = styled.button`
-  color: #3722d3;
-  font-size: 18px;
-  background: none;
-  font-weight: 600;
-  border-style: none;
-  margin-bottom: 16px;
+  align-self: flex-end;
   cursor: pointer;
+  width: 60px;
+  height: 30px;
+  background-color: transparent;
+  font-weight: 600;
+  outline: none;
+  border: 1px solid #f27e59;
+  border-radius: 3px;
+  color: #f27e59;
+  font-size: 10px;
+
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
 `;
 
 const Body = styled.div`
@@ -102,8 +113,10 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
           <Avatar src={currentUser?.avatar} />
         </Link>
         <UserWrapper>
-          <div>{currentUser?.displayName}</div>
-          <div>{applicant?.creationTime.toDate().toLocaleString("zh-TW")}</div>
+          <NameStyle NameStyle>{currentUser?.displayName}</NameStyle>
+          <TimeStyle>
+            {applicant?.creationTime.toDate().toLocaleString("zh-TW")}
+          </TimeStyle>
         </UserWrapper>
       </Header>
 
@@ -119,3 +132,11 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
 };
 
 export default ApplicationList;
+
+const NameStyle = styled.div`
+  font-weight: 600;
+`;
+
+const TimeStyle = styled.div`
+  font-size: 0.8rem;
+`;

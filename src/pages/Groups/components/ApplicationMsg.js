@@ -3,43 +3,66 @@ import styled from "styled-components";
 import * as firebase from "../../../utils/firebase";
 import ApplicationList from "./ApplicationList";
 import { useSelector } from "react-redux";
+
 const SendApplication = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
+  /* justify-content: center; */
 `;
 
 const Label = styled.label`
+  font-size: 1.2rem;
   font-weight: 550;
+  @media only screen and (max-width: 500px) {
+    font-size: 1rem;
+    /* border-radius: 0; */
+  }
 `;
 
 const TextCtn = styled.textarea`
-  /* resize: none; */
-  border-radius: 10px;
+  border-radius: 4px;
   margin: 10px 0;
   padding: 10px;
+  height: 20vh;
 `;
 
 const Button = styled.button`
-  padding: 10px;
+  /* padding: 10px;
   border-radius: 10px;
   cursor: pointer;
   border: none;
   outline: none;
-  color: black;
+  color: black; */
+  align-self: flex-end;
+  cursor: pointer;
+  width: 60px;
+  height: 30px;
+  background-color: transparent;
+  font-weight: 600;
+  outline: none;
+  border: 1px solid #f27e59;
+  border-radius: 3px;
+  color: #f27e59;
+  font-size: 10px;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
+  /* margin: 0.5rem; */
 `;
 
 const ContentStyled = styled.div`
   font-weight: 550;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 `;
 
 const ApplicationStyled = styled.div`
-  margin: 0 10px 0 0;
-  background-color: #f2f2f2;
-  height: auto;
+  background-color: rgba(255, 244, 228);
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 4px;
   overflow: overflow-x;
+  box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
 `;
 
 const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
@@ -63,7 +86,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
   if (groupData?.creatorID !== userData.uid) {
     if (appliedData) {
       return (
-        <>
+        <SendApplication>
           <ContentStyled>加入申請已送出，請耐心等候</ContentStyled>
           <ContentStyled>
             {`申請時間：${appliedData.creationTime
@@ -72,7 +95,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
           </ContentStyled>
           <ContentStyled>申請內容：</ContentStyled>
           <ApplicationStyled>{appliedData.content}</ApplicationStyled>
-        </>
+        </SendApplication>
       );
     }
     return (
@@ -92,7 +115,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
     groupData.creatorID === userData.uid &&
     applicationData.data.length === 0
   ) {
-    return <div>社群申請已審核完畢</div>;
+    return <Empty>社群申請已審核完畢</Empty>;
   } else if (groupData.creatorID === userData.uid) {
     return (
       <>
@@ -112,3 +135,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
 };
 
 export default ApplicationMsg;
+
+const Empty = styled.div`
+  font-weight: 600;
+`;

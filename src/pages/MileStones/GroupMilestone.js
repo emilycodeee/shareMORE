@@ -4,10 +4,10 @@ import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import * as firebase from "../../utils/firebase";
-import medallion from "../../sources/medallion.png";
 import { arrCaculator } from "../../utils/commonText";
 import Card from "../Home/components/Card";
 import { Link } from "react-router-dom";
+import GroupHeader from "../Groups/components/GroupHeader";
 
 const GroupMilestone = () => {
   const { groupID } = useParams();
@@ -49,55 +49,51 @@ const GroupMilestone = () => {
   // console.log(maxArticles);
 
   return (
-    <Wrapper>
-      <ImgWrapper>
-        <Img src={medallion} />
-      </ImgWrapper>
-      <WinnerWrapper>
-        <ItemWp>
-          <Link to={`/profile/${maxPost?.userID}`}>
-            <Avatat src={getUserData(maxPost?.userID)?.avatar} />
-          </Link>
-          <div> {getUserData(maxPost?.userID)?.displayName}</div>
-          <Link to={`/group/${groupID}`}>
-            <h3>發起最多討論</h3>
-          </Link>
-          <div>共 {maxPost.point} 則</div>
-        </ItemWp>
-        <ItemWp>
-          <Link to={`/profile/${maxArticles?.userID}`}>
-            <Avatat src={getUserData(maxArticles?.userID)?.avatar} />
-          </Link>
-          <div> {getUserData(maxArticles?.userID)?.displayName}</div>
-          <Link to={`/milestones`}>
-            <h3>分享最多文章</h3>
-          </Link>
-          <div>共 {maxArticles.point} 則</div>
-        </ItemWp>
-        <ItemWp>
-          <Link to={`/profile/${maxBooks?.userID}`}>
-            <Avatat src={getUserData(maxBooks?.userID)?.avatar} />
-          </Link>
-          <div>{getUserData(maxBooks?.userID)?.displayName}</div>
-          <Link to={`/group/${groupID}/bookshelf`}>
-            <h3>分享最多書本</h3>
-          </Link>
-          <div>共 {maxBooks.point} 則</div>
-        </ItemWp>
-      </WinnerWrapper>
-      <ContenWrapper>
-        {renderMilestone.map((m) => {
-          return (
-            <Card
-              item={m}
-              key={m.milestoneID}
-              // userList={userList}
-              // groupList={groupList}
-            />
-          );
-        })}
-      </ContenWrapper>
-    </Wrapper>
+    <>
+      <GroupHeader />
+      <Wrapper>
+        {/* <ImgWrapper>
+          <Img src={medallion} />
+        </ImgWrapper> */}
+        {/* <WinnerWrapper>
+          <ItemWp>
+            <Link to={`/profile/${maxPost?.userID}`}>
+              <Avatat src={getUserData(maxPost?.userID)?.avatar} />
+            </Link>
+            <div> {getUserData(maxPost?.userID)?.displayName}</div>
+            <Link to={`/group/${groupID}`}>
+              <h3>發起最多討論</h3>
+            </Link>
+            <div>共 {maxPost.point} 則</div>
+          </ItemWp>
+          <ItemWp>
+            <Link to={`/profile/${maxArticles?.userID}`}>
+              <Avatat src={getUserData(maxArticles?.userID)?.avatar} />
+            </Link>
+            <div> {getUserData(maxArticles?.userID)?.displayName}</div>
+            <Link to={`/milestones`}>
+              <h3>分享最多文章</h3>
+            </Link>
+            <div>共 {maxArticles.point} 則</div>
+          </ItemWp>
+          <ItemWp>
+            <Link to={`/profile/${maxBooks?.userID}`}>
+              <Avatat src={getUserData(maxBooks?.userID)?.avatar} />
+            </Link>
+            <div>{getUserData(maxBooks?.userID)?.displayName}</div>
+            <Link to={`/group/${groupID}/bookshelf`}>
+              <h3>分享最多書本</h3>
+            </Link>
+            <div>共 {maxBooks.point} 則</div>
+          </ItemWp>
+        </WinnerWrapper> */}
+        <ContenWrapper>
+          {renderMilestone.map((m) => {
+            return <Card item={m} key={m.milestoneID} />;
+          })}
+        </ContenWrapper>
+      </Wrapper>
+    </>
   );
 };
 
@@ -138,8 +134,27 @@ const WinnerWrapper = styled.div`
 `;
 
 const Wrapper = styled.div`
-  max-width: 1200px;
+  border-radius: 4px;
+  max-width: 1560px;
+  width: 80%;
+  /* padding: 0 3rem; */
   margin: 0 auto;
+  margin-bottom: 1.5rem;
+  display: flex;
+  background-color: #fff;
+  padding: 1rem 0;
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+  }
+  /* border-radius: 8px;
+  max-width: 1560px; */
+  /* width: 100%; */
+  /* border: 1px solid red;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  border: 30px solid rgb(255 193 174);
+  width: 80%;
+  padding: 0 10%; */
   /* margin: 0 10%; */
 `;
 

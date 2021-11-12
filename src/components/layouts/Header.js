@@ -25,6 +25,7 @@ const Header = () => {
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
+
   const [showLogin, setShowLogin] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
@@ -123,16 +124,16 @@ const Header = () => {
     <>
       <HeaderContainer>
         <InnerWrapper>
-          <LogoContainer to="/">
+          <Link to="/">
             <LogoCtn src={logo} />
-          </LogoContainer>
+          </Link>
           <ListContainer>
-            <ListStyled to="/milestones">所有里程碑</ListStyled>
+            <ListStyled to="/milestones">分享廣場</ListStyled>
             {userData && (
               <>
                 <ListStyled to="/groups">所有社團</ListStyled>
                 <ListStyled to="/groups/post">發起社團</ListStyled>
-                <ListStyled to="/milestones/post">創建里程碑</ListStyled>
+                <ListStyled to="/milestones/post">分享成果</ListStyled>
                 <ListStyled to={`/profile/${userData?.uid}`}>
                   <ImgCtn src={userAvatar} />
                 </ListStyled>
@@ -166,7 +167,7 @@ const Header = () => {
                   <BoldName data-id={msg.docId} data-id={msg.docId}>
                     {getUserName(msg.sender)}
                   </BoldName>
-                  在你的里程碑
+                  在你的分享文章
                   <BoldName data-id={msg.docId} data-id={msg.docId}>
                     {" "}
                     {getArticles(msg.milestoneID)}{" "}
@@ -217,14 +218,11 @@ const Header = () => {
           <Close onClick={() => setToggleMobile(!toggleMobile)} />
         </MobileCtn>
         <MLogo src={logo} />
-        <MobileList to="/milestones">所有里程碑</MobileList>
+        <MobileList to="/milestones">分享廣場</MobileList>
         <MobileList to="/groups">所有社團</MobileList>
         <MobileList to="/groups/post">發起社團</MobileList>
-        <MobileList to="/milestones/post">創建里程碑</MobileList>
+        <MobileList to="/milestones/post">分享成果</MobileList>
         <MobileList to={`/profile/${userData?.uid}`}>個人頁面</MobileList>
-        {/* <MobileCtn>
-          登出 <LogoutBtn onClick={handleLogout} />
-        </MobileCtn> */}
       </MobileMenu>
     </>
   );
@@ -360,25 +358,24 @@ const InnerWrapper = styled.div`
 `;
 
 const HeaderContainer = styled.div`
+  /* position: -webkit-sticky; */
+  /* position: sticky;
+  top: 0; */
+
+  /* z-index: 99999; */
   display: flex;
   justify-content: center;
   width: 100%;
   margin: 0 auto;
   color: white;
   background-color: #f27e59;
-  /* box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px; */
   box-shadow: 0px -3px 16px -7px #ffffff;
   @media only screen and (max-width: 992px) {
     justify-content: space-between;
   }
 `;
 
-const LogoContainer = styled(Link)`
-  /* flex-grow: 1; */
-  @media only screen and (max-width: 992px) {
-    /* max-width: 200px; */
-  }
-`;
+const LogoContainer = styled(Link)``;
 
 const LogoCtn = styled.img`
   max-width: 300px;

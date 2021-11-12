@@ -60,11 +60,6 @@ const Sider = styled.div`
   border-bottom-left-radius: 10px;
   background-color: #f27e59;
   @media only screen and (max-width: 992px) {
-    /* width: 100%;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0; */
     display: none;
   }
 `;
@@ -108,10 +103,8 @@ const ShowSignUp = styled.button`
   font-size: 18px;
   background: none;
   margin-top: 2rem;
-  /* font-family: "GT Walsheim Pro", Arial, sans-serif; */
   font-weight: 700;
   border-style: none;
-  /* margin-bottom: 16px; */
   cursor: pointer;
 `;
 

@@ -2,11 +2,10 @@ import React from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 const CommentWrapper = styled.div`
-  background-color: #f5f5f5;
-  width: 80%;
-  border-radius: 10px;
-  padding: 1rem 1rem;
-  margin-bottom: 10px;
+  background-color: #fffdfd;
+  padding: 10px 10px;
+  width: fit-content;
+  box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
 `;
 
 const AvatorStyled = styled.img`
@@ -30,8 +29,8 @@ const UserWrapper = styled.div`
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: end;
-  padding-bottom: 0.5rem;
+  justify-content: start;
+  padding: 10px 10px 0 10px;
 `;
 
 const UserText = styled.div`

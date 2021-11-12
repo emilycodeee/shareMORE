@@ -59,27 +59,6 @@ function App() {
           d(getUserData(null));
         }
       });
-
-      //redux
-      // firebase
-      //   .getTotalDocList("users")
-      //   .then((res) => d(getUsersList(res)))
-      //   .catch((err) => console.log(err));
-
-      // firebase
-      //   .getTotalDocSortList("groups")
-      //   .then((res) => d(getGroupsList(res)))
-      //   .catch((err) => console.log(err));
-
-      // firebase
-      //   .getTotalDocSortList("articles")
-      //   .then((res) => d(getArticlesList(res)))
-      //   .catch((err) => console.log(err));
-
-      // firebase
-      //   .getTotalDocList("books")
-      //   .then((res) => d(getBooksList(res)))
-      //   .catch((err) => console.log(err));
     }
     return () => {
       isMounted = false;
@@ -127,14 +106,7 @@ function App() {
       d(getGroupsList(data));
     });
 
-    // if (isMounted) {
-    //   obsUserStatus();
-    //   obsGroupStatus();
-    //   obsArticlesStatus();
-    // }
-
     return () => {
-      // isMounted = false;
       userStatusUnsubscribe();
       groupStatusUnsubscribe();
       articlesStatusUnsubscribe();
@@ -162,6 +134,7 @@ function App() {
         <Route path="/group/:groupID" exact>
           <GroupPage />
         </Route>
+
         <Route path="/group/:groupID/milestones" exact>
           <GroupMilestone />
         </Route>
@@ -192,9 +165,7 @@ function App() {
         <Route path="/profile/:userID" exact>
           <ProfilePage />
         </Route>
-        {/* <Route path="/profile/:userID" exact>
-          <ProfilePage />
-        </Route> */}
+
         <Route path="/profile/:userID/edit" exact>
           <ProfileSetting />
         </Route>

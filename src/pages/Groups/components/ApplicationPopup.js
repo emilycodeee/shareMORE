@@ -6,44 +6,72 @@ import ApplicationMsg from "./ApplicationMsg";
 import styled from "styled-components";
 
 const Container = styled.div`
-  width: 50%;
+  max-width: 1560px;
+  width: 60%;
   display: flex;
-  padding: 0px;
+  justify-content: center;
   position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   margin-right: 120px;
-  max-width: 80%;
   outline: none;
-
-  /* overflow-y: auto; */
+  z-index: 99;
+  border-radius: 10px;
+  min-height: 150px;
+  /* padding: 5px 0; */
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+    /* border-radius: 0; */
+  }
+  @media only screen and (max-width: 500px) {
+    width: 80%;
+  }
 `;
-// 多欄會破版
+
 const MainCtn = styled.div`
+  width: 60%;
+  /* height: 50vh; */
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
-  width: 70%;
-  height: 500px;
+  border: #dcdee1 1px solid;
+  align-items: center;
+  justify-content: center;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   background-color: rgb(255, 255, 255);
-  /* background-color: red; */
-  padding: 10px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
+  padding: 50px;
+  /* width: auto; */
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: 10px;
+    /* border-top: 4px solid #f27e59; */
+  }
 `;
 
 const Sider = styled.div`
-  max-width: 35%;
+  padding: 0 1rem;
+  width: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-  background-color: rgb(255 234 182);
-  padding: 10px;
+  background-color: #f27e59;
+  gap: 1rem;
+  padding: 1rem;
+  @media only screen and (max-width: 992px) {
+    padding: 0.5rem;
+    width: 100%;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 0;
+
+    gap: 0.5rem;
+    /* display: none; */
+  }
 `;
 
 const InputStyled = styled.input`
@@ -59,12 +87,9 @@ const ApplicationPopup = ({ groupData, applicationData, appliedData }) => {
   return (
     <Container>
       <Sider>
-        <h2>一起 走得更遠</h2>
-        <h4>
-          What I wamt is you to try, and the result will follow.If not today
-          ,then some other day.
-          <br />─ Jonas
-        </h4>
+        <Slogan>一起 走得更遠</Slogan>
+        <Slogan>TOGETHER</Slogan>
+        <Slogan>WE ARE STRONGER.</Slogan>
       </Sider>
       <MainCtn>
         <ApplicationMsg
@@ -78,3 +103,16 @@ const ApplicationPopup = ({ groupData, applicationData, appliedData }) => {
 };
 
 export default ApplicationPopup;
+
+const Slogan = styled.h2`
+  margin: 0;
+  /* margin-bottom: 1rem; */
+  color: #ffffff;
+  @media only screen and (max-width: 992px) {
+    margin: 0 auto;
+    /* margin-bottom: 0.5rem; */
+    flex-direction: column;
+    font-size: 1rem;
+    /* border-radius: 0; */
+  }
+`;

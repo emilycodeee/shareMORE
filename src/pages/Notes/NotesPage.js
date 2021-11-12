@@ -6,16 +6,22 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import * as firebase from "../../utils/firebase";
 import { BsUpload } from "react-icons/bs";
+import GroupHeader from "../Groups/components/GroupHeader";
 // BsFillFolderFill;
 const Wrapper = styled.div`
-  max-width: 1000px;
-  width: 100%;
+  border-radius: 4px;
+  max-width: 1560px;
+  width: 80%;
+  /* padding: 0 3rem; */
   margin: 0 auto;
-  padding: 20px 20px;
+  margin-bottom: 1.5rem;
   display: flex;
+  background-color: #fff;
+  padding: 1rem 0;
   flex-direction: column;
-  /* justify-content: center; */
-  align-items: center;
+  /* @media only screen and (max-width: 992px) {
+    flex-direction: column;
+  } */
 `;
 
 const Notes = styled(Link)`
@@ -143,46 +149,49 @@ const NotesPage = () => {
     return time;
   };
   return (
-    <Wrapper>
-      <TopCtn>
-        <Search placeholder="請輸入標題名稱、內容..." />
-        <TopBtn>最新發起</TopBtn>
-        {endpoint.includes("milestones") && (
-          <TopBtn>
-            <Link to="/milestones/post">建立里程碑</Link>
-          </TopBtn>
-        )}
-        {checkGroupCreator && endpoint.includes("notes") && (
-          <TopBtn>
-            <Link to={`/group/${groupID}/notes/post`}>
-              <BsUpload />
-            </Link>
-          </TopBtn>
-        )}
-      </TopCtn>
-      {contentsList?.length === 0 && <div>{emptyText}</div>}
-      {contentsList?.map((item) => {
-        let url;
-        if (endpoint.includes("notes")) {
-          url = `/group/${groupID}/notes/${item?.noteID}`;
-        } else if (endpoint.includes("milestones")) {
-          url = `/milestone/${item.milestoneID}`;
-        }
-        return (
-          <Notes key={item?.noteID || item?.milestoneID} to={url}>
-            <Cover src={item.coverImage} />
-            <Content>
-              <TitleStyle>{item.title}</TitleStyle>
-              <TimeTag>
-                {usersList.find((p) => p.uid === item.creatorID)?.displayName}
-              </TimeTag>
-              <TimeTag>{getTime(item)}</TimeTag>
-              <TextTag>{item.introduce}</TextTag>
-            </Content>
-          </Notes>
-        );
-      })}
-    </Wrapper>
+    <>
+      <GroupHeader />
+      <Wrapper>
+        <TopCtn>
+          <Search placeholder="請輸入標題名稱、內容..." />
+          <TopBtn>最新發起</TopBtn>
+          {endpoint.includes("milestones") && (
+            <TopBtn>
+              <Link to="/milestones/post">建立里程碑</Link>
+            </TopBtn>
+          )}
+          {checkGroupCreator && endpoint.includes("notes") && (
+            <TopBtn>
+              <Link to={`/group/${groupID}/notes/post`}>
+                <BsUpload />
+              </Link>
+            </TopBtn>
+          )}
+        </TopCtn>
+        {contentsList?.length === 0 && <div>{emptyText}</div>}
+        {contentsList?.map((item) => {
+          let url;
+          if (endpoint.includes("notes")) {
+            url = `/group/${groupID}/notes/${item?.noteID}`;
+          } else if (endpoint.includes("milestones")) {
+            url = `/milestone/${item.milestoneID}`;
+          }
+          return (
+            <Notes key={item?.noteID || item?.milestoneID} to={url}>
+              <Cover src={item.coverImage} />
+              <Content>
+                <TitleStyle>{item.title}</TitleStyle>
+                <TimeTag>
+                  {usersList.find((p) => p.uid === item.creatorID)?.displayName}
+                </TimeTag>
+                <TimeTag>{getTime(item)}</TimeTag>
+                <TextTag>{item.introduce}</TextTag>
+              </Content>
+            </Notes>
+          );
+        })}
+      </Wrapper>
+    </>
   );
 };
 

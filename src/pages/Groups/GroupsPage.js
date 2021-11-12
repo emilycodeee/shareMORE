@@ -180,16 +180,16 @@ const GroupsPage = () => {
       </TopCtn>
       <ContentCtn>
         <Side>
-          <ListStyle key={uuidv4()} onClick={handleCategory}>
+          <ListStyle key={"all"} onClick={handleCategory}>
             全部
           </ListStyle>
 
           {categoryList.map((item, i) => (
-            <div key={item.name}>
+            <div key={i}>
               <ListStyle onClick={handleCategory}>{item.name}</ListStyle>
               {item.subClasses.map((sitem, i) => (
                 <SubList
-                  key={item.name}
+                  key={i}
                   category={item.name}
                   active={subClassesName}
                   onClick={handleSubCategory}
