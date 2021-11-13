@@ -294,7 +294,7 @@ const PostContainer = ({ item, content }) => {
               </MoreBtn>
             )}
             <MoreBtn onClick={handleDelete}>刪除</MoreBtn>
-            {checkGroupOwner && (
+            {(checkGroupOwner || checkPostSender) && (
               <MoreBtn>
                 <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
                   設為筆記

@@ -22,7 +22,8 @@ import {
 } from "react-icons/bs";
 import { ImBooks } from "react-icons/im";
 
-const GroupHeader = () => {
+const GroupHeader = ({ tag }) => {
+  console.log("tagggg", tag);
   const { groupID } = useParams();
   const { path, url } = useRouteMatch();
   console.log("path", path);
@@ -222,17 +223,23 @@ const GroupHeader = () => {
             <AvatarImg src={groupOwner?.avatar} />
           </LinkAvatar> */}
 
-          <LinkStyled to={`/group/${groupID}/bookshelf`}>
+          <LinkStyled
+            to={`/group/${groupID}/bookshelf`}
+            tag={tag === "bookShelf"}
+          >
             <Bookshelf />
             <span>社團書櫃</span>
           </LinkStyled>
           {checkMember && (
             <>
-              <LinkStyled to={`/group/${groupID}/milestones`}>
+              <LinkStyled
+                to={`/group/${groupID}/milestones`}
+                tag={tag === "milestone"}
+              >
                 <Miles />
                 <span> 成果分享</span>
               </LinkStyled>
-              <LinkStyled to={`/group/${groupID}/notes`}>
+              <LinkStyled to={`/group/${groupID}/notes`} tag={tag === "note"}>
                 <Folder />
                 <span>社團筆記</span>
               </LinkStyled>
@@ -438,6 +445,7 @@ const WelcomeToggle = styled.div`
 
 const LiStyled = styled.div`
   display: flex;
+
   /* background-color: red; */
   border-radius: 4px;
   padding: 0.3rem 0.4rem;
@@ -477,13 +485,17 @@ const ShareStyled = styled.div`
 `;
 
 const LinkStyled = styled(Link)`
+  /* transform: ${(props) =>
+    props.tag === "bookShelf" ? "translateY(-8px)" : "none"}; */
+  /* transform: translateY(-8px); */
   color: #ffffff;
   text-align: center;
   font-weight: 600;
   text-decoration: none;
   font-size: 1rem;
   display: inline-block;
-  background: rgb(255 193 174);
+  background: ${(props) => (props.tag ? "#f27e59" : "rgb(255 193 174)")};
+  /* rgb(255 193 174); */
   padding: 0.5rem 1rem;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
@@ -493,6 +505,9 @@ const LinkStyled = styled(Link)`
   display: flex;
   align-items: center;
   gap: 3px;
+  &:hover {
+    background-color: #f27e59;
+  }
   @media only screen and (max-width: 992px) {
     span {
       display: none;

@@ -8,94 +8,6 @@ import * as firebase from "../../utils/firebase";
 import { BsUpload } from "react-icons/bs";
 import GroupHeader from "../Groups/components/GroupHeader";
 // BsFillFolderFill;
-const Wrapper = styled.div`
-  border-radius: 4px;
-  max-width: 1560px;
-  width: 80%;
-  /* padding: 0 3rem; */
-  margin: 0 auto;
-  margin-bottom: 1.5rem;
-  display: flex;
-  background-color: #fff;
-  padding: 1rem 0;
-  flex-direction: column;
-  /* @media only screen and (max-width: 992px) {
-    flex-direction: column;
-  } */
-`;
-
-const Notes = styled(Link)`
-  box-shadow: 0 2px 10px #a2a2a2;
-  margin-bottom: 2rem;
-  height: 150px;
-  text-decoration: none;
-  color: black;
-  border-radius: 25px;
-  border: 1px solid rgb(204, 204, 204);
-  display: flex;
-`;
-
-const Content = styled.div`
-  padding: 0 1rem 1rem 1rem;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin-left: 1rem;
-`;
-
-const Search = styled.input`
-  width: 70%;
-  height: 1.8rem;
-  border-radius: 25px;
-  box-shadow: none;
-  border: 1px solid rgb(204, 204, 204);
-  padding: 4px 0px 4px 50px;
-  font-size: 18px;
-  margin: 2rem 0;
-`;
-
-const TopBtn = styled.div`
-  /* flex-grow: 1; */
-  align-self: center;
-  text-align: center;
-  width: 8%;
-  padding: 1% 0;
-  margin-left: 1rem;
-  border-radius: 25px;
-  background-color: #f5f5f5;
-  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
-  cursor: pointer;
-`;
-
-const Cover = styled.img`
-  width: 20%;
-  border-top-left-radius: 25px;
-  border-bottom-left-radius: 25px;
-`;
-
-const TopCtn = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-`;
-
-const TitleStyle = styled.h1`
-  font-size: 1.5rem;
-  margin: 0;
-  margin-top: 1rem;
-`;
-
-const TimeTag = styled.p`
-  align-self: flex-end;
-  margin: 3px 0;
-  font-size: 12px;
-  font-weight: 550;
-  color: rgb(111 104 102);
-`;
-
-const TextTag = styled.p`
-  margin-top: 1rem;
-`;
 
 const NotesPage = () => {
   const { groupID } = useParams();
@@ -114,33 +26,27 @@ const NotesPage = () => {
     let isMounted = true;
 
     if (isMounted) {
-      if (endpoint.includes("notes")) {
-        console.log("你在筆記葉");
-        firebase
-          .getGroupNotes("groups", groupID, "notes")
-          .then((res) => setContentsList(res))
-          .catch((err) => console.log(err));
-      } else if (endpoint.includes("milestones")) {
-        firebase.getGroupMilestones(groupID).then((res) => {
-          const filterPublic = res.filter((item) => {
-            return item.public === true;
-          });
-          setContentsList(filterPublic);
-          emptyText = "目前尚未存在與社團相關的公開里程碑";
-        });
-      }
+      // if (endpoint.includes("notes")) {
+      console.log("你在筆記葉");
+      firebase
+        .getGroupNotes("groups", groupID, "notes")
+        .then((res) => setContentsList(res))
+        .catch((err) => console.log(err));
+      // } else if (endpoint.includes("milestones")) {
+      //   firebase.getGroupMilestones(groupID).then((res) => {
+      //     const filterPublic = res.filter((item) => {
+      //       return item.public === true;
+      //     });
+      //     setContentsList(filterPublic);
+      //     emptyText = "目前尚未存在與社團相關的公開里程碑";
+      //   });
+      // }
     }
 
     return () => {
       isMounted = false;
     };
   }, []);
-
-  // <LinkStyle to={`/group/${groupID}/notes/${postID}/post`}>
-  //   設為精選筆記
-  // </LinkStyle>;
-
-  // FaFileUpload;
 
   const getTime = (content) => {
     const time = new Date(content.creationTime?.toDate()).toLocaleString(
@@ -150,49 +56,207 @@ const NotesPage = () => {
   };
   return (
     <>
-      <GroupHeader />
+      <GroupHeader tag="note" />
       <Wrapper>
-        <TopCtn>
+        {endpoint.includes("notes") && (
+          <CreateButton to={`/group/${groupID}/notes/post`}>
+            建立社團筆記
+          </CreateButton>
+        )}
+        {/* <TopCtn>
+        checkGroupCreator && 
           <Search placeholder="請輸入標題名稱、內容..." />
-          <TopBtn>最新發起</TopBtn>
-          {endpoint.includes("milestones") && (
+          <TopBtn>最新發起</TopBtn> */}
+        {/* {endpoint.includes("milestones") && (
             <TopBtn>
               <Link to="/milestones/post">建立里程碑</Link>
             </TopBtn>
-          )}
-          {checkGroupCreator && endpoint.includes("notes") && (
-            <TopBtn>
-              <Link to={`/group/${groupID}/notes/post`}>
-                <BsUpload />
-              </Link>
-            </TopBtn>
-          )}
-        </TopCtn>
-        {contentsList?.length === 0 && <div>{emptyText}</div>}
-        {contentsList?.map((item) => {
-          let url;
-          if (endpoint.includes("notes")) {
-            url = `/group/${groupID}/notes/${item?.noteID}`;
-          } else if (endpoint.includes("milestones")) {
-            url = `/milestone/${item.milestoneID}`;
-          }
-          return (
-            <Notes key={item?.noteID || item?.milestoneID} to={url}>
-              <Cover src={item.coverImage} />
-              <Content>
-                <TitleStyle>{item.title}</TitleStyle>
-                <TimeTag>
-                  {usersList.find((p) => p.uid === item.creatorID)?.displayName}
-                </TimeTag>
-                <TimeTag>{getTime(item)}</TimeTag>
-                <TextTag>{item.introduce}</TextTag>
-              </Content>
-            </Notes>
-          );
-        })}
+          )} */}
+        {/* </TopCtn> */}
+
+        {contentsList?.length === 0 && (
+          <Empty>
+            <div>目前尚未建立社群筆記</div>
+            <lottie-player
+              src="https://assets4.lottiefiles.com/private_files/lf30_6npzscwg.json"
+              background="transparent"
+              speed="1"
+              style={{ maxWidth: "300px", maxHeight: "300px" }}
+              loop
+              autoplay
+            />
+          </Empty>
+        )}
+
+        {/* {contentsList?.length === 0 && <div>{emptyText}</div>} */}
+        <NotesArea>
+          {contentsList?.map((item) => {
+            let url;
+            if (endpoint.includes("notes")) {
+              url = `/group/${groupID}/notes/${item?.noteID}`;
+            } else if (endpoint.includes("milestones")) {
+              url = `/milestone/${item.milestoneID}`;
+            }
+            return (
+              <Notes key={item?.noteID || item?.milestoneID} to={url}>
+                <Cover itemImg={item.coverImage} />
+                <Content>
+                  <TitleStyle>{item.title}</TitleStyle>
+                  <TimeTag>
+                    {
+                      usersList.find((p) => p.uid === item.creatorID)
+                        ?.displayName
+                    }
+                  </TimeTag>
+                  <TimeTag>{getTime(item)}</TimeTag>
+                  <TextTag>{item.introduce}</TextTag>
+                </Content>
+              </Notes>
+            );
+          })}
+        </NotesArea>
       </Wrapper>
     </>
   );
 };
 
 export default NotesPage;
+
+const Empty = styled.div`
+  /* background-color: red; */
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  gap: 1rem;
+  div {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: rgb(242, 126, 89);
+  }
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+`;
+
+const CreateButton = styled(Link)`
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  text-decoration: none;
+  cursor: pointer;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  &:hover {
+    background-color: #f27e59;
+    color: #fff;
+  }
+`;
+
+const Wrapper = styled.div`
+  border-radius: 4px;
+  max-width: 1560px;
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 1.5rem;
+  display: flex;
+  background-color: #fff;
+  padding: 2rem 0;
+  flex-direction: column;
+`;
+
+const Notes = styled(Link)`
+  box-shadow: 0 2px 4px #a2a2a2;
+  text-decoration: none;
+  color: black;
+  /* border: 1px solid rgb(204, 204, 204); */
+  display: flex;
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 0 auto;
+  width: 100%;
+  justify-content: space-between;
+  @media only screen and (max-width: 992px) {
+  }
+`;
+
+const NotesArea = styled.div`
+  width: 90%;
+  padding: 0 1rem;
+  /* padding-bottom: 1rem; */
+  margin: 0 auto;
+  /* border: 1px solid salmon; */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const Content = styled.div`
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  margin-left: 1rem;
+  @media only screen and (max-width: 500px) {
+    margin: 0;
+    width: 100%;
+  }
+`;
+
+const Cover = styled.div`
+  width: 30%;
+  background-image: url(${(props) => props.itemImg});
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+
+  background-size: cover;
+  background-position: center;
+  @media only screen and (max-width: 500px) {
+    display: none;
+  }
+`;
+
+const TitleStyle = styled.h1`
+  font-size: 1.5rem;
+  margin: 0;
+  /* margin-top: 1rem; */
+  /* line-height: 28px; */
+`;
+
+const TimeTag = styled.p`
+  align-self: flex-end;
+  margin: 3px 0;
+  font-size: 12px;
+  font-weight: 550;
+  color: rgb(111 104 102);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @media only screen and (max-width: 992px) {
+    align-self: flex-start;
+  }
+`;
+
+const TextTag = styled.p`
+  /* margin-top: 1rem; */
+  /* display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis; */
+`;

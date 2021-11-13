@@ -50,11 +50,12 @@ const GroupMilestone = () => {
 
   return (
     <>
-      <GroupHeader />
+      <GroupHeader tag="milestone" />
       <Wrapper>
         <CreateButton to="/milestones/post">分享我的學習成果</CreateButton>
         {renderMilestone.length === 0 && (
           <Empty>
+            <div>目前尚未有任何成果分享，就從你開始吧！</div>
             <lottie-player
               src="https://assets4.lottiefiles.com/private_files/lf30_6npzscwg.json"
               background="transparent"
@@ -114,10 +115,17 @@ export default GroupMilestone;
 
 const Empty = styled.div`
   /* background-color: red; */
-  margin: 0 auto;
-  /* display: flex;
+  display: flex;
   justify-content: center;
-  align-items: center; */
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  gap: 1rem;
+  div {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: rgb(242, 126, 89);
+  }
 `;
 
 const CreateButton = styled(Link)`

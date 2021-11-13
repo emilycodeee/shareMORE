@@ -72,17 +72,23 @@ const NotePage = () => {
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const currentGroupData = groupsList.find((item) => item.groupID === groupID);
+  const usersList = useSelector((state) => state.usersList);
   console.log(currentGroupData);
   const [noteContent, setNoteContent] = useState("");
+  const [checkNoteCreator, setCheckNoteCreator] = useState(false);
   const history = useHistory();
   const checkGroupCreator = currentGroupData?.creatorID === userData?.uid;
+  // const checkCreator = currentGroupData?.creatorID === userData?.uid;
   console.log(checkGroupCreator);
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
       firebase
         .getGroupsNoteContent("groups", groupID, "notes", postID)
-        .then((res) => setNoteContent(res))
+        .then((res) => {
+          setNoteContent(res);
+          setCheckNoteCreator(res.creatorID === userData?.uid);
+        })
         .catch((err) => console.log(err));
     }
 
@@ -113,11 +119,13 @@ const NotePage = () => {
       <TopArea>
         <h1>{noteContent.title}</h1>
         <IconsWrapper>
-          {checkGroupCreator && (
+          {(checkGroupCreator || checkNoteCreator) && (
             <>
-              <IconLink to={`/group/${groupID}/notes/${postID}/edit`}>
-                <BsPencilSquare />
-              </IconLink>
+              {checkNoteCreator && (
+                <IconLink to={`/group/${groupID}/notes/${postID}/edit`}>
+                  <BsPencilSquare />
+                </IconLink>
+              )}
               <IconCtn>
                 <BsFillTrashFill onClick={handleDelete} />
               </IconCtn>

@@ -12,14 +12,16 @@ import { getGroupsList } from "../../redux/actions";
 const MainContainer = styled.div`
   /* border-radius: 20px;
   border: 1px solid #3e2914; */
+  max-width: 1560px;
+  width: 80%;
   display: flex;
   flex-direction: column;
-
-  margin: 3rem 5rem;
-  padding: 3rem 5rem;
-  @media only screen and (max-width: 992px) {
+  margin: 0 auto;
+  margin-top: 3rem;
+  /* padding: 3rem 5rem; */
+  /* @media only screen and (max-width: 992px) {
     margin: 0;
-  }
+  } */
 `;
 
 const LabelCtn = styled.label`

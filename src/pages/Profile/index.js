@@ -27,13 +27,18 @@ const SideCard = styled.div`
 
 const Wrapper = styled.div`
   /* border: 1px solid gray; */
+
+  max-width: 1560px;
+  width: 80%;
+  display: flex;
+
   border-radius: 10px;
   margin: 0 auto;
   margin-top: 2rem;
-  width: 100%;
-  max-width: 1000px;
+  /* width: 100%; */
+  /* max-width: 1000px; */
   padding: 60px 60px 150px;
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
   justify-content: space-between;
 `;

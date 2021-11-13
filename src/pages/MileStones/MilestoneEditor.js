@@ -10,8 +10,8 @@ import { useSelector } from "react-redux";
 import Fireworks from "../../components/Fireworks";
 
 const ContainerStyled = styled.div`
-  width: 1000px;
-  width: 100%;
+  max-width: 1560px;
+  width: 80%;
   display: flex;
   /* margin: 3rem 5rem; */
   padding: 3rem 5rem;
@@ -64,11 +64,28 @@ const UploadBtn = styled.label`
 `;
 
 const SubmitBtn = styled.button`
-  align-self: end;
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  text-decoration: none;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   margin: 0 auto;
-  padding: 10px;
-  border-radius: 10px;
+  margin-bottom: 2rem;
   border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
 `;
 
 const SwitchCtn = styled.div`

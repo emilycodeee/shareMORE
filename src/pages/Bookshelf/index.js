@@ -44,7 +44,7 @@ const Run = styled.h1`
   white-space: nowrap;
   overflow: hidden;
   border-right: 0.05em solid;
-  color: white;
+  color: black;
   animation: ${typing} 6s steps(15) infinite, ${caret} 1s steps(1) infinite;
   @media only screen and (max-width: 500px) {
     font-size: 1.2rem;
@@ -185,7 +185,7 @@ const Bookshelf = () => {
 
   return (
     <>
-      <GroupHeader />
+      <GroupHeader tag="bookShelf" />
       <Wrapper>
         {/* <TopCover style={{ backgroundImage: `url(${bookshelf})` }}>
           <Run>找書更方便！一起建立社團書櫃！</Run>
@@ -216,6 +216,7 @@ const Bookshelf = () => {
         {renderBookData.length === 0 && (
           <>
             {/* <div>社群書櫃目前還空空的</div> */}
+            <BookWelcome>紀錄書單更方便，一起建立我們的社團書櫃！</BookWelcome>
             <BookAnimation />
             {/* <BookAnimation2 /> */}
           </>
@@ -289,6 +290,18 @@ export default Bookshelf;
 
 const SelectedBook = styled.div`
   cursor: pointer;
+`;
+
+const BookWelcome = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+
+  margin-top: 1rem;
+  font-weight: 600;
+  color: rgb(242, 126, 89);
 `;
 
 const BookAuthor = styled.div`

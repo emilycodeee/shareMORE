@@ -9,16 +9,12 @@ import generateText from "../../utils/commonText";
 import { useSelector } from "react-redux";
 
 const ContainerStyled = styled.div`
-  /* border-radius: 20px;
-  border: 1px solid #3e2914;
-  display: flex;
-  margin: 3rem 5rem;
-  padding: 3rem 5rem; */
-  max-width: 1000px;
+  max-width: 1560px;
+  width: 80%;
   display: flex;
   /* margin: 3rem 5rem; */
-  padding: 3rem 5rem;
   margin: 0 auto;
+  margin-top: 3rem;
   @media only screen and (max-width: 992px) {
     padding: 1rem 2rem;
   }
@@ -31,12 +27,6 @@ const MainContainer = styled.div`
 `;
 
 const InputCtn = styled.input`
-  /* border-radius: 10px;
-  padding: 3px 10px;
-  font-size: 1.2rem;
-  margin: 1rem 0;
-  border: 1px solid #b5b2b0; */
-
   width: 100%;
   padding: 3px 10px;
   font-size: 1.2rem;
@@ -45,19 +35,11 @@ const InputCtn = styled.input`
 `;
 
 const SideSetting = styled.div`
-  /* padding: 10px;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  border-radius: 10px; */
   width: 30%;
   padding: 10px;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  /* border: 1px solid #b5b2b0; */
-  /* align-items: center;
-  justify-content: center; */
 `;
 
 const SettingWrapper = styled.div`
@@ -92,9 +74,28 @@ const UploadBtn = styled.label`
 `;
 
 const SubmitBtn = styled.button`
-  align-self: end;
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  text-decoration: none;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   margin: 0 auto;
-  padding: 10px;
+  margin-bottom: 2rem;
+  border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
 `;
 
 const Introduce = styled.textarea`

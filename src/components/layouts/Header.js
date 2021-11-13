@@ -17,8 +17,8 @@ import {
 } from "firebase/firestore";
 
 import { HiOutlineLogout, HiMenu, HiChevronDoubleRight } from "react-icons/hi";
-import { MdAgriculture, MdOutlineNotificationsActive } from "react-icons/md";
-
+import { MdLogout, MdOutlineNotificationsActive } from "react-icons/md";
+import { BsDoorOpen } from "react-icons/bs";
 const Header = () => {
   const history = useHistory();
   const userData = useSelector((state) => state.userData);
@@ -244,8 +244,8 @@ const Count = styled.div`
   border-radius: 50%;
   position: absolute;
   font-size: 0.5rem;
-
-  bottom: 0;
+  opacity: 0.9px;
+  bottom: 10px;
   right: -4px;
 `;
 
@@ -304,6 +304,7 @@ const ListContainer = styled.ul`
   align-items: center;
   padding: 0 0 0 1rem;
   /* gap: 1rem; */
+
   @media only screen and (max-width: 992px) {
     padding: 0;
   }
@@ -316,7 +317,15 @@ const ListStyled = styled(Link)`
   text-decoration: none;
   font-size: 1rem;
   /* color: rgb(17 17 17); */
-  color: #fff4e4;
+  /* #fff4e4 */
+  color: white;
+  &:hover {
+    border-bottom: 3px solid white;
+  }
+
+  &:nth-child(5) {
+    border-bottom: none;
+  }
   @media only screen and (max-width: 992px) {
     display: none;
   }
@@ -413,16 +422,23 @@ const MLogo = styled.img`
 
 const MobileList = styled(Link)`
   text-decoration: none;
-  color: rgb(17 17 17);
+  /* color: rgb(17 17 17); */
+  color: #f27e59;
+  font-weight: 600;
   cursor: pointer;
   height: 2rem;
   width: 100%;
+  padding: 20px 0;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:first-child {
     justify-content: start;
+  }
+  &:hover {
+    color: white;
+    background-color: #f27e59;
   }
 `;
 
@@ -434,13 +450,14 @@ const MobileCtn = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 `;
 
 const IconSet = styled.div`
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  justify-content: center;
   /* padding: 0 1rem; */
   gap: 10px;
 `;
@@ -462,14 +479,16 @@ const Close = styled(HiChevronDoubleRight)`
 
   display: flex;
   justify-content: start;
+  color: #f27e59;
 `;
 
 const Notifications = styled(MdOutlineNotificationsActive)`
   ${iconStyle}
   cursor: pointer;
+  margin: none;
 `;
 
-const LogoutBtn = styled(HiOutlineLogout)`
+const LogoutBtn = styled(MdLogout)`
   ${iconStyle}
   cursor: pointer;
   @media only screen and (max-width: 992px) {
