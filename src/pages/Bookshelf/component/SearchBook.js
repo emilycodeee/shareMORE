@@ -1,10 +1,11 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useParams, useHistory, useLocation } from "react-router";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-// import * as firebase from "../../../utils/firebase";
-import { GrRevert, GrBook, GrSearchAdvanced, GrLink } from "react-icons/gr";
+
+import { BsLink45Deg, BsBookmarkPlus } from "react-icons/bs";
+import { BiSearchAlt2, BiUndo, BiX } from "react-icons/bi";
 import { JumpCircleLoading } from "react-loadingg";
 import BookContent from "./BookContnet";
 import * as firebase from "../../../utils/firebase";
@@ -19,24 +20,20 @@ const Wrapper = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   margin-right: 120px;
-  /* max-width: 70%; */
   outline: none;
   background-color: white;
   z-index: 99;
-  border-radius: 3px;
-  /* 卷軸 */
+  border-radius: 5px;
   min-height: 150px;
-  /* padding: 0px 0px 20px; */
   padding: 2rem;
   max-height: calc(100vh - 240px);
-  border-top: 8px solid #f27e59;
+  border-top: 5px solid #f27e59;
   overflow-y: auto;
   scroll-behavior: smooth;
 `;
 
 const ResultBookCtn = styled.div`
   cursor: pointer;
-  /* border: 1px solid red; */
 `;
 
 const ResultWrapper = styled.div`
@@ -44,6 +41,7 @@ const ResultWrapper = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   text-align: center;
   gap: 1rem;
+  margin-top: 1rem;
   @media only screen and (max-width: 992px) {
     grid-template-columns: 1fr 1fr 1fr;
   }
@@ -116,29 +114,6 @@ const BookImage = styled.img`
   }
 `;
 
-const style = {
-  margin: "1rem",
-  cursor: "pointer",
-  height: "1.5rem",
-  width: "1.5rem",
-};
-
-const LinkIcon = styled(GrLink)`
-  ${style}
-`;
-
-const RevertIcon = styled(GrRevert)`
-  ${style}
-`;
-
-const GrBookIcon = styled(GrBook)`
-  ${style}
-`;
-
-const GrSearchAdvancedIcon = styled(GrSearchAdvanced)`
-  ${style}
-`;
-
 const SearchBook = () => {
   const { groupID } = useParams();
   console.log(groupID);
@@ -170,10 +145,24 @@ const SearchBook = () => {
       .catch((err) => console.log(err));
   };
 
+  const handleSearch = (e) => {
+    if (e.key === "Enter") {
+      const keyWord = e.target.value;
+      setIsLoading(true);
+      fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${keyWord}&maxResults=40`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data.items);
+          setContent(data.items);
+          setIsLoading(false);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   const handleRec = (e) => {
-    console.log(bookContent);
-    // const obj = JSON.parse(bookContent);
-    console.log(bookContent);
     const data = {
       ...bookContent,
       recReason: submitValue,
@@ -183,13 +172,6 @@ const SearchBook = () => {
       // applyStatus: false,
       shareDate: new Date(),
     };
-
-    // if (checkGroupCreator) {
-    //   data.applyStatus = true;
-    // } else {
-    //   data.applyStatus = false;
-    // }
-
     setShowSubmitDialogue(false);
     console.log(data);
     firebase.setGroupBook(data).then(() => {
@@ -197,14 +179,7 @@ const SearchBook = () => {
       setSubmitValue("");
       if (true) {
         alert("書本已經存入書櫃囉");
-      } else {
-        alert("推薦書本已送出，等候社長審核後就會存入書櫃囉");
       }
-      // if (checkGroupCreator) {
-      //   alert("書本已經存入書櫃囉");
-      // } else {
-      //   alert("推薦書本已送出，等候社長審核後就會存入書櫃囉");
-      // }
     });
   };
 
@@ -218,11 +193,13 @@ const SearchBook = () => {
         {!showBookContent && (
           <>
             {/* <label>查找書目</label> */}
+            {/* <Run>找書更方便！一起建立社團書櫃！</Run> */}
             <SearchBookInput>
               <SearchInput
                 value={value}
+                onKeyPress={handleSearch}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="書名、作者名、ISBN..."
+                placeholder="書名、作者、ISBN..."
               />
               <AdvancedIcon onClick={submit} />
               {/* <button onClick={submit}>搜尋</button> */}
@@ -281,13 +258,8 @@ const SearchBook = () => {
                   <a href={bookContent.volumeInfo.previewLink} target="_blank">
                     <LinkIcon />
                   </a>
-                  <RevertIcon
-                    onClick={() => {
-                      setShowBookContent(false);
-                      setSubmitValue("");
-                    }}
-                  />
-                  <GrBookIcon
+
+                  <BookIcon
                     onClick={() => {
                       setShowSubmitDialogue(true);
                     }}
@@ -298,15 +270,12 @@ const SearchBook = () => {
             <ContentText>
               {HtmlParser(bookContent.volumeInfo.description)}
             </ContentText>
-            {/* <button
+            <RevertIcon
               onClick={() => {
                 setShowBookContent(false);
-
-                // console.log(showBookContent);
+                setSubmitValue("");
               }}
-            >
-              返回
-            </button> */}
+            />
           </BookWrapper>
         )}
       </Wrapper>
@@ -319,7 +288,7 @@ const SearchBook = () => {
           }}
         >
           <InputWrapper>
-            <div>說說為什麼想推薦，幫助夥伴快速瞭解這本書(30字內)</div>
+            <div>說說為什麼想推薦，幫助夥伴快速瞭解這本書吧!</div>
             <RecTextarea
               value={submitValue}
               onChange={(e) => {
@@ -342,6 +311,35 @@ const RecButton = styled.button`
   padding: 0.6rem;
   cursor: pointer;
   border-radius: 4px;
+  color: #f27e59;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  font-weight: 600;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
+`;
+
+const typing = keyframes`
+	from { width: 0 }
+`;
+
+const caret = keyframes`
+	50% { border-right-color: transparent; }
+`;
+
+const Run = styled.h1`
+  width: 34rem;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 0.05em solid;
+  color: black;
+  animation: ${typing} 6s steps(15) infinite, ${caret} 1s steps(1) infinite;
+  @media only screen and (max-width: 500px) {
+    font-size: 1.2rem;
+    width: 20rem;
+  }
 `;
 
 const RecTextarea = styled.textarea`
@@ -361,8 +359,14 @@ const Pstyle = styled.p`
 `;
 
 const ActionIcon = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 0.5rem;
+  padding: 3px;
+  gap: 10px;
+
   @media only screen and (max-width: 800px) {
-    text-align: center;
+    justify-content: center;
   }
 `;
 
@@ -411,19 +415,48 @@ const InputWrapper = styled.div`
   max-height: calc(100vh - 240px);
   overflow-y: auto;
   scroll-behavior: smooth;
+  /* background-color: red; */
+  border-top: 5px solid #f27e59;
 `;
 
 const SearchInput = styled.input`
   width: 100%;
   height: 20%;
-  border-radius: 4px;
+  border-radius: 10px;
   outline: none;
   border: 1px solid #d1cbcb;
-  padding: 4px 5px;
+  padding: 10px;
+  &:focus {
+    border: none;
+    box-shadow: 0px 0px 7px -2px rgba(242, 126, 89, 0.76) inset;
+  }
 `;
 
-const AdvancedIcon = styled(GrSearchAdvancedIcon)`
-  cursor: pointer;
+const IconStyle = {
+  fontSize: "2rem",
+  cursor: "pointer",
+  color: "#f27e59",
+};
+
+const LinkIcon = styled(BsLink45Deg)`
+  ${IconStyle}
+  font-size: 2rem;
+`;
+
+const RevertIcon = styled(BiUndo)`
+  ${IconStyle}
+  font-size: 2rem;
+  margin: 10px 0;
+`;
+
+const BookIcon = styled(BsBookmarkPlus)`
+  ${IconStyle}
+  font-size: 1.7rem;
+  margin-bottom: 10px;
+`;
+
+const AdvancedIcon = styled(BiSearchAlt2)`
+  ${IconStyle}
   margin-left: 10px;
   margin-right: 0;
 `;

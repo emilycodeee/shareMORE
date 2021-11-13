@@ -265,10 +265,11 @@ const BoldName = styled.span`
 const NotificationsArea = styled.div`
   font-size: 0.9rem;
   position: absolute;
+  max-height: 40vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   width: 20%;
   height: auto;
   right: 10px;
@@ -276,7 +277,8 @@ const NotificationsArea = styled.div`
   background-color: rgb(255 244 228);
   padding: 10px 0;
   overflow-y: auto;
-
+  gap: 10px;
+  box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
   @media only screen and (max-width: 992px) {
     width: 30%;
   }
@@ -286,12 +288,12 @@ const NotificationsArea = styled.div`
 `;
 
 const NotifiLink = styled(Link)`
-  margin: 10px 0;
+  /* margin: 10px 0; */
   text-decoration: none;
-  align-self: center;
-  height: 30%;
+  /* align-self: center; */
+  /* height: 30%; */
   color: black;
-  padding: 0.5rem;
+  padding: 0 0.5rem;
   :hover {
     background-color: #ffae96;
   }

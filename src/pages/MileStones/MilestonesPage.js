@@ -26,7 +26,7 @@ const Wrapper = styled.div`
   align-items: flex-start;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-column-gap: 1.2rem;
-  grid-row-gap: 1.2rem;
+  grid-row-gap: 2rem;
   margin: 0 auto;
 
   @media only screen and (max-width: 992px) {

@@ -52,6 +52,19 @@ const GroupMilestone = () => {
     <>
       <GroupHeader />
       <Wrapper>
+        <CreateButton to="/milestones/post">分享我的學習成果</CreateButton>
+        {renderMilestone.length === 0 && (
+          <Empty>
+            <lottie-player
+              src="https://assets4.lottiefiles.com/private_files/lf30_6npzscwg.json"
+              background="transparent"
+              speed="1"
+              style={{ maxWidth: "300px", maxHeight: "300px" }}
+              loop
+              autoplay
+            />
+          </Empty>
+        )}
         {/* <ImgWrapper>
           <Img src={medallion} />
         </ImgWrapper> */}
@@ -99,38 +112,39 @@ const GroupMilestone = () => {
 
 export default GroupMilestone;
 
-const ItemWp = styled.div`
-  border: 1px solid black;
-  background-color: #f6f6f6;
-  padding: 1rem;
-`;
-
-const Img = styled.img`
-  width: 18vmin;
-  height: 18vmin;
+const Empty = styled.div`
+  /* background-color: red; */
   margin: 0 auto;
-  text-align: center;
-`;
-
-const ImgWrapper = styled.div`
-  padding: 1rem;
-  display: flex;
+  /* display: flex;
   justify-content: center;
+  align-items: center; */
 `;
 
-const Avatat = styled.img`
-  height: 15vmin;
-  width: 15vmin;
-  border-radius: 50%;
-`;
-
-const WinnerWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  text-align: center;
-  padding: 1rem;
-
-  gap: 1rem;
+const CreateButton = styled(Link)`
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  text-decoration: none;
+  cursor: pointer;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 80%;
+  margin: 0 auto;
+  margin-bottom: 2rem;
+  border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  &:hover {
+    background-color: #f27e59;
+    color: #fff;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -141,21 +155,14 @@ const Wrapper = styled.div`
   margin: 0 auto;
   margin-bottom: 1.5rem;
   display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #fff;
   padding: 1rem 0;
-  @media only screen and (max-width: 992px) {
+  flex-direction: column;
+  /* @media only screen and (max-width: 992px) {
     flex-direction: column;
-  }
-  /* border-radius: 8px;
-  max-width: 1560px; */
-  /* width: 100%; */
-  /* border: 1px solid red;
-  margin: 0 auto;
-  margin-bottom: 1rem;
-  border: 30px solid rgb(255 193 174);
-  width: 80%;
-  padding: 0 10%; */
-  /* margin: 0 10%; */
+  } */
 `;
 
 const ContenWrapper = styled.div`
@@ -164,10 +171,19 @@ const ContenWrapper = styled.div`
   padding: 1em;
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-column-gap: 1.3em;
-  grid-row-gap: 1.3em;
+  width: 80%;
+  grid-column-gap: 1.4rem;
+  grid-row-gap: 2rem;
+
+  @media only screen and (max-width: 992px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 
   @media only screen and (max-width: 800px) {
     grid-template-columns: 1fr 1fr;
+  }
+
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
   }
 `;

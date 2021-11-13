@@ -436,6 +436,7 @@ const Wrapper = styled.div`
   margin-bottom: 1.5rem;
   display: flex;
   background-color: #fff;
+  /* background-color: #fff4e4; */
   padding: 1rem 0;
   @media only screen and (max-width: 992px) {
     flex-direction: column;

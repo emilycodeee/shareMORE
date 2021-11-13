@@ -55,7 +55,7 @@ const Wrapper = styled.div`
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-column-gap: 1.4rem;
-  grid-row-gap: 1.4rem;
+  grid-row-gap: 2rem;
 
   @media only screen and (max-width: 992px) {
     grid-template-columns: 1fr 1fr 1fr;
@@ -83,7 +83,7 @@ const Section = styled.div`
 const LinkStyled = styled(Link)`
   margin-top: 1rem;
   text-decoration: none;
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 600;
   background: #f27e59;
   border: none;
@@ -240,7 +240,7 @@ const InnerWrapper = styled.div`
 
 const CateBtn = styled.div`
   text-decoration: none;
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 600;
   background: #f27e59;
   border: none;

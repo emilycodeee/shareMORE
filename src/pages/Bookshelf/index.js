@@ -10,9 +10,11 @@ import SearchBook from "./component/SearchBook";
 import * as firebase from "../../utils/firebase";
 import BookContent from "./component/BookContnet";
 import GroupHeader from "../Groups/components/GroupHeader";
+import { BiX } from "react-icons/bi";
 import { JumpCircleLoading } from "react-loadingg";
-// import GroupHeader from "../Groups/components/GroupHeader";
-
+import { BsBookHalf } from "react-icons/bs";
+import BookAnimation from "./component/BookAnimation";
+import BookAnimation2 from "./component/BookAnimation2";
 const Wrapper = styled.div`
   border-radius: 4px;
   max-width: 1560px;
@@ -80,29 +82,28 @@ const BookItem = styled.div`
   margin: 10px;
 `;
 
-const DeleteIcon = styled(AiOutlineClose)`
+const DeleteIcon = styled(BiX)`
   position: absolute;
   top: -20px;
   right: 0;
+  margin-bottom: 20px;
   cursor: pointer;
-  height: 1.3rem;
-  width: 1.3rem;
+  font-size: 1.5rem;
 `;
 
 const SerchButton = styled.button`
-  /* display: flex; */
   border-radius: 4px;
-  /* padding: 0.3rem 0.4rem; */
-
   list-style: none;
   font-weight: 600;
   font-size: 1rem;
   height: auto;
-  /* -webkit-text-decoration: none; */
   text-decoration: none;
   cursor: pointer;
   color: #f27e59;
-
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   width: 80%;
   margin: 0 auto;
   margin-bottom: 20px;
@@ -125,7 +126,7 @@ const Bookshelf = () => {
   const [renderBookData, setRenderBookData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   // const [groupDetail, setGroupDetail] = useState({});
-
+  const [showDelete, setShowDelete] = useState(false);
   const [isInsider, setIsInsider] = useState(null);
   const [isOwner, setIsOwner] = useState(null);
 
@@ -197,7 +198,7 @@ const Bookshelf = () => {
             }}
           >
             推薦選書
-            <GiNotebook />
+            <BsBookHalf />
           </SerchButton>
         )}
 
@@ -212,13 +213,23 @@ const Bookshelf = () => {
             <SearchBook />
           </PageShield>
         )}
-        {renderBookData.length === 0 && <div>社群書櫃目前還空空的</div>}
+        {renderBookData.length === 0 && (
+          <>
+            {/* <div>社群書櫃目前還空空的</div> */}
+            <BookAnimation />
+            {/* <BookAnimation2 /> */}
+          </>
+        )}
 
         <ShelfWrapper>
           {renderBookData.map((b) => {
             return (
-              <BookItem key={b.groupBookID}>
-                {isOwner && (
+              <BookItem
+                key={b.groupBookID}
+                onMouseOver={() => setShowDelete(true)}
+                onMouseLeave={() => setShowDelete(false)}
+              >
+                {isOwner && showDelete && (
                   <DeleteIcon
                     onClick={handleDeleteBook}
                     data-bookid={b.groupBookID}
@@ -282,7 +293,7 @@ const SelectedBook = styled.div`
 
 const BookAuthor = styled.div`
   color: gray;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
   margin-bottom: 10px;
   display: -webkit-box;
@@ -293,8 +304,8 @@ const BookAuthor = styled.div`
 `;
 
 const BookTitle = styled.div`
-  font-size: 1.1rem;
-  margin: 0.7rem 0;
+  font-size: 1rem;
+  /* margin: 0.7rem 0; */
   font-weight: 550;
 `;
 
@@ -330,7 +341,7 @@ const ShelfWrapper = styled.div`
   grid-column-gap: 1rem;
   text-align: center;
   padding: 10px;
-  @media only screen and (max-width: 992px) {
+  @media only screen and (max-width: 1024px) {
     width: 80%;
     grid-template-columns: 1fr 1fr 1fr;
   }

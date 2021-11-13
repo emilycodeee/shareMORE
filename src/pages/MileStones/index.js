@@ -371,7 +371,9 @@ const MilestonePage = () => {
             style={{ backgroundImage: `url(${content?.coverImage})` }}
           />
         </div>
-        <div className="ql-editor">{HtmlParser(content?.content)}</div>
+        <QlContent className="ql-editor">
+          {HtmlParser(content?.content)}
+        </QlContent>
       </Wrapper>
       <SideSetting>
         <Link to={`/profile/${authorData?.uid}`}>
@@ -432,3 +434,8 @@ const MilestonePage = () => {
 };
 
 export default MilestonePage;
+
+const QlContent = styled.div`
+  width: 100%;
+  background-color: #fff4e4;
+`;
