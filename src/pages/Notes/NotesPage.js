@@ -135,9 +135,9 @@ const Empty = styled.div`
     font-weight: 600;
     color: rgb(242, 126, 89);
   }
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
+  @media only screen and (max-width: 500px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const CreateButton = styled(Link)`

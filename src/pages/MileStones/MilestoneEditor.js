@@ -10,14 +10,16 @@ import { useSelector } from "react-redux";
 import Fireworks from "../../components/Fireworks";
 
 const ContainerStyled = styled.div`
+  gap: 1rem;
   max-width: 1560px;
   width: 80%;
+  /* border: 1px solid red; */
   display: flex;
-  /* margin: 3rem 5rem; */
-  padding: 3rem 5rem;
+  /* padding: 3rem 5rem; */
   margin: 0 auto;
+  margin-top: 3rem;
   @media only screen and (max-width: 992px) {
-    padding: 1rem 2rem;
+    flex-direction: column;
   }
 `;
 
@@ -25,20 +27,25 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
-
-  /* background-color: salmon; */
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const SideSetting = styled.div`
   width: 30%;
-  padding: 10px;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
 `;
 
 const LabelCtn = styled.label`
-  padding: 10px 0 0 8px;
   font-size: 1.1rem;
   font-weight: 550;
   margin-right: 10px;
@@ -46,16 +53,17 @@ const LabelCtn = styled.label`
 
 const InputCtn = styled.input`
   width: 100%;
-  padding: 3px 10px;
+  padding: 10px;
   font-size: 1.2rem;
   margin: 1rem 0;
   border: 1px solid #b5b2b0;
+  border-radius: 4px;
   /* border: 1px solid #b5b2b0; */
 `;
 
 const InputWrapper = styled.div`
   border-radius: 4px;
-  padding: 8px;
+  /* padding: 8px; */
 `;
 
 const UploadBtn = styled.label`
@@ -86,13 +94,21 @@ const SubmitBtn = styled.button`
     background-color: #f27e59;
     color: white;
   }
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+    width: 100%;
+    align-items: flex-end;
+  }
 `;
 
 const SwitchCtn = styled.div`
   padding: 10px;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-around;
+  div {
+    font-weight: 550;
+  }
 `;
 
 const SettingLb = styled.label`
@@ -100,15 +116,28 @@ const SettingLb = styled.label`
   font-size: 1.1rem;
   font-weight: 550;
   margin-bottom: 10px;
+  @media only screen and (max-width: 992px) {
+    align-self: flex-start;
+    /* margin: 0;
+    width: 100%;
+    align-items: flex-end; */
+  }
 `;
 
 const PreViewCtn = styled.img`
   width: 100%;
   margin: 10px 0;
+  @media only screen and (max-width: 992px) {
+    width: 60%;
+  }
+  @media only screen and (max-width: 500px) {
+    width: 100%;
+  }
 `;
 
-const WrapperStyled = styled.div`
-  padding: 10px;
+const EditorArea = styled.div`
+  width: 100%;
+  margin: 0 auto;
 `;
 
 const SettingWrapper = styled.div`
@@ -120,14 +149,15 @@ const SettingWrapper = styled.div`
   padding: 10px;
   border: 1px solid #b5b2b0;
   border-radius: 4px;
+  gap: 10px;
 `;
 
 const Introduce = styled.textarea`
   border: none;
-  background-color: #f5f5f5;
+  background-color: #fff;
   padding: 10px;
   /* resize: none; */
-  margin: 10px;
+  /* margin: 10px; */
 `;
 
 const OriginLabel = styled.label`
@@ -150,7 +180,7 @@ const MilestoneEditor = () => {
   const [check, setCheck] = useState(true);
   const [originLabel, setOriginLabel] = useState("");
   const [previewUrl, setPreviewUrl] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1"
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66"
   );
   // init
   const editMode = useRef(false);
@@ -259,17 +289,18 @@ const MilestoneEditor = () => {
   return (
     <ContainerStyled>
       <MainContainer>
-        <LabelCtn>分享新的里程碑</LabelCtn>
-        <InputWrapper>
-          <InputCtn
-            placeholder="請輸入標題..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </InputWrapper>
-        <WrapperStyled>
+        {/* <div>回頭看，才發現自己已經走了這麼遠</div> */}
+        <LabelCtn>分享我的學習成果</LabelCtn>
+        {/* <InputWrapper> */}
+        <InputCtn
+          placeholder="請輸入標題..."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        {/* </InputWrapper> */}
+        <EditorArea>
           <RichTextEditor value={value} editorHandler={editorHandler} />
-        </WrapperStyled>
+        </EditorArea>
       </MainContainer>
       <SideSetting>
         <SettingLb> 文章設定</SettingLb>

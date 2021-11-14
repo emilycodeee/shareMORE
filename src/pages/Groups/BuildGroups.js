@@ -10,25 +10,20 @@ import { useSelector, useDispatch } from "react-redux";
 import { getGroupsList } from "../../redux/actions";
 
 const MainContainer = styled.div`
-  /* border-radius: 20px;
-  border: 1px solid #3e2914; */
   max-width: 1560px;
   width: 80%;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
   margin-top: 3rem;
-  /* padding: 3rem 5rem; */
-  /* @media only screen and (max-width: 992px) {
-    margin: 0;
-  } */
+  gap: 1rem;
 `;
 
 const LabelCtn = styled.label`
   font-size: 1.1rem;
   font-weight: 550;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  /* margin-right: 10px; */
+  /* margin-bottom: 10px; */
   @media only screen and (max-width: 600px) {
     font-size: 0.8rem;
     margin-right: 0;
@@ -38,8 +33,10 @@ const LabelCtn = styled.label`
 const LabelWrapper = styled.div`
   display: flex;
   flex-wrap: nowrap;
+  justify-content: center;
   align-items: center;
-  margin-left: 1rem;
+  gap: 1rem;
+  /* margin-left: 1rem; */
   @media only screen and (max-width: 600px) {
     flex-wrap: wrap;
     /* flex-direction: column; */
@@ -48,15 +45,20 @@ const LabelWrapper = styled.div`
 
 const Field = styled.div`
   display: flex;
-  margin-bottom: 10px;
+  gap: 1rem;
+  /* margin-bottom: 10px; */
   align-items: center;
   justify-content: end;
+  width: 100%;
+  @media only screen and (max-width: 500px) {
+    gap: 0.8rem;
+    /* flex-direction: column; */
+  }
 `;
 
 const InputCtn = styled.input`
   flex-grow: 1;
-  resize: none;
-  height: 2rem;
+  /* width: 80%; */
   border-radius: 4px;
   padding: 3px 10px;
   font-size: 1.2rem;
@@ -88,12 +90,8 @@ const Slogan = styled.div`
 `;
 
 const UploadBtn = styled.label`
-  background-color: black;
-  color: white;
-  padding: 1rem;
-  width: 10rem;
-  align-self: end;
-  text-align: center;
+  background-color: transparent;
+  margin: 0 auto;
 `;
 
 const ImgField = styled.div`
@@ -104,8 +102,29 @@ const ImgField = styled.div`
 `;
 
 const SubmitBtn = styled.button`
-  padding: 10px;
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  text-decoration: none;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 auto;
+  margin-bottom: 2rem;
   border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  width: 100%;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
 `;
 
 const BuildGroups = () => {
@@ -148,7 +167,7 @@ const BuildGroups = () => {
 
   const previewImg = file
     ? URL.createObjectURL(file)
-    : "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
+    : "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66";
 
   const handleSubmit = () => {
     if (goal.length === 0 || name.length === 0 || goalDate.length === 0) {
@@ -183,84 +202,94 @@ const BuildGroups = () => {
   };
 
   return (
-    <div>
-      <MainContainer>
-        <Slogan>shareMore。一起，走得更遠</Slogan>
-        <Field>
-          <LabelWrapper>
-            <LabelCtn>主題類別</LabelCtn>
-            <Select
-              defaultValue={selectedCategory}
-              onChange={(e) => {
-                console.log(e);
-                setSelectedCategory(e.value);
-              }}
-              options={CategoryOpt}
-            />
-          </LabelWrapper>
-          <LabelWrapper>
-            <LabelCtn>子類別</LabelCtn>
-            <Select
-              defaultValue={selectedSubClass}
-              onChange={(e) => {
-                console.log(e);
-                setSelectedSubClass(e.value);
-              }}
-              options={subClassesName}
-            />
-          </LabelWrapper>
-        </Field>
+    <MainContainer>
+      <Slogan>shareMore。一起，走得更遠</Slogan>
+      <Field>
+        <LabelWrapper>
+          <LabelCtn>主題類別</LabelCtn>
+          <Select
+            defaultValue={selectedCategory}
+            onChange={(e) => {
+              console.log(e);
+              setSelectedCategory(e.value);
+            }}
+            options={CategoryOpt}
+          />
+        </LabelWrapper>
+        <LabelWrapper>
+          <LabelCtn>子類別</LabelCtn>
+          <Select
+            defaultValue={selectedSubClass}
+            onChange={(e) => {
+              console.log(e);
+              setSelectedSubClass(e.value);
+            }}
+            options={subClassesName}
+          />
+        </LabelWrapper>
+      </Field>
 
-        <Field>
-          <LabelCtn>社群名稱</LabelCtn>
-          <InputCtn
-            placeholder="為社群取個喜歡的名字吧"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-          />
-        </Field>
-        <EditArea>
-          <LabelCtn>學習目標</LabelCtn>
-          <SimpleEditor goal={goal} setGoal={setGoal} />
-        </EditArea>
-        <Field>
-          <LabelCtn>目標完成日</LabelCtn>
-          <InputCtn
-            type="date"
-            onChange={(e) => {
-              setGoalDate(e.target.value);
-            }}
-          />
-        </Field>
-        <Field>
-          <LabelCtn>社群介紹</LabelCtn>
-          <TextareaCtn
-            style={{ minHeight: "100px" }}
-            placeholder="我想這樣介紹這個社群......"
-            value={introduce}
-            onChange={(e) => {
-              setIntroduce(e.target.value);
-            }}
-          />
-        </Field>
-        <ImgField>
-          <InputCtn
-            type="file"
-            id="upload-img"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              setFile(e.target.files[0]);
-            }}
-          />
-          <img src={previewImg} style={{ width: "300px" }} />
-          <UploadBtn htmlFor="upload-img">上傳封面圖片</UploadBtn>
-        </ImgField>
-        <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
-      </MainContainer>
-    </div>
+      <Field>
+        <LabelCtn>社群名稱</LabelCtn>
+        <InputCtn
+          placeholder="為社群取個喜歡的名字吧"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+        />
+      </Field>
+      <EditArea>
+        <LabelCtn>學習目標</LabelCtn>
+        <SimpleEditor goal={goal} setGoal={setGoal} />
+      </EditArea>
+      <Field>
+        <LabelCtn>目標完成日</LabelCtn>
+        <InputCtn
+          type="date"
+          onChange={(e) => {
+            setGoalDate(e.target.value);
+          }}
+        />
+      </Field>
+      <Field>
+        <LabelCtn>社群介紹</LabelCtn>
+        <TextareaCtn
+          style={{ minHeight: "100px" }}
+          placeholder="我想這樣介紹這個社群......"
+          value={introduce}
+          onChange={(e) => {
+            setIntroduce(e.target.value);
+          }}
+        />
+      </Field>
+      <ImgField>
+        <InputCtn
+          type="file"
+          id="upload-img"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            setFile(e.target.files[0]);
+          }}
+        />
+        <UploadBtn htmlFor="upload-img">
+          <PreViewCtn src={previewImg} style={{ width: "300px" }} />
+        </UploadBtn>
+      </ImgField>
+      <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
+    </MainContainer>
   );
 };
 
 export default BuildGroups;
+
+const PreViewCtn = styled.img`
+  width: 100%;
+  margin: 10px 0;
+  @media only screen and (max-width: 992px) {
+    width: 60%;
+  }
+  @media only screen and (max-width: 500px) {
+    width: 100%;
+  }
+`;

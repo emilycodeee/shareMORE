@@ -16,60 +16,94 @@ import ContentCards from "./components/ContentCards";
 import { v4 as uuidv4 } from "uuid";
 
 const SideCard = styled.div`
-  padding: 1rem;
-  width: 30%;
-  /* height: 550px; */
+  margin-top: 3rem;
+  padding: 3rem 1rem 1rem 1rem;
+  width: 35%;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
-  box-shadow: 0 2px 10px #a2a2a2;
+  background: #fffdfd;
+  position: relative;
+
+  @media only screen and (max-width: 992px) {
+    align-items: center;
+    padding: 1rem;
+    margin-top: 0;
+    width: 100%;
+    position: static;
+    flex-direction: row;
+  }
 `;
 
 const Wrapper = styled.div`
-  /* border: 1px solid gray; */
-
   max-width: 1560px;
-  width: 80%;
+  width: 100%;
   display: flex;
 
-  border-radius: 10px;
   margin: 0 auto;
   margin-top: 2rem;
-  /* width: 100%; */
-  /* max-width: 1000px; */
   padding: 60px 60px 150px;
-  /* display: flex; */
   flex-direction: row;
   justify-content: space-between;
+  gap: 1rem;
+  @media only screen and (max-width: 992px) {
+    margin-top: 0;
+    padding: 0;
+    flex-direction: column;
+  }
 `;
 
 const ContentWrapper = styled.div`
   padding: 10px;
-  width: 100%;
-  box-shadow: 0 2px 10px #a2a2a2;
-`;
-
-const AvatarCtn = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 2rem 0;
+  width: 65%;
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+  }
+  /* box-shadow: 0 2px 10px #a2a2a2; */
 `;
 
 const Avatar = styled.img`
-  width: 60%;
-  height: 60%;
+  width: 10rem;
+  height: 10rem;
+  position: absolute;
+  top: -75px;
+  left: 50%;
+  border: 2px solid #fff;
+  transform: translateX(-50%);
   border-radius: 50%;
+  /* flex-direction: column; */
+  @media only screen and (max-width: 992px) {
+    position: static;
+    transform: translateX(0);
+    width: 3rem;
+    height: 3rem;
+    align-self: center;
+    margin: 0 1rem;
+  }
 `;
 
 const UserInfo = styled.div`
-  border-radius: 10px;
+  margin-top: 4rem;
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px;
   border: 1px solid rgb(219, 216, 214);
   margin-bottom: 10px;
+  gap: 10px;
+  @media only screen and (max-width: 992px) {
+    h1,
+    p {
+      margin: 0;
+    }
+    h1 {
+      font-size: 1rem;
+    }
+    width: 100%;
+    margin-top: 0;
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
 `;
 
 const TagSet = styled.div`
@@ -80,18 +114,28 @@ const TagWrapper = styled.div`
   padding: 10px;
   display: flex;
   justify-content: space-around;
+  @media only screen and (max-width: 992px) {
+    display: none;
+  }
 `;
 
 const Icon = styled.img`
   height: 1.8rem;
+  @media only screen and (max-width: 500px) {
+    height: 1rem;
+  }
 `;
 
 const IconSet = styled.div`
   margin: 10px;
   width: 100%;
-
   display: flex;
   justify-content: space-evenly;
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+    justify-content: flex-start;
+    gap: 10px;
+  }
 `;
 
 const ContentCtn = styled.div`
@@ -101,19 +145,22 @@ const ContentCtn = styled.div`
 const ListCtn = styled.ul`
   padding: 0;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  border-bottom: 1px solid #fffdfd;
 `;
 
 const ListItem = styled.li`
   cursor: pointer;
-  margin-left: 1rem;
-  border-radius: 30px;
+  /* margin-left: 1rem; */
+  /* border-radius: 30px; */
   list-style: none;
-  background-color: ${(props) =>
-    props.active === props.children ? "#dfdfdf" : "#f5f5f5"};
-
+  background-color: none;
+  font-weight: 600;
+  border-bottom: 3px solid
+    ${(props) => (props.active === props.children ? "#f27e59" : "none")};
+  color: ${(props) => (props.active === props.children ? "#f27e59" : "black")};
   padding: 0.5rem 1rem;
-  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
+  /* box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px; */
   /* &:last-child {
     background-color: #dfdfdf;
   } */
@@ -130,12 +177,17 @@ const SettingBtn = styled(Link)`
   height: 40px;
   display: flex;
   flex-direction: row;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 1px solid rgb(219, 216, 214);
   align-items: center;
   justify-content: center;
   &:hover {
     color: gray;
+  }
+  @media only screen and (max-width: 992px) {
+    margin-left: 10px;
+    width: 100px;
+    /* display: block; */
   }
 `;
 
@@ -202,7 +254,7 @@ const ProfilePage = () => {
         setSelected(userCreateGroups);
         break;
       case "stone":
-        setActive("我的里程碑");
+        setActive("我的分享");
         setSelected(userMilestones.filter((item) => item.public === true));
         break;
       case "save":
@@ -224,76 +276,70 @@ const ProfilePage = () => {
   return (
     <Wrapper>
       <SideCard>
-        <div>
-          <AvatarCtn>
-            <Avatar src={currentUser?.avatar} alt="" />
-          </AvatarCtn>
-        </div>
-        <div>
-          <UserInfo>
-            <h1>{currentUser?.displayName} </h1>
-            <p>{currentUser?.introduce || "我還在想😜"}</p>
-            <IconSet>
-              {/* {currentUser?.introduce} */}
+        <Avatar src={currentUser?.avatar} alt="" />
+        <UserInfo>
+          <h1>{currentUser?.displayName} </h1>
+          <p>{currentUser?.introduce || "我還在想😜"}</p>
+          <IconSet>
+            {/* {currentUser?.introduce} */}
 
-              {currentUser?.instagram && (
-                <a href={currentUser?.instagram} target="_blank">
-                  <Icon src={ig} />
-                </a>
-              )}
-              {currentUser?.facebook && (
-                <a href={currentUser?.facebook} target="_blank">
-                  <Icon src={facebookTag} />
-                </a>
-              )}
-              {currentUser?.linkedin && (
-                <a href={currentUser?.linkedin} target="_blank">
-                  <Icon src={linkedin} />
-                </a>
-              )}
-              {currentUser?.github && (
-                <a href={currentUser?.github} target="_blank">
-                  <Icon src={github} />
-                </a>
-              )}
-              {currentUser?.secondEmail && (
-                <a href={`mailto:${currentUser?.secondEmail}`}>
-                  <Icon src={email} />
-                </a>
-              )}
-              {currentUser?.webUrl && (
-                <a href={currentUser?.webUrl} target="_blank">
-                  <Icon src={web} />
-                </a>
-              )}
-            </IconSet>
-          </UserInfo>
-          <TagWrapper>
-            <TagSet>
-              <div>參加</div>
-              <div>{userJoinGroups.length}</div>
-              <div>社群</div>
-            </TagSet>
-            <TagSet>
-              <div>發起</div>
-              <div>{userCreateGroups.length}</div>
-              <div>社群</div>
-            </TagSet>
-            <TagSet>
-              <div>創建</div>
-              <div>{publicMilestone}</div>
-              <div>里程碑</div>
-            </TagSet>
-          </TagWrapper>
-          {/* <div>
+            {currentUser?.instagram && (
+              <a href={currentUser?.instagram} target="_blank">
+                <Icon src={ig} />
+              </a>
+            )}
+            {currentUser?.facebook && (
+              <a href={currentUser?.facebook} target="_blank">
+                <Icon src={facebookTag} />
+              </a>
+            )}
+            {currentUser?.linkedin && (
+              <a href={currentUser?.linkedin} target="_blank">
+                <Icon src={linkedin} />
+              </a>
+            )}
+            {currentUser?.github && (
+              <a href={currentUser?.github} target="_blank">
+                <Icon src={github} />
+              </a>
+            )}
+            {currentUser?.secondEmail && (
+              <a href={`mailto:${currentUser?.secondEmail}`}>
+                <Icon src={email} />
+              </a>
+            )}
+            {currentUser?.webUrl && (
+              <a href={currentUser?.webUrl} target="_blank">
+                <Icon src={web} />
+              </a>
+            )}
+          </IconSet>
+        </UserInfo>
+        <TagWrapper>
+          <TagSet>
+            <div>參加</div>
+            <div>{userJoinGroups.length}</div>
+            <div>社群</div>
+          </TagSet>
+          <TagSet>
+            <div>發起</div>
+            <div>{userCreateGroups.length}</div>
+            <div>社群</div>
+          </TagSet>
+          <TagSet>
+            <div>創建</div>
+            <div>{publicMilestone}</div>
+            <div>里程碑</div>
+          </TagSet>
+        </TagWrapper>
+        {/* <div>
             <p>Follow me on popular social media sites.</p>
           </div> */}
-          {me && (
-            <SettingBtn to={`/profile/${userID}/edit`}>個人頁面設定</SettingBtn>
-          )}
-        </div>
+        {me && (
+          <SettingBtn to={`/profile/${userID}/edit`}>個人頁面設定</SettingBtn>
+        )}
       </SideCard>
-      <hr />
+
       <ContentWrapper>
         <ListCtn>
           <ListItem data-id="part" active={active} onClick={handleChoose}>
@@ -303,7 +349,7 @@ const ProfilePage = () => {
             我創建的社團
           </ListItem>
           <ListItem data-id="stone" active={active} onClick={handleChoose}>
-            我的里程碑
+            我的分享
           </ListItem>
           {me && (
             <>
@@ -319,9 +365,6 @@ const ProfilePage = () => {
               </ListItem>
             </>
           )}
-          {/* <LinkStyle to={`/messages/${userID}`}>
-            <ListItem>發訊息</ListItem>
-          </LinkStyle> */}
         </ListCtn>
         <ContentCtn>
           {defaultRender.current
@@ -345,7 +388,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-
-//  <Link to={`/messages/${userID}`} style={{ height: "100px" }}>
-//    傳訊息
-//  </Link>;

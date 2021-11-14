@@ -14,57 +14,86 @@ import {
 import { Link } from "react-router-dom";
 
 const TopCover = styled.div`
-  /* opacity: 0.8; */
-
-  width: 700px;
-  height: 300px;
-  /* border: 1px solid red; */
+  width: 100%;
+  height: 30vw;
   background-size: cover;
   background-position: center;
+  margin: 1.5rem 0;
+
+  /* opacity: 0.8; */
+  /* 
+  width: 700px;
+  height: 300px; */
+  /* border: 1px solid red; */
+  /* background-size: cover;
+  background-position: center; */
   /* margin: 0 auto; */
-  margin-top: 2rem;
+  /* margin-top: 2rem; */
 `;
 
 const Wrapper = styled.div`
-  max-width: 1000px;
-  width: 100%;
+  max-width: 1560px;
+  width: 80%;
   margin: 0 auto;
-  margin-top: 1rem;
+  padding: 1rem;
+  margin-top: 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fafafa;
+  background-color: #fff;
 `;
 
 const ContentStyle = styled.div`
-  padding: 1rem;
+  height: fit-content;
+  margin: 0 auto;
+  background-color: #fff;
+  img {
+    max-width: 100%;
+  }
 `;
 
 const TopArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  h2 {
+    margin: 0;
+  }
+  @media only screen and (max-width: 992px) {
+    /* height: 10vh; */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 const IconCtn = styled.button`
   background-color: transparent;
   border: none;
-  padding: 0.5rem;
-  margin-left: 0.3rem;
+  /* padding: 0.5rem; */
+  /* margin-left: 0.3rem; */
   cursor: pointer;
 `;
 
 const IconLink = styled(Link)`
   background-color: transparent;
   border: none;
-  padding: 0.5rem;
-  margin-left: 0.3rem;
+  /* padding: 0.5rem; */
+  /* margin-left: 0.3rem; */
   cursor: pointer;
 `;
 
 const IconsWrapper = styled.div`
+  align-self: flex-end;
   display: flex;
-  margin-left: 1rem;
+  gap: 10px;
+  /* margin-left: 1rem; */
+
+  justify-content: flex-end;
+  align-items: center;
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+  }
 `;
 
 const NotePage = () => {
@@ -75,6 +104,7 @@ const NotePage = () => {
   const usersList = useSelector((state) => state.usersList);
   console.log(currentGroupData);
   const [noteContent, setNoteContent] = useState("");
+  const [noteCreator, setNoteCreator] = useState({});
   const [checkNoteCreator, setCheckNoteCreator] = useState(false);
   const history = useHistory();
   const checkGroupCreator = currentGroupData?.creatorID === userData?.uid;
@@ -88,6 +118,7 @@ const NotePage = () => {
         .then((res) => {
           setNoteContent(res);
           setCheckNoteCreator(res.creatorID === userData?.uid);
+          setNoteCreator(usersList.find((p) => p.uid === res.creatorID));
         })
         .catch((err) => console.log(err));
     }
@@ -115,28 +146,27 @@ const NotePage = () => {
       <TopCover
         style={{ backgroundImage: `url(${noteContent?.coverImage})` }}
       />
-
+      <IconsWrapper>
+        {(checkGroupCreator || checkNoteCreator) && (
+          <>
+            {checkNoteCreator && (
+              <IconLink to={`/group/${groupID}/notes/${postID}/edit`}>
+                <BsPencilSquare />
+              </IconLink>
+            )}
+            <IconCtn>
+              <BsFillTrashFill onClick={handleDelete} />
+            </IconCtn>
+          </>
+        )}
+        <IconLink to={`/group/${groupID}`}>
+          <BsFillHouseDoorFill />
+        </IconLink>
+      </IconsWrapper>
       <TopArea>
-        <h1>{noteContent.title}</h1>
-        <IconsWrapper>
-          {(checkGroupCreator || checkNoteCreator) && (
-            <>
-              {checkNoteCreator && (
-                <IconLink to={`/group/${groupID}/notes/${postID}/edit`}>
-                  <BsPencilSquare />
-                </IconLink>
-              )}
-              <IconCtn>
-                <BsFillTrashFill onClick={handleDelete} />
-              </IconCtn>
-            </>
-          )}
-          <IconLink to={`/group/${groupID}`}>
-            <BsFillHouseDoorFill />
-          </IconLink>
-        </IconsWrapper>
+        <h2>{noteContent.title}</h2>
       </TopArea>
-
+      <label>撰寫自：{noteCreator?.displayName}</label>
       <label>{convertTime(noteContent?.creationTime)}</label>
 
       <ContentStyle>

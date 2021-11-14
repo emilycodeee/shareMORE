@@ -18,61 +18,132 @@ import CommentReply from "./components/CommentReply";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
 
 const Container = styled.div`
-  width: 1000px;
-  width: 100%;
+  /* position: relative; */
+  max-width: 1560px;
+  width: 80%;
+  padding: 1rem;
+  height: fit-content;
   display: flex;
   margin: 0 auto;
-  justify-content: center;
-  /* align-items: center; */
+  margin-top: 3rem;
+  gap: 1rem;
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+    padding-bottom: 0;
+  }
 `;
 
 const TopCover = styled.div`
-  /* opacity: 0.8; */
-  width: 700px;
-  height: 300px;
-  /* border: 1px solid red; */
+  width: 100%;
+  height: 30vw;
   background-size: cover;
   background-position: center;
   margin: 1.5rem 0;
 `;
 
 const Wrapper = styled.div`
-  margin: 30px 10px;
   border-radius: 4px;
   padding: 30px;
-  /* border: 1px solid #3e2914; */
-  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
+  background-color: #fffdfd;
+  border: none;
+  width: 80%;
+  /* border: 1px solid red; */
+  @media only screen and (max-width: 992px) {
+    /* position: fixed; */
+    width: 100%;
+  }
+`;
+
+const AuthorLink = styled(Link)`
+  @media only screen and (max-width: 992px) {
+    /* position: fixed; */
+    display: none;
+  }
 `;
 
 const SideSetting = styled.div`
-  width: 10%;
-  padding: 20px;
+  width: 15%;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
   margin-top: 30px;
-  height: 600px;
-  border: 1px solid #d1cbcb;
+  height: 100vh;
+  /* transform: translateY(0px); */
+  /* border: 1px solid #f27e59; */
   border-radius: 4px;
   position: sticky;
   top: 20px;
   left: 0;
+  gap: 1rem;
+
+  h3 {
+    word-wrap: break-word;
+    text-align: center;
+  }
+  @media only screen and (max-width: 992px) {
+    flex-direction: row;
+    background-color: #fff4e4;
+    h3 {
+      display: none;
+    }
+    width: 100%;
+    /* height: 10%; */
+    position: static;
+    /* top: 0; */
+    /* bottom: 80px; */
+    height: 13vh;
+    margin-top: 0;
+    /* height: 100vh; */
+  }
 `;
 
 const Icon = styled.img`
   height: 1.5rem;
   margin: 0 auto;
   cursor: pointer;
-  margin-bottom: 1.2rem;
-  /* position: relative; */
+`;
+
+const IconWord = styled.div`
+  display: flex;
+  flex-direction: column;
+  @media only screen and (max-width: 992px) {
+    /* padding: 1rem; */
+    /* border: 1px solid red; */
+    /* span {
+      display: none;
+    } */
+    /* &:hover {
+      background-color: red;
+    } */
+  }
 `;
 
 const CountWrapper = styled.div`
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  span {
+    display: none;
+  }
+  @media only screen and (max-width: 992px) {
+    margin-top: 0;
+    flex-direction: column;
+    span {
+      display: block;
+    }
+    /* padding: 1rem; */
+    /* border: 1px solid red; */
+    /* span {
+      display: none;
+    } */
+    /* &:hover {
+      background-color: red;
+    } */
+  }
 `;
 
 const Count = styled.div`
@@ -80,13 +151,19 @@ const Count = styled.div`
   top: -17px;
   right: -5px;
   font-size: 14px;
+  @media only screen and (max-width: 992px) {
+    /* display: none; */
+  }
 `;
 
 const Avatar = styled.img`
-  width: 4rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
-  margin: 20px 0;
+  /* margin: 20px 0; */
+  @media only screen and (max-width: 992px) {
+    display: none;
+  }
 `;
 
 const TinyAvatar = styled.img`
@@ -97,64 +174,106 @@ const TinyAvatar = styled.img`
 `;
 
 const HeadDetail = styled.div`
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+  }
 `;
 
 const P = styled.p`
   margin-bottom: 1rem;
   /* margin-bottom: 10px; */
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
+  @media only screen and (max-width: 992px) {
+    display: none;
+  }
 `;
 
 const LinkStyle = styled(Link)`
   text-decoration: none;
-  color: rgb(255 182 0);
-  font-weight: 550;
+  color: #f27e59;
+  font-weight: 600;
   &:hover {
-    color: rgb(255 217 121);
+    /* font-weight: ; */
   }
 `;
 
 const TopPTag = styled.p`
   font-weight: 500;
   font-size: 14px;
+  &:first-child {
+    font-weight: 600;
+  }
 `;
 
 const EditBtn = styled.button`
-  margin-left: 10px;
-  border-radius: 8px;
-  padding: 5px 10px;
-  border: 1px solid #d1cbcb;
-  outline: none;
-  text-align: center;
-  text-align: end;
-  background-color: #ffffff;
+  /* width: 30%; */
+
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+  height: auto;
+  text-decoration: none;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: none;
+  /* min-width: 80px; */
+  padding: 5px;
   cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
   &:hover {
-    background-color: #d1cbcb;
+    background-color: #f27e59;
+    color: white;
+  }
+  @media only screen and (max-width: 992px) {
+    padding: 2px;
+    font-size: 0.6rem;
+  }
+`;
+
+const ButtonSet = styled.div`
+  display: flex;
+  gap: 10px;
+  @media only screen and (max-width: 992px) {
+    margin-top: 10px;
+    align-self: flex-end;
   }
 `;
 
 const EditLink = styled(Link)`
-  color: black;
+  /* width: 30%; */
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+  height: auto;
   text-decoration: none;
-  margin-left: 10px;
-  border-radius: 8px;
-  padding: 5px 10px;
-  border: 1px solid #d1cbcb;
-  outline: none;
-  text-align: center;
-  text-align: end;
-  background-color: #ffffff;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: none;
+  /* min-width: 80px; */
+  padding: 5px 5px;
   cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
   &:hover {
-    background-color: #d1cbcb;
+    background-color: #f27e59;
+    color: white;
+  }
+  @media only screen and (max-width: 992px) {
+    padding: 2px;
+    font-size: 0.6rem;
   }
 `;
 
@@ -172,9 +291,13 @@ const PageShield = styled.div`
 const AuthorDataCtn = styled.div`
   display: flex;
   align-items: center;
+  @media only screen and (max-width: 992px) {
+    align-self: flex-start;
+  }
 `;
 
 const CommentCtn = styled.div`
+  border-top: 3px solid #f27e59;
   width: 600px;
   display: flex;
   flex-direction: column;
@@ -194,6 +317,10 @@ const CommentCtn = styled.div`
   max-height: calc(100vh - 240px);
   overflow-y: auto;
   scroll-behavior: smooth;
+
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+  }
 `;
 
 const MainPost = styled.div`
@@ -240,10 +367,10 @@ const TextAreaStyle = styled.textarea`
 
 const PostBtn = styled.button`
   margin-top: 1rem;
-  color: rgb(255 182 0);
+  color: #f27e59;
   background-color: transparent;
   font-size: 12px;
-  border: 1px solid rgb(255 182 0);
+  border: 1px solid #f27e59;
   border-radius: 2px;
   min-width: 80px;
   padding: 4px;
@@ -343,7 +470,7 @@ const MilestonePage = () => {
               <TinyAvatar src={authorData?.avatar} />
             </Link>
             <div>
-              <TopPTag>作者：{authorData?.displayName}</TopPTag>
+              <TopPTag>{authorData?.displayName}</TopPTag>
               <TopPTag>
                 啟發自：
                 <LinkStyle to={`/group/${content?.groupID}`}>
@@ -351,19 +478,18 @@ const MilestonePage = () => {
                 </LinkStyle>
               </TopPTag>
               <TopPTag>
-                發布日期：
                 {content?.creationTime?.toDate().toLocaleString("zh-TW")}
               </TopPTag>
             </div>
           </AuthorDataCtn>
           {userData?.uid === authorData?.uid && (
-            <div>
+            <ButtonSet>
               <EditLink to={`/milestone/${milestoneID}/edit`}>編輯</EditLink>
               <EditBtn onClick={handleDelete}>刪除</EditBtn>
               <EditBtn onClick={handlePrivate}>
                 設為{publicStatus ? "非公開" : "公開"}
               </EditBtn>
-            </div>
+            </ButtonSet>
           )}
         </HeadDetail>
         <div>
@@ -371,37 +497,49 @@ const MilestonePage = () => {
             style={{ backgroundImage: `url(${content?.coverImage})` }}
           />
         </div>
-        <QlContent className="ql-editor">
-          {HtmlParser(content?.content)}
+        <QlContent>
+          <div className="ql-editor">{HtmlParser(content?.content)}</div>
         </QlContent>
       </Wrapper>
       <SideSetting>
-        <Link to={`/profile/${authorData?.uid}`}>
+        <AuthorLink to={`/profile/${authorData?.uid}`}>
           <Avatar src={authorData?.avatar} />
-        </Link>
+        </AuthorLink>
         <h3>{authorData?.displayName}</h3>
         <P>{authorData?.introduce}</P>
-        <Icon
-          src={share}
-          onClick={() => {
-            navigator.clipboard.writeText(root + pathname);
-            alert(`複製連結成功！`);
-          }}
-        />
-        <Icon
-          onClick={handleSave}
-          src={content?.saveBy?.includes(userData?.uid) ? saved : save}
-        />
-        <CountWrapper onClick={handleClap}>
-          <Icon
-            src={content?.clapBy?.includes(userData?.uid) ? claped : clap}
-          />
-          <Count>{content?.clapBy?.length > 0 && content?.clapBy.length}</Count>
-        </CountWrapper>
-        <CountWrapper onClick={() => setShowCmt(!showCmt)}>
-          <Icon src={comment} />
-          <Count>{renderPost.length > 0 && renderPost.length}</Count>
-        </CountWrapper>
+        <IconSet>
+          <IconWord>
+            <Icon
+              src={share}
+              onClick={() => {
+                navigator.clipboard.writeText(root + pathname);
+                alert(`複製連結成功！`);
+              }}
+            />
+            <span>分享</span>
+          </IconWord>
+          <IconWord>
+            <Icon
+              onClick={handleSave}
+              src={content?.saveBy?.includes(userData?.uid) ? saved : save}
+            />
+            <span>收藏</span>
+          </IconWord>
+          <CountWrapper onClick={handleClap}>
+            <Icon
+              src={content?.clapBy?.includes(userData?.uid) ? claped : clap}
+            />
+            <span>拍手</span>
+            <Count>
+              {content?.clapBy?.length > 0 && content?.clapBy.length}
+            </Count>
+          </CountWrapper>
+          <CountWrapper onClick={() => setShowCmt(!showCmt)}>
+            <Icon src={comment} />
+            <span>留言</span>
+            <Count>{renderPost.length > 0 && renderPost.length}</Count>
+          </CountWrapper>
+        </IconSet>
       </SideSetting>
       {showCmt && (
         <PageShield
@@ -435,7 +573,28 @@ const MilestonePage = () => {
 
 export default MilestonePage;
 
+const IconSet = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  @media only screen and (max-width: 992px) {
+    /* height: 10vh; */
+    flex-direction: row;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    padding: 1rem 0;
+    /* gap: 0; */
+    /* padding: 0; */
+  }
+`;
+
 const QlContent = styled.div`
-  width: 100%;
-  background-color: #fff4e4;
+  /* width: 90%; */
+  height: fit-content;
+  margin: 0 auto;
+  background-color: #fff;
+  img {
+    max-width: 100%;
+  }
 `;

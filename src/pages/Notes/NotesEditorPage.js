@@ -15,8 +15,11 @@ const ContainerStyled = styled.div`
   /* margin: 3rem 5rem; */
   margin: 0 auto;
   margin-top: 3rem;
+  /* border: 1px solid red; */
+  /* padding: 1rem 2rem; */
+  gap: 1rem;
   @media only screen and (max-width: 992px) {
-    padding: 1rem 2rem;
+    flex-direction: column;
   }
 `;
 
@@ -24,22 +27,31 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 70%;
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const InputCtn = styled.input`
-  width: 100%;
-  padding: 3px 10px;
+  /* width: 100%; */
+  padding: 10px;
   font-size: 1.2rem;
   margin: 1rem 0;
   border: 1px solid #b5b2b0;
+  border-radius: 4px;
 `;
 
 const SideSetting = styled.div`
   width: 30%;
-  padding: 10px;
+  /* padding: 10px; */
   display: flex;
   flex-direction: column;
   margin: 0 auto;
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+    width: 100%;
+    align-items: flex-start;
+  }
 `;
 
 const SettingWrapper = styled.div`
@@ -49,11 +61,13 @@ const SettingWrapper = styled.div`
   justify-content: center;
   margin-bottom: 10px;
   padding: 10px;
+  gap: 10px;
   border: 1px solid #b5b2b0;
   border-radius: 4px;
 `;
 
 const EditorArea = styled.div`
+  width: 100%;
   margin: 0 auto;
 `;
 
@@ -67,6 +81,7 @@ const SideLabel = styled.label`
   font-size: 1.1rem;
   font-weight: 550;
   text-align: center;
+  margin-bottom: 10px;
 `;
 
 const UploadBtn = styled.label`
@@ -96,15 +111,20 @@ const SubmitBtn = styled.button`
     background-color: #f27e59;
     color: white;
   }
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+    width: 100%;
+    align-items: flex-end;
+  }
 `;
 
 const Introduce = styled.textarea`
   border: none;
-  background-color: #f5f5f5;
+  background-color: #fff;
   padding: 10px;
-  height: 4rem;
-  overflow-y: auto;
-  margin: 10px;
+  /* height: 4rem; */
+  /* overflow-y: auto; */
+  /* margin: 10px; */
   /* width: 300px; */
 `;
 
@@ -123,7 +143,7 @@ const NotesEditorPage = () => {
   const [introduce, setIntroduce] = useState("");
   const [originContent, setOriginContent] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1"
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66"
   );
   const editMode = useRef(false);
   const editorHandler = (e) => {
@@ -252,4 +272,10 @@ export default NotesEditorPage;
 const PreViewCtn = styled.img`
   width: 100%;
   margin: 10px 0;
+  @media only screen and (max-width: 992px) {
+    width: 60%;
+  }
+  @media only screen and (max-width: 500px) {
+    width: 100%;
+  }
 `;

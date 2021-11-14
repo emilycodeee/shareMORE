@@ -126,6 +126,9 @@ const Empty = styled.div`
     font-weight: 600;
     color: rgb(242, 126, 89);
   }
+  @media only screen and (max-width: 500px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const CreateButton = styled(Link)`

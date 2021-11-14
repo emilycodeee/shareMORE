@@ -52,6 +52,9 @@ const ListStyle = styled.li`
   /* margin: 1rem 0; */
   font-size: 1.2rem;
   padding: 0.6rem 0;
+  @media only screen and (max-width: 500px) {
+    font-size: 1rem;
+  }
 `;
 
 const SubList = styled.li`
@@ -70,6 +73,7 @@ const SubList = styled.li`
 
 const ContentCtn = styled.div`
   display: flex;
+  padding: 0 1rem;
 `;
 
 const Search = styled.input`
@@ -131,9 +135,6 @@ const GroupsPage = () => {
     console.log(keyWord);
     const search = groupsList.filter((g) => g.name.includes(keyWord));
     setRenderGroups(search);
-    // algolia.search(e.target.value).then((result) => {
-    //   console.log(result.hits);
-    // });
   };
 
   const handleInputChange = (e) => {
@@ -155,6 +156,7 @@ const GroupsPage = () => {
     console.log(target);
     if (target === "全部") {
       setRenderGroups(groupsList);
+      setSubClassesName("");
     } else {
       const filterCategory = groupsList.filter((g) => g.category === target);
       setRenderGroups(filterCategory);

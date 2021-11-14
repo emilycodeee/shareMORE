@@ -7,19 +7,18 @@ import * as firebase from "../../../utils/firebase";
 const CommentCtn = styled.div`
   /* background-color: red; */
   display: flex;
-  justify-content: space-between;
-  width: 70%;
-  margin-left: 20%;
-  margin-top: 8px;
-  padding: 0.5rem 0 0.5rem 1rem;
+  /* justify-content: center。; */
+  width: 90%;
+  align-items: center;
+  /* margin-top: 8px; */
+  padding: 0.5rem;
   border-bottom: 1px solid rgb(203, 195, 194);
-  /* border-radius: 3px; */
-  /* height: 30px; */
+  gap: 10px;
 `;
 
 const PostAvatar = styled.img`
-  height: 3rem;
-  width: 3rem;
+  height: 2rem;
+  width: 2rem;
   border-radius: 50%;
   margin-right: 0.5rem;
 `;
@@ -29,6 +28,12 @@ const Head = styled.div`
   justify-content: space-between;
   /* font-weight: 550; */
   font-size: 14px;
+  div {
+    font-weight: 600;
+    &:last-child {
+      font-weight: 500;
+    }
+  }
 `;
 
 const Content = styled.div`
@@ -39,7 +44,7 @@ const Content = styled.div`
 `;
 
 const ContentText = styled.div`
-  margin: 0.5rem;
+  /* margin: 0.5rem; */
 `;
 
 const DelBtn = styled.button`
@@ -63,7 +68,10 @@ const IconImg = styled.img`
 `;
 
 const Wrapper = styled.div`
+  /* border: 1px solid red; */
   display: flex;
+  justify-content: center;
+  /* padding-bottom: 10px; */
 `;
 
 const CommentReply = ({ item, author }) => {
@@ -96,13 +104,13 @@ const CommentReply = ({ item, author }) => {
           </Head>
           <ContentText>{item.content}</ContentText>
         </Content>
+        {(checkOwner || checkAuthor) && (
+          <DelBtn onClick={handleDeleteComment}>
+            <IconImg src={deleteIcon} />
+            {/* 刪除 */}
+          </DelBtn>
+        )}
       </CommentCtn>
-      {(checkOwner || checkAuthor) && (
-        <DelBtn onClick={handleDeleteComment}>
-          <IconImg src={deleteIcon} />
-          {/* 刪除 */}
-        </DelBtn>
-      )}
     </Wrapper>
   );
 };

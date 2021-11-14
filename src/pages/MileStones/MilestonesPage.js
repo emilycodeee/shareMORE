@@ -275,32 +275,41 @@ const MilestonesPage = () => {
         const finalFilter = articlesList.filter((el) =>
           key.includes(el.milestoneID)
         );
-
-        // const articleFilter = key.forEach((k) =>
-        //   articlesList.filter((a) => a.milestoneID === key)
-        // );
         setRenderMileStone(finalFilter);
-        // setRenderMileStone(articlesList.filter((a) => a.milestoneID === key));
       });
     }
+  };
+
+  const handleSearchBtn = () => {
+    // if (e.key === "Enter") {
+    algolia.search(inputValue).then((result) => {
+      const key = result.hits.map((r) => r.objectID);
+      // console.log(key);
+
+      const finalFilter = articlesList.filter((el) =>
+        key.includes(el.milestoneID)
+      );
+      setRenderMileStone(finalFilter);
+    });
+    // }
   };
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
     if (e.target.value === "") {
-      setRenderMileStone(articlesList);
+      setRenderMileStone(articlesList.filter((a) => a.public === true));
     }
   };
 
   useEffect(() => {
-    setRenderMileStone(articlesList);
+    setRenderMileStone(articlesList.filter((a) => a.public === true));
   }, [articlesList]);
 
   useEffect(() => {
     let isMounted = true;
 
     if (isMounted) {
-      firebase.getContentsListSort("articles", setMilestonesList);
+      // firebase.getContentsListSort("articles", setMilestonesList);
       firebase.getTotalDocList("gorden").then((res) => setGorden(res));
       firebase.getGroupBookShelf().then((res) => {
         setBookList(res);
@@ -379,7 +388,7 @@ const MilestonesPage = () => {
           <ArticleList>
             <LastLabel>Latest 5</LastLabel>
             <ArticleCtn>
-              {milestonesList.slice(0, 5).map((item, i) => {
+              {renderMilestone.slice(0, 5).map((item, i) => {
                 console.log(item);
                 return (
                   <LinkStyle
@@ -411,7 +420,7 @@ const MilestonesPage = () => {
           onChange={handleInputChange}
           onKeyPress={handleSearch}
         />
-        <SerachButton onClick={handleSearch}>搜尋</SerachButton>
+        <SerachButton onClick={handleSearchBtn}>搜尋</SerachButton>
       </SearchWrapper>
       <div>
         <Wrapper>

@@ -3,12 +3,13 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const ItemWrapper = styled.div`
-  border: 1px solid rgb(219, 216, 214);
-  border-radius: 10px;
+  border-bottom: 1px solid rgb(219, 216, 214);
+  /* border-radius: 10px; */
+  gap: 10px;
   margin-bottom: 1rem;
   display: flex;
   padding: 1rem;
-  box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px;
+  /* box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px; */
 `;
 
 const CoverContainer = styled.div`
@@ -21,10 +22,12 @@ const CoverContainer = styled.div`
 `;
 
 const ItemInfo = styled.div`
-  margin-left: 1rem;
+  /* margin-left: 1rem; */
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
+  gap: 10px;
 `;
 
 const Title = styled.div`
@@ -34,11 +37,16 @@ const Title = styled.div`
 
 const CategorySet = styled.div`
   display: flex;
-  justify-content: end;
-  margin-bottom: 10px;
+  justify-content: flex-end;
+  gap: 10px;
+  div {
+    font-weight: 600;
+  }
+  /* margin-bottom: 10px; */
 `;
 
 const Category = styled.div`
+  font-weight: 600;
   margin-left: 10px;
 `;
 
@@ -63,8 +71,8 @@ const ContentCards = ({ item }) => {
           <Title>{item.name || item.title}</Title>
           {!item.milestoneID && (
             <CategorySet>
-              <Category>{item.category}</Category>
-              <Category>{item.subClass}</Category>
+              <div>{item.category}</div>
+              <div>{item.subClass}</div>
             </CategorySet>
           )}
           <div>{item.introduce}</div>

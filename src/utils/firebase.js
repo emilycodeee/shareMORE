@@ -66,7 +66,7 @@ export const socialMediaAuth = async (provider, setFunction) => {
         displayName: result.user.displayName || "",
         avatar:
           result.user.photoURL ||
-          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e",
+          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Ficons8-user-64.png?alt=media&token=aaac8452-1058-40c6-94e1-aa5ceaf2d9f3",
         email: result.user.email,
         uid: result.user.uid,
       };
@@ -96,7 +96,7 @@ export const register = async (name, email, password, setFunction) => {
       creationTime: result.user.metadata.creationTime,
       displayName: name,
       avatar:
-        "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e",
+        "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Ficons8-user-64.png?alt=media&token=aaac8452-1058-40c6-94e1-aa5ceaf2d9f3",
       email: result.user.email,
       uid: result.user.uid,
     };

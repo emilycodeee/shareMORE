@@ -23,6 +23,7 @@ const Container = styled.div`
   border-radius: 10px;
   min-height: 150px;
   @media only screen and (max-width: 992px) {
+    width: 80%;
     flex-direction: column;
     /* border-radius: 0; */
   }
@@ -44,6 +45,7 @@ const AuthCtn = styled.div`
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     border-top: 4px solid #f27e59;
+    padding: 20px;
     /* border-bottom-left-radius: 0;
     border-bottom-right-radius: 0; */
     /* display: none; */

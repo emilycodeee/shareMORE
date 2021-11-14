@@ -26,10 +26,14 @@ const Wrapper = styled.div`
   border-radius: 5px;
   min-height: 150px;
   padding: 2rem;
-  max-height: calc(100vh - 240px);
+  max-height: 65vh;
+  /* max-height: calc(100vh - 240px); */
   border-top: 5px solid #f27e59;
   overflow-y: auto;
   scroll-behavior: smooth;
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+  }
 `;
 
 const ResultBookCtn = styled.div`
@@ -78,7 +82,7 @@ const Author = styled.p`
 `;
 
 const ImgDe = styled.img`
-  height: 100px;
+  height: 150px;
   box-shadow: rgb(0 0 0 / 16%) 0px 5px 11px 0px;
 `;
 
@@ -403,7 +407,7 @@ const InputWrapper = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   margin-right: 120px;
-  max-width: 50%;
+  /* max-width: 50%; */
   outline: none;
   background-color: white;
   z-index: 99;
@@ -417,6 +421,9 @@ const InputWrapper = styled.div`
   scroll-behavior: smooth;
   /* background-color: red; */
   border-top: 5px solid #f27e59;
+  @media only screen and (max-width: 500px) {
+    width: 90%;
+  }
 `;
 
 const SearchInput = styled.input`

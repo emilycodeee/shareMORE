@@ -116,7 +116,7 @@ const RichTextEditor = ({ value, editorHandler }) => {
         onChange={editorHandler}
         modules={modules}
         formats={formats}
-        placeholder="開始建立社群筆記..."
+        placeholder="開始分享吧..."
       />
     </>
   );
