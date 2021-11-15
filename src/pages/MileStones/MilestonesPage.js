@@ -11,9 +11,11 @@ import algolia from "../../utils/algolia";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { GiBookmarklet } from "react-icons/gi";
-
+import { BiSearchAlt2, BiUndo, BiX } from "react-icons/bi";
 const MainCtn = styled.div`
-  max-width: 1000px;
+  max-width: 1560px;
+  width: 80%;
+  padding: 1rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -156,12 +158,12 @@ const Search = styled.input`
   /* text-align: center; */
 `;
 
-const SearchWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 80%;
-  margin: 0 auto;
-`;
+// const SearchWrapper = styled.div`
+//   display: flex;
+//   justify-content: flex-end;
+//   width: 80%;
+//   margin: 0 auto;
+// `;
 
 const BookImg = styled.img`
   background-position: center center;
@@ -206,6 +208,7 @@ const MilestonesPage = () => {
   const [bookContent, setBookContent] = useState({});
   const [showBookContent, setShowBookContent] = useState(false);
   const [renderMilestone, setRenderMileStone] = useState([]);
+  const [latestFiveMilestone, setLatestFiveMilestone] = useState([]);
   const [gorden, setGorden] = useState([]);
 
   const settings = {
@@ -303,6 +306,9 @@ const MilestonesPage = () => {
 
   useEffect(() => {
     setRenderMileStone(articlesList.filter((a) => a.public === true));
+    setLatestFiveMilestone(
+      articlesList.filter((a) => a.public === true).slice(0, 5)
+    );
   }, [articlesList]);
 
   useEffect(() => {
@@ -388,7 +394,7 @@ const MilestonesPage = () => {
           <ArticleList>
             <LastLabel>Latest 5</LastLabel>
             <ArticleCtn>
-              {renderMilestone.slice(0, 5).map((item, i) => {
+              {latestFiveMilestone.map((item, i) => {
                 console.log(item);
                 return (
                   <LinkStyle
@@ -414,15 +420,42 @@ const MilestonesPage = () => {
         </LastBlock>
       </TopSection>
       <SearchWrapper>
-        <Search
+        <Container>
+          <SearchBarInput
+            placeholder="文章標題、文章內容..."
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyPress={handleSearch}
+          />
+          <SubmitBtn onClick={handleSearchBtn}>
+            <SearchIcon />
+          </SubmitBtn>
+        </Container>
+
+        {/* <Search
           placeholder="文章標題、文章內容..."
           value={inputValue}
           onChange={handleInputChange}
           onKeyPress={handleSearch}
-        />
-        <SerachButton onClick={handleSearchBtn}>搜尋</SerachButton>
+        /> */}
+        {/* <SerachButton onClick={handleSearchBtn}>搜尋</SerachButton> */}
       </SearchWrapper>
       <div>
+        {renderMilestone.length === 0 && (
+          <>
+            <Empty>
+              <div>找不到相關的分享文章，就由你來建立第一個吧！</div>
+              <lottie-player
+                src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
+                background="transparent"
+                speed="1"
+                style={{ maxWidth: "300px", maxHeight: "300px" }}
+                loop
+                autoplay
+              />
+            </Empty>
+          </>
+        )}
         <Wrapper>
           {renderMilestone.map((item) => {
             return <Card item={item} key={item.milestoneID} />;
@@ -434,6 +467,109 @@ const MilestonesPage = () => {
 };
 
 export default MilestonesPage;
+
+const Empty = styled.div`
+  /* background-color: red; */
+  width: 80%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0 10px;
+  /* gap: 1rem; */
+  div {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: rgb(242, 126, 89);
+  }
+  @media only screen and (max-width: 500px) {
+    font-size: 0.8rem;
+  }
+`;
+
+const SearchWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  color: #f27e59;
+  margin: 2rem 10%;
+  width: 80%;
+`;
+
+const SearchIcon = styled(BiSearchAlt2)`
+  width: 2rem;
+  height: 2rem;
+`;
+
+const Container = styled.div`
+  border: 2px solid #f27e59;
+  display: flex;
+  justify-content: flex-end;
+  border-radius: 100px;
+  overflow: hidden;
+  font-size: 1.25em;
+  position: relative;
+  width: 60px;
+  height: 60px;
+  // margin-left: auto;
+  transition: width 450ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  padding: 3px;
+
+  &:focus-within {
+    // box-shadow: 0 0 5px var(--clr-primary);
+    width: 100%;
+
+    input {
+      opacity: 1;
+      z-index: initial;
+      cursor: initial;
+      width: calc(100% - 60px);
+    }
+
+    button {
+      background: #f27e59;
+      color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      // transition: transform 500ms ease-out;
+
+      &:hover,
+      &:focus {
+        outline: 0;
+        // transform: rotate(1turn);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.65);
+      }
+    }
+  }
+`;
+
+const SubmitBtn = styled.button`
+  font-size: 1.5rem;
+  margin-left: auto;
+  background: 0;
+  border: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 200ms ease-out;
+  width: calc(60px - 10px);
+  height: calc(60px - 10px);
+  color: black;
+`;
+
+const SearchBarInput = styled.input`
+  border: 0;
+  padding: 0.25em 1em;
+  flex-grow: 1;
+  outline: 0;
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+`;
 
 const GroupLink = styled(Link)`
   text-decoration: none;

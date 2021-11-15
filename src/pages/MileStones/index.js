@@ -14,7 +14,7 @@ import clap from "../../sources/clap.png";
 import claped from "../../sources/claped.png";
 import comment from "../../sources/comment.png";
 import CommentReply from "./components/CommentReply";
-
+import Swal from "sweetalert2";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
 
 const Container = styled.div`
@@ -106,21 +106,17 @@ const Icon = styled.img`
 `;
 
 const IconWord = styled.div`
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   @media only screen and (max-width: 992px) {
-    /* padding: 1rem; */
-    /* border: 1px solid red; */
-    /* span {
-      display: none;
-    } */
-    /* &:hover {
-      background-color: red;
-    } */
+    /* width: 1rem */
+    /* margin: 1rem; */
   }
 `;
 
 const CountWrapper = styled.div`
+  cursor: pointer;
   margin-top: 10px;
   display: flex;
   justify-content: center;
@@ -131,18 +127,11 @@ const CountWrapper = styled.div`
   }
   @media only screen and (max-width: 992px) {
     margin-top: 0;
+    /* margin: 1rem; */
     flex-direction: column;
     span {
       display: block;
     }
-    /* padding: 1rem; */
-    /* border: 1px solid red; */
-    /* span {
-      display: none;
-    } */
-    /* &:hover {
-      background-color: red;
-    } */
   }
 `;
 
@@ -187,6 +176,12 @@ const P = styled.p`
   margin-bottom: 1rem;
   /* margin-bottom: 10px; */
   text-align: center;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
   @media only screen and (max-width: 992px) {
     display: none;
   }
@@ -420,14 +415,24 @@ const MilestonePage = () => {
   };
 
   const handleDelete = () => {
-    const check = window.confirm("刪除將不可恢復，請再次確認是否刪除");
-    if (check) {
-      firebase.deleteMilestone("articles", milestoneID).then(() => {
-        history.push("/");
-        // alert("文章已經刪除囉！");
-      });
-    }
-    console.log(check);
+    Swal.fire({
+      title: "確定要刪除嗎?",
+      text: "刪除將不可恢復，請再次確認是否刪除！",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "確定",
+      cancelButtonText: "取消",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        firebase.deleteMilestone("articles", milestoneID).then(() => {
+          history.push("/");
+          // alert("文章已經刪除囉！");
+        });
+        Swal.fire("Deleted!", "文章已經刪除囉！", "success");
+      }
+    });
   };
 
   const handlePrivate = () => {
@@ -436,7 +441,18 @@ const MilestonePage = () => {
     firebase
       .toggleMilestone("articles", milestoneID, !publicStatus)
       .then(() => {
-        if (publicStatus) history.push("/");
+        if (publicStatus) {
+          Swal.fire({
+            title: "文章已設為隱藏，若要調整請至個人頁面封存夾",
+            showClass: {
+              popup: "animate__animated animate__fadeInDown",
+            },
+            hideClass: {
+              popup: "animate__animated animate__fadeOutUp",
+            },
+          });
+          history.push("/");
+        }
       });
   };
 
@@ -508,19 +524,23 @@ const MilestonePage = () => {
         <h3>{authorData?.displayName}</h3>
         <P>{authorData?.introduce}</P>
         <IconSet>
-          <IconWord>
-            <Icon
-              src={share}
-              onClick={() => {
-                navigator.clipboard.writeText(root + pathname);
-                alert(`複製連結成功！`);
-              }}
-            />
+          <IconWord
+            onClick={() => {
+              navigator.clipboard.writeText(root + pathname);
+              Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "成功複製連結",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            }}
+          >
+            <Icon src={share} />
             <span>分享</span>
           </IconWord>
-          <IconWord>
+          <IconWord onClick={handleSave}>
             <Icon
-              onClick={handleSave}
               src={content?.saveBy?.includes(userData?.uid) ? saved : save}
             />
             <span>收藏</span>
@@ -578,19 +598,29 @@ const IconSet = styled.div`
   flex-direction: column;
   gap: 1rem;
   @media only screen and (max-width: 992px) {
-    /* height: 10vh; */
+    /* border: 1px solid red; */
+    position: fixed;
+    bottom: 0;
     flex-direction: row;
-    width: 100%;
+    width: 100vw;
     align-items: flex-start;
     justify-content: space-evenly;
-    padding: 1rem 0;
-    /* gap: 0; */
-    /* padding: 0; */
+    padding: 1.2rem 0 1rem 0;
+    left: 0;
+    background-color: #fff4e4;
+    box-shadow: rgb(0 0 0 / 16%) 0px -4px 11px 0px;
   }
 `;
 
+// const MobileIconSet = styled.div`
+//   display: none;
+//   @media only screen and (max-width: 992px) {
+//     /* height: 10vh; */
+//     display: block;
+//   }
+// `;
+
 const QlContent = styled.div`
-  /* width: 90%; */
   height: fit-content;
   margin: 0 auto;
   background-color: #fff;

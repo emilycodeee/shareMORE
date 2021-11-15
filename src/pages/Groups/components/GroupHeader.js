@@ -13,13 +13,15 @@ import * as firebase from "../../../utils/firebase";
 import { useSelector } from "react-redux";
 import { BsFillFolderFill, BsPencilSquare, BsCheckLg } from "react-icons/bs";
 import { AiOutlineTrophy } from "react-icons/ai";
-import { GiBookshelf } from "react-icons/gi";
-import { RiShareForwardFill } from "react-icons/ri";
+import { FiShare2 } from "react-icons/fi";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 import {
   BsFillCameraFill,
   BsFillCheckSquareFill,
   BsMailbox,
 } from "react-icons/bs";
+import camera from "../../../sources/camera.png";
+import checked from "../../../sources/checked.png";
 import { ImBooks } from "react-icons/im";
 
 const GroupHeader = ({ tag }) => {
@@ -87,14 +89,27 @@ const GroupHeader = ({ tag }) => {
 
   const handleSubmitImg = () => {
     setActEditImage(!actEditImage);
-    firebase
-      .editGroupImage(file, content.groupID)
-      .then(() => alert("修改成功"));
+    firebase.editGroupImage(file, content.groupID).then(
+      () =>
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "修改成功！",
+          showConfirmButton: false,
+          timer: 1500,
+        })
+      // alert("修改成功")
+    );
   };
 
   const handleApplicationBtn = () => {
     if (userData === null) {
-      alert("請先登入或加入會員");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "請先登入或加入會員",
+      });
+      // alert("請先登入或加入會員");
       return;
     }
     setShowApplication(!showApplication);
@@ -128,6 +143,13 @@ const GroupHeader = ({ tag }) => {
       name: titleValue,
     };
     firebase.editGroupData(data, content.groupID);
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "資料修改成功",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   };
 
   if (showApplication) {
@@ -162,20 +184,31 @@ const GroupHeader = ({ tag }) => {
         />
         <TopCover style={{ backgroundImage: `url(${previewImg})` }} />
         {checkOwner && !actEditImage && (
-          <DivCtn as="label" htmlFor="uploadImg">
-            <EditImage />
-          </DivCtn>
+          <CameraIcon>
+            <DivCtn as="label" htmlFor="uploadImg">
+              <EditImage src={camera} />
+            </DivCtn>
+          </CameraIcon>
         )}
-        {checkOwner && actEditImage && <SaveImage onClick={handleSubmitImg} />}
+        {checkOwner && actEditImage && (
+          <SaveImage src={checked} onClick={handleSubmitImg} />
+        )}
       </ImgWrapper>
       <WelcomeToggle>
         <ShareStyled
           onClick={() => {
             navigator.clipboard.writeText(root + pathname);
-            alert(`複製連結成功！`);
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "成功複製連結！",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            // alert(`複製連結成功！`);
           }}
         >
-          <RiShareForwardFill />
+          <ShareIcon />
         </ShareStyled>
         {content?.creatorID === userData?.uid && (
           <>
@@ -331,7 +364,8 @@ const Mailbox = styled(BsMailbox)`
   }
 `;
 
-const SaveImage = styled(BsFillCheckSquareFill)`
+const SaveImage = styled.img`
+  margin-right: 5px;
   position: absolute;
   width: 2rem;
   height: 2rem;
@@ -341,29 +375,30 @@ const SaveImage = styled(BsFillCheckSquareFill)`
 `;
 
 const TopCover = styled.div`
-  opacity: 0.8;
+  opacity: 0.9;
   /* width: 100vw; */
   height: 30vw;
   background-size: cover;
   background-position: center;
 `;
 
-const EditImage = styled(BsFillCameraFill)`
-  position: absolute;
+const EditImage = styled.img`
   width: 2rem;
   height: 2rem;
-  /* bottom: -20px; */
-  right: 0;
   cursor: pointer;
+  margin-right: 5px;
 `;
 
 const DivCtn = styled.div`
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid red;
   position: absolute;
   bottom: -20px;
   right: 0;
+`;
+
+const CameraIcon = styled.div`
+  /* background-color: gray;
+  border: 1px solid red;
+  padding: 1rem; */
 `;
 
 const ImgWrapper = styled.div`
@@ -540,6 +575,13 @@ const EditIcon = styled(BsPencilSquare)`
   margin-left: 1rem;
   height: 1rem;
   width: 1rem;
+`;
+const ShareIcon = styled(FiShare2)`
+  cursor: pointer;
+  margin-left: 1rem;
+  height: 1rem;
+  width: 1rem;
+  color: #f27e59;
 `;
 
 const SubmitIcon = styled(BsCheckLg)`

@@ -159,13 +159,29 @@ const HomePage = ({ userList, groupList }) => {
       </div>
       <Section>
         <Slogan>看看最近大家在學些什麼</Slogan>
+        {groupsIntro.length === 0 && (
+          <>
+            <Empty>
+              <div>目前找不到相關社團，就由你來建立第一個吧！</div>
+              <lottie-player
+                src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
+                background="transparent"
+                speed="1"
+                style={{ maxWidth: "300px", maxHeight: "300px" }}
+                loop
+                autoplay
+              />
+            </Empty>
+          </>
+        )}
 
-        <Wrapper>
-          {groupsIntro.slice(0, 8).map((item) => {
-            return <GroupsCard item={item} key={item.groupID} />;
-          })}
-        </Wrapper>
-
+        {groupsIntro.length > 0 && (
+          <Wrapper>
+            {groupsIntro.slice(0, 8).map((item) => {
+              return <GroupsCard item={item} key={item.groupID} />;
+            })}
+          </Wrapper>
+        )}
         <LinkStyled to="/groups">查看更多</LinkStyled>
       </Section>
       <Section>
@@ -254,5 +270,26 @@ const CateBtn = styled.div`
   &:hover {
     box-shadow: 0px 17px 16px -11px #ffae96;
     transform: translateY(-8px);
+  }
+`;
+
+const Empty = styled.div`
+  /* background-color: red; */
+  width: 80%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0 10px;
+  margin-bottom: 10px;
+  gap: 1rem;
+  div {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: rgb(242, 126, 89);
+  }
+  @media only screen and (max-width: 500px) {
+    font-size: 0.8rem;
   }
 `;

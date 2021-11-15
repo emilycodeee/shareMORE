@@ -38,11 +38,6 @@ const Header = () => {
     setShowNotification(!showNotification);
   };
 
-  console.log(
-    "notificationCtn",
-    notificationCtn.filter((d) => d.readed === false).length
-  );
-
   const getUserName = (uid) => {
     const user = usersList.find((p) => p.uid === uid);
 
@@ -63,6 +58,11 @@ const Header = () => {
   const handleReadNoti = (e) => {
     const target = e.target.dataset.id;
     firebase.readNotification(target, userData.uid);
+    setShowNotification(false);
+  };
+
+  const handleClick = () => {
+    setToggleMobile(false);
   };
 
   useEffect(() => {
@@ -76,12 +76,6 @@ const Header = () => {
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const data = [];
         querySnapshot.forEach((doc) => {
-          console.log("😍", doc.data());
-          if (doc.data().docId?.includes("m-")) {
-            console.log("有里程碑留言", doc.data().sender);
-          } else if (doc.data().docId?.includes("g-")) {
-            console.log("有社團留言", doc.data());
-          }
           data.push(doc.data());
         });
         setNotificationCtn(data);
@@ -94,6 +88,7 @@ const Header = () => {
 
   const handleLogout = () => {
     firebase.logOut();
+    setShowLogin(false);
     history.push("/");
   };
 
@@ -138,8 +133,8 @@ const Header = () => {
                   <ImgCtn src={userAvatar} />
                 </ListStyled>
                 <IconSet>
-                  <NotifiSet>
-                    <Notifications onClick={actNotifications} />
+                  <NotifiSet onClick={actNotifications}>
+                    <Notifications />
                     <Count count={count}>{count}</Count>
                   </NotifiSet>
                   <MenuBurger onClick={() => setToggleMobile(!toggleMobile)} />
@@ -153,6 +148,9 @@ const Header = () => {
       </HeaderContainer>
       {showNotification && (
         <NotificationsArea>
+          {notificationCtn.length === 0 && (
+            <NotifiDiv>目前沒有新通知</NotifiDiv>
+          )}
           {notificationCtn.map((msg) => {
             console.log(msg);
             if (msg.docId?.includes("m-")) {
@@ -214,15 +212,25 @@ const Header = () => {
         </NotificationsArea>
       )}
       <MobileMenu toggleMobile={toggleMobile}>
-        <MobileCtn>
-          <Close onClick={() => setToggleMobile(!toggleMobile)} />
+        <MobileCtn onClick={() => setToggleMobile(!toggleMobile)}>
+          <Close />
         </MobileCtn>
         <MLogo src={logo} />
-        <MobileList to="/milestones">分享廣場</MobileList>
-        <MobileList to="/groups">所有社團</MobileList>
-        <MobileList to="/groups/post">發起社團</MobileList>
-        <MobileList to="/milestones/post">分享成果</MobileList>
-        <MobileList to={`/profile/${userData?.uid}`}>個人頁面</MobileList>
+        <MobileList to="/milestones" onClick={handleClick}>
+          分享廣場
+        </MobileList>
+        <MobileList to="/groups" onClick={handleClick}>
+          所有社團
+        </MobileList>
+        <MobileList to="/groups/post" onClick={handleClick}>
+          發起社團
+        </MobileList>
+        <MobileList to="/milestones/post" onClick={handleClick}>
+          分享成果
+        </MobileList>
+        <MobileList to={`/profile/${userData?.uid}`} onClick={handleClick}>
+          個人頁面
+        </MobileList>
       </MobileMenu>
     </>
   );
@@ -231,7 +239,13 @@ const Header = () => {
 export default Header;
 
 const NotifiSet = styled.div`
+  cursor: pointer;
   position: relative;
+  /* margin: none;
+   */
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: 0;
 `;
 
 const Count = styled.div`
@@ -284,6 +298,18 @@ const NotificationsArea = styled.div`
   }
   @media only screen and (max-width: 400px) {
     width: 40%;
+  }
+`;
+
+const NotifiDiv = styled.div`
+  /* margin: 10px 0; */
+  text-decoration: none;
+  /* align-self: center; */
+  /* height: 30%; */
+  color: black;
+  padding: 0 0.5rem;
+  :hover {
+    background-color: #ffae96;
   }
 `;
 
@@ -408,7 +434,7 @@ const MobileMenu = styled.div`
   top: 0px;
   bottom: 0px;
   min-width: 240px;
-  width: 60%;
+  width: 40%;
   gap: 10px;
   right: ${(props) => (props.toggleMobile ? "0%" : "-100%")};
   transition: right 0.3s ease 0s;
@@ -446,7 +472,7 @@ const MobileCtn = styled.div`
   text-decoration: none;
   color: rgb(17 17 17);
   cursor: pointer;
-  height: 2rem;
+  /* height: 2rem; */
   width: 100%;
   display: flex;
   align-items: center;
@@ -476,16 +502,24 @@ const iconStyle = {
 
 const Close = styled(HiChevronDoubleRight)`
   ${iconStyle}
-
+  margin-top:4rem;
+  margin: 1rem;
   display: flex;
   justify-content: start;
   color: #f27e59;
+  /* &:hover{
+
+  } */
 `;
 
 const Notifications = styled(MdOutlineNotificationsActive)`
+  /* position: relative; */
   ${iconStyle}
+  width: 1.6rem;
+  height: 1.5rem;
+  margin: 0;
+  /* margin-top: 7px; */
   cursor: pointer;
-  margin: none;
 `;
 
 const LogoutBtn = styled(MdLogout)`
@@ -496,8 +530,8 @@ const LogoutBtn = styled(MdLogout)`
 `;
 
 const MenuBurger = styled(HiMenu)`
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 1.5rem;
+  height: 1.5rem;
   cursor: pointer;
   color: #fff4e4;
   /* margin-right: 1rem; */

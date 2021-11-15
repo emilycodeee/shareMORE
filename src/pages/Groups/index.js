@@ -1,5 +1,6 @@
 import React from "react";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
@@ -15,7 +16,7 @@ import { query, collection, orderBy, onSnapshot } from "firebase/firestore";
 import Slider from "react-slick";
 import { useSelector } from "react-redux";
 import SimpleEditor from "../../components/SimpleEditor";
-
+import Swal from "sweetalert2/dist/sweetalert2.js";
 const SectionStyled = styled.section`
   display: flex;
   flex-direction: column;
@@ -127,6 +128,8 @@ const GroupPage = () => {
     slidesToScroll: 1,
   };
 
+  console.log("renderPost", renderPost);
+
   useEffect(() => {
     const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
 
@@ -197,6 +200,13 @@ const GroupPage = () => {
       goalDate: dateValue,
     };
     firebase.editGroupData(data, content.groupID);
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "資料修改成功",
+      showConfirmButton: false,
+      timer: 1500,
+    });
   };
 
   const checkMember =
@@ -247,13 +257,13 @@ const GroupPage = () => {
             <LabelStyled>
               關於我們
               {checkOwner && !actEdit && (
-                <BsPencilSquare
+                <EditIcon
                   onClick={() => {
                     setActEdit(!actEdit);
                   }}
                 />
               )}
-              {checkOwner && actEdit && <BsCheckLg onClick={handleSubmit} />}
+              {checkOwner && actEdit && <ConfirmIcon onClick={handleSubmit} />}
             </LabelStyled>
             {actEdit && (
               <ContentCtn
@@ -270,14 +280,14 @@ const GroupPage = () => {
             <LabelStyled>
               學習目標
               {checkOwner && !actEditGoal && (
-                <BsPencilSquare
+                <EditIcon
                   onClick={() => {
                     setActEditGoal(!actEditGoal);
                   }}
                 />
               )}
               {checkOwner && actEditGoal && (
-                <BsCheckLg onClick={handleSubmit} />
+                <ConfirmIcon onClick={handleSubmit} />
               )}
             </LabelStyled>
 
@@ -294,7 +304,7 @@ const GroupPage = () => {
               預計完成日：
               {!actEditDate && dateText}
               {checkOwner && !actEditDate && (
-                <BsPencilSquare
+                <EditIcon
                   onClick={() => {
                     setActEditDate(!actEditDate);
                   }}
@@ -307,7 +317,7 @@ const GroupPage = () => {
                   type="date"
                   onChange={(e) => setDateValue(e.target.value)}
                 />
-                <BsCheckLg onClick={handleSubmit} />
+                <ConfirmIcon onClick={handleSubmit} />
               </div>
             )}
           </SectionStyled>
@@ -336,12 +346,14 @@ const GroupPage = () => {
           )}
         </MainBlock>
         <SideBlock>
-          <BestBoard />
+          <BestBoard renderPost={renderPost} />
           <LabelStyled>學習夥伴</LabelStyled>
           <MemberContainer>
             {/* <StyledSlider {...settings}> */}
             <HeadDiv>
-              <HeadAvatar src={stationHead?.avatar} />
+              <Link to={`/profile/${stationHead?.uid}`}>
+                <HeadAvatar src={stationHead?.avatar} />
+              </Link>
               <Crown />
             </HeadDiv>
 
@@ -368,6 +380,16 @@ const TagStyle = styled.div`
   padding: 8px 16px;
   border-radius: 100px;
   box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
+`;
+
+const EditIcon = styled(BsPencilSquare)`
+  cursor: pointer;
+  margin-left: 10px;
+`;
+
+const ConfirmIcon = styled(BsCheckLg)`
+  cursor: pointer;
+  margin-left: 10px;
 `;
 
 const CateTag = styled.div`

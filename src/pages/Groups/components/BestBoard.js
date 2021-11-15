@@ -7,8 +7,9 @@ import { arrCaculator } from "../../../utils/commonText";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import target from "../../../sources/target.gif";
+import trophy from "../../../sources/trophy.png";
 
-const BestBoard = () => {
+const BestBoard = ({ renderPost }) => {
   const { groupID } = useParams();
   const [maxPost, setMaxPost] = useState({});
   const [maxArticles, setMaxArticles] = useState({});
@@ -24,10 +25,8 @@ const BestBoard = () => {
   };
 
   useEffect(() => {
-    firebase.getGroupPost(groupID).then((res) => {
-      const userArr = res.map((i) => i.creatorID);
-      setMaxPost(arrCaculator(userArr));
-    });
+    const userArr = renderPost.map((i) => i.creatorID);
+    setMaxPost(arrCaculator(userArr));
 
     firebase.getGroupBookShelf().then((res) => {
       const groupBook = res.filter((b) => b.groupID === groupID);
@@ -40,58 +39,58 @@ const BestBoard = () => {
       const articlesArr = filterPublicArticles.map((a) => a.creatorID);
       setMaxArticles(arrCaculator(articlesArr));
     });
-  }, [articlesList]);
+  }, [articlesList, renderPost]);
 
   return (
     <WinnerWrapper>
+      <SloganLabel>
+        社團貢獻排行榜
+        <img src={trophy} />
+      </SloganLabel>
       <SloganLabel>分享，建立學習的正向迴圈</SloganLabel>
       <ItemWp>
-        <Link to={`/profile/${maxPost?.userID}`}>
+        <div to={`/profile/${maxPost?.userID}`}>
           <Avatat src={getUserData(maxPost?.userID)?.avatar || target} />
-        </Link>
+        </div>
         <Detail>
           <PersonName> {getUserData(maxPost?.userID)?.displayName}</PersonName>
-          <TextLabelStyle>
-            {" "}
-            {getUserData(maxPost?.userID)?.introduce}
-          </TextLabelStyle>
-          <TextStyle>
+          <TextStyle>{getUserData(maxPost?.userID)?.introduce}</TextStyle>
+          <TextDivStyle winner={maxPost}>
             {maxPost.point > 0
               ? `發起最多討論 累計 ${maxPost.point} 則`
-              : `不用遠行，現在就在留言區發起第一篇討論`}
-          </TextStyle>
+              : `現在就在留言區發起第一篇討論`}
+          </TextDivStyle>
         </Detail>
       </ItemWp>
 
       <ItemWp>
-        <Link to={`/profile/${maxArticles?.userID}`}>
+        <div to={`/profile/${maxArticles?.userID}`}>
           <Avatat src={getUserData(maxArticles?.userID)?.avatar || target} />
-        </Link>
+        </div>
         <Detail>
           <PersonName>
-            {" "}
             {getUserData(maxArticles?.userID)?.displayName}
           </PersonName>
           <TextStyle> {getUserData(maxArticles?.userID)?.introduce}</TextStyle>
-          <TextLinkStyle to={`/milestones`}>
+          <TextDivStyle to={`/milestones`} winner={maxArticles}>
             {maxArticles.point > 0
               ? `分享最多文章 累計 ${maxArticles.point} 則`
-              : `點我，開始分享第一篇學習成果`}
-          </TextLinkStyle>
+              : `成為第一個分享學習成果的人吧`}
+          </TextDivStyle>
         </Detail>
       </ItemWp>
       <ItemWp>
-        <TextLinkStyle to={`/profile/${maxBooks?.userID}`}>
+        <div to={`/profile/${maxBooks?.userID}`}>
           <Avatat src={getUserData(maxBooks?.userID)?.avatar || target} />
-        </TextLinkStyle>
+        </div>
         <Detail>
           <PersonName>{getUserData(maxBooks?.userID)?.displayName}</PersonName>
           <TextStyle>{getUserData(maxBooks?.userID)?.introduce}</TextStyle>
-          <TextLinkStyle to={`/group/${groupID}/bookshelf`}>
+          <TextDivStyle winner={maxBooks}>
             {maxBooks.point > 0
-              ? `推薦最多書籍 累計 ${maxBooks.point} 則`
-              : `點我，開始建立社團的第一本書`}
-          </TextLinkStyle>
+              ? `推薦最多書籍 累計 ${maxBooks.point} 本`
+              : `書櫃空空的，開始建立社團的第一本書`}
+          </TextDivStyle>
         </Detail>
       </ItemWp>
     </WinnerWrapper>
@@ -105,13 +104,26 @@ const SloganLabel = styled.div`
   line-height: 20px;
   font-size: 1rem;
   color: black;
-  padding-bottom: 1rem;
+  /* padding-bottom: 1rem。; */
+  text-align: center;
+  img {
+    height: 2rem;
+  }
 `;
 
 const PersonName = styled.p`
   font-weight: 700;
   line-height: 20px;
   font-size: 1rem;
+`;
+
+const TextDivStyle = styled.div`
+  font-weight: ${(props) => (props.winner?.point > 0 ? "600" : "400")};
+  line-height: 20px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  color: ${(props) =>
+    props.winner?.point > 0 ? "#f27e59" : "rgba(117,117,117,1)"};
 `;
 
 const TextLinkStyle = styled(Link)`
@@ -134,6 +146,11 @@ const TextStyle = styled.div`
   line-height: 20px;
   font-size: 0.8rem;
   color: rgba(117, 117, 117, 1);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const ItemWp = styled.div`

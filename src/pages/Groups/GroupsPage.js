@@ -6,14 +6,20 @@ import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Animated } from "react-animated-css";
 import algolia from "../../utils/algolia";
+import { BiSearchAlt2, BiUndo, BiX } from "react-icons/bi";
 // import algoliasearch from "algoliasearch";
 
 const MainCtn = styled.div`
-  max-width: 1000px;
-  width: 100%;
+  max-width: 1560px;
+  width: 80%;
+  padding: 1rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  @media only screen and (max-width: 992px) {
+    width: 90%;
+    padding: 0;
+  }
   /* justify-content: center;
   align-items: center; */
 `;
@@ -63,7 +69,8 @@ const SubList = styled.li`
   list-style: none;
   /* display: flex; */
   /* justify-content: center; */
-  font-weight: 500;
+  color: gray;
+  font-weight: 550;
   font-size: 1rem;
   padding: 0.4rem 0;
   margin-bottom: 0.5rem;
@@ -73,7 +80,7 @@ const SubList = styled.li`
 
 const ContentCtn = styled.div`
   display: flex;
-  padding: 0 1rem;
+  /* padding: 0 1rem; */
 `;
 
 const Search = styled.input`
@@ -89,6 +96,7 @@ const Search = styled.input`
 
 const Side = styled.div`
   width: 20%;
+  word-wrap: none;
 `;
 
 const TopCtn = styled.div`
@@ -171,14 +179,27 @@ const GroupsPage = () => {
   return (
     <MainCtn>
       <TopCtn>
-        <Search
+        {/* <Search
           placeholder="請輸入社群名稱..."
           value={inputValue}
           onKeyPress={handleSearch}
           onChange={handleInputChange}
         />
-        {/* <TopBtn>最新發起</TopBtn> */}
-        <TopBtn onClick={handleSearchBtn}>搜尋</TopBtn>
+        <TopBtn onClick={handleSearchBtn}>搜尋</TopBtn> */}
+
+        <SearchWrapper>
+          <SContainer>
+            <SearchBarInput
+              placeholder="請輸入社群名稱..."
+              value={inputValue}
+              onKeyPress={handleSearch}
+              onChange={handleInputChange}
+            />
+            <SubmitBtn onClick={handleSearchBtn}>
+              <SearchIcon />
+            </SubmitBtn>
+          </SContainer>
+        </SearchWrapper>
       </TopCtn>
       <ContentCtn>
         <Side>
@@ -202,15 +223,249 @@ const GroupsPage = () => {
             </div>
           ))}
         </Side>
+        {renderGroups.length === 0 && (
+          <>
+            <Empty>
+              <div>目前找不到相關社團，就由你來建立第一個吧！</div>
+              <lottie-player
+                src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
+                background="transparent"
+                speed="1"
+                style={{ maxWidth: "300px", maxHeight: "300px" }}
+                loop
+                autoplay
+              />
+            </Empty>
+          </>
+        )}
 
-        <Wrapper>
-          {renderGroups.map((item) => {
-            return <GroupsCard item={item} key={item.groupID} />;
-          })}
-        </Wrapper>
+        {renderGroups.length > 0 && (
+          <Wrapper>
+            {renderGroups.map((item) => {
+              return <GroupsCard item={item} key={item.groupID} />;
+            })}
+          </Wrapper>
+        )}
       </ContentCtn>
     </MainCtn>
   );
 };
 
 export default GroupsPage;
+
+const Empty = styled.div`
+  /* background-color: red; */
+  width: 80%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0 10px;
+  /* gap: 1rem; */
+  div {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: rgb(242, 126, 89);
+  }
+  @media only screen and (max-width: 500px) {
+    font-size: 0.8rem;
+  }
+`;
+
+const SearchWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  color: #f27e59;
+  margin: 1rem;
+  width: 100%;
+`;
+
+const SearchIcon = styled(BiSearchAlt2)`
+  width: 2rem;
+  height: 2rem;
+`;
+
+const SContainer = styled.div`
+  border: 2px solid #f27e59;
+  display: flex;
+  justify-content: flex-end;
+  border-radius: 100px;
+  overflow: hidden;
+  font-size: 1.25em;
+  position: relative;
+  width: 60px;
+  height: 60px;
+  // margin-left: auto;
+  transition: width 450ms cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  padding: 3px;
+
+  &:focus-within {
+    // box-shadow: 0 0 5px var(--clr-primary);
+    width: 100%;
+
+    input {
+      opacity: 1;
+      z-index: initial;
+      cursor: initial;
+      width: calc(100% - 60px);
+    }
+
+    button {
+      background: #f27e59;
+      color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      // transition: transform 500ms ease-out;
+
+      &:hover,
+      &:focus {
+        outline: 0;
+        // transform: rotate(1turn);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.65);
+      }
+    }
+  }
+`;
+
+const SubmitBtn = styled.button`
+  font-size: 1.5rem;
+  margin-left: auto;
+  background: 0;
+  border: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 200ms ease-out;
+  width: calc(60px - 10px);
+  height: calc(60px - 10px);
+  color: black;
+`;
+
+const SearchBarInput = styled.input`
+  border: 0;
+  padding: 0.25em 1em;
+  flex-grow: 1;
+  outline: 0;
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+`;
+
+const Container = styled.div`
+  width: 350px;
+  margin: 60px auto;
+  text-align: center;
+  color: white;
+`;
+
+const Search2 = styled.div`
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  background: crimson;
+  border-radius: 50%;
+  transition: all 1s;
+  z-index: 4;
+  box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.4);
+  // box-shadow: 0 0 25px 0 crimson;
+  &:hover {
+    cursor: pointer;
+  }
+  &::before {
+    content: "";
+    position: absolute;
+    margin: auto;
+    top: 22px;
+    right: 0;
+    bottom: 0;
+    left: 22px;
+    width: 12px;
+    height: 2px;
+    background: white;
+    transform: rotate(45deg);
+    transition: all 0.5s;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    margin: auto;
+    top: -5px;
+    right: 0;
+    bottom: 0;
+    left: -5px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid white;
+    transition: all 0.5s;
+  }
+`;
+
+const SearchInput = styled.input`
+  position: absolute;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  outline: none;
+  border: none;
+  // border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: crimson;
+  color: white;
+  text-shadow: 0 0 10px crimson;
+  padding: 0 80px 0 20px;
+  border-radius: 30px;
+  box-shadow: 0 0 25px 0 crimson, 0 20px 25px 0 rgba(0, 0, 0, 0.2);
+  // box-shadow: inset 0 0 25px 0 rgba(0, 0, 0, 0.5);
+  transition: all 1s;
+  opacity: 0;
+  z-index: 5;
+  font-weight: bolder;
+  letter-spacing: 0.1em;
+  &:hover {
+    cursor: pointer;
+  }
+  &:focus {
+    width: 300px;
+    opacity: 1;
+    cursor: text;
+  }
+  &:focus ~ div {
+    right: -250px;
+    background: #151515;
+    z-index: 6;
+    &::before {
+      top: 0;
+      left: 0;
+      width: 25px;
+    }
+    &::after {
+      top: 0;
+      left: 0;
+      width: 25px;
+      height: 2px;
+      border: none;
+      background: white;
+      border-radius: 0%;
+      transform: rotate(-45deg);
+    }
+  }
+  &::placeholder {
+    color: white;
+    opacity: 0.5;
+    font-weight: bolder;
+  }
+`;

@@ -33,6 +33,8 @@ import {
   collectionGroup,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+
 require("dotenv").config();
 
 const firebaseConfig = {
@@ -66,7 +68,7 @@ export const socialMediaAuth = async (provider, setFunction) => {
         displayName: result.user.displayName || "",
         avatar:
           result.user.photoURL ||
-          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Ficons8-user-64.png?alt=media&token=aaac8452-1058-40c6-94e1-aa5ceaf2d9f3",
+          "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FdefaultUser.png?alt=media&token=c9df27ee-dbd2-46be-828b-117c5e4ad3e4",
         email: result.user.email,
         uid: result.user.uid,
       };
@@ -96,7 +98,7 @@ export const register = async (name, email, password, setFunction) => {
       creationTime: result.user.metadata.creationTime,
       displayName: name,
       avatar:
-        "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Ficons8-user-64.png?alt=media&token=aaac8452-1058-40c6-94e1-aa5ceaf2d9f3",
+        "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FdefaultUser.png?alt=media&token=c9df27ee-dbd2-46be-828b-117c5e4ad3e4",
       email: result.user.email,
       uid: result.user.uid,
     };
@@ -143,7 +145,14 @@ export const logIn = async (email, password, setFunction) => {
 export const logOut = () => {
   signOut(auth)
     .then(() => {
-      alert("Sign-out successful.");
+      // alert("Sign-out successful.");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "成功登出",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     })
     .catch((error) => {
       console.log("💔error happened.");
@@ -158,7 +167,7 @@ export function subscribeToUser(callback) {
 export const postArticles = async (data, file) => {
   const docRefId = doc(collection(db, "articles")).id;
   let imgURL =
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66";
   if (file) {
     const storageRef = ref(storage);
     const imagesRef = ref(
@@ -314,7 +323,7 @@ export const postGroupNotes = async (groupID, data, file) => {
   const docRefId = doc(collection(db, "groups", groupID, "notes")).id;
 
   let imgURL =
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66";
   if (file) {
     const storageRef = ref(storage);
     const imagesRef = ref(storageRef, `groups/${groupID}/notes/` + docRefId);
@@ -515,7 +524,7 @@ export const getGroupMilestones = async (grouprID) => {
 
 export const createGroup = async (data, file) => {
   let imgURL =
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fimage-gallery.png?alt=media&token=37d813ef-f1a9-41a9-adf7-926d4e7546e1";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66";
   const docRefId = doc(collection(db, "groups")).id;
   if (file) {
     const storageRef = ref(storage);
@@ -531,6 +540,8 @@ export const createGroup = async (data, file) => {
     coverImage: imgURL,
   };
   const response = await setDoc(doc(db, "groups", docRefId), finalData);
+  // console.log(docRefId);
+  return docRefId;
 };
 
 export const getContentsList = async (topic, setFonction) => {

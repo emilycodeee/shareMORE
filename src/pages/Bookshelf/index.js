@@ -183,6 +183,9 @@ const Bookshelf = () => {
     };
   }, []);
 
+  const defaultBook =
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
+
   return (
     <>
       <GroupHeader tag="bookShelf" />
@@ -215,9 +218,20 @@ const Bookshelf = () => {
         )}
         {renderBookData.length === 0 && (
           <>
+            <Empty>
+              <div>目前書櫃空空的，一起建立我們的社團書櫃！</div>
+              <lottie-player
+                src="https://assets5.lottiefiles.com/packages/lf20_tnrzlN.json"
+                background="transparent"
+                speed="1"
+                style={{ maxWidth: "300px", maxHeight: "300px" }}
+                loop
+                autoplay
+              />
+            </Empty>
             {/* <div>社群書櫃目前還空空的</div> */}
-            <BookWelcome>紀錄書單更方便，一起建立我們的社團書櫃！</BookWelcome>
-            <BookAnimation />
+            {/* <BookWelcome>紀錄書單更方便，一起建立我們的社團書櫃！</BookWelcome>
+            <BookAnimation /> */}
             {/* <BookAnimation2 /> */}
           </>
         )}
@@ -244,7 +258,9 @@ const Bookshelf = () => {
                   }}
                 >
                   <div>
-                    <BookImage src={b.volumeInfo.imageLinks.thumbnail} />
+                    <BookImage
+                      src={b.volumeInfo.imageLinks?.thumbnail || defaultBook}
+                    />
                   </div>
                   <div>
                     <div>
@@ -346,6 +362,24 @@ const Avatar = styled.img`
   border-radius: 50%;
   align-self: flex-start;
   margin-right: 0.5rem;
+`;
+
+const Empty = styled.div`
+  /* background-color: red; */
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  gap: 1rem;
+  div {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: rgb(242, 126, 89);
+  }
+  @media only screen and (max-width: 500px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const ShelfWrapper = styled.div`

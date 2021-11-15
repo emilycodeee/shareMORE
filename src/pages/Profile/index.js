@@ -12,13 +12,14 @@ import web from "../../sources/web.png";
 import github from "../../sources/github.png";
 import * as firebase from "../../utils/firebase";
 import ContentCards from "./components/ContentCards";
+import { IoSettingsOutline } from "react-icons/io5";
 
 import { v4 as uuidv4 } from "uuid";
 
 const SideCard = styled.div`
   margin-top: 3rem;
   padding: 3rem 1rem 1rem 1rem;
-  width: 35%;
+  width: 30%;
   display: flex;
   flex-direction: column;
   background: #fffdfd;
@@ -31,6 +32,9 @@ const SideCard = styled.div`
     width: 100%;
     position: static;
     flex-direction: row;
+  }
+  @media only screen and (max-width: 500px) {
+    flex-direction: column;
   }
 `;
 
@@ -54,7 +58,7 @@ const Wrapper = styled.div`
 
 const ContentWrapper = styled.div`
   padding: 10px;
-  width: 65%;
+  width: 70%;
   @media only screen and (max-width: 992px) {
     width: 100%;
   }
@@ -74,10 +78,10 @@ const Avatar = styled.img`
   @media only screen and (max-width: 992px) {
     position: static;
     transform: translateX(0);
-    width: 3rem;
-    height: 3rem;
+    width: 5rem;
+    height: 5rem;
     align-self: center;
-    margin: 0 1rem;
+    margin: 1rem;
   }
 `;
 
@@ -90,7 +94,11 @@ const UserInfo = styled.div`
   padding: 10px;
   border: 1px solid rgb(219, 216, 214);
   margin-bottom: 10px;
-  gap: 10px;
+  gap: 1rem;
+  h1,
+  p {
+    margin: 0;
+  }
   @media only screen and (max-width: 992px) {
     h1,
     p {
@@ -99,11 +107,13 @@ const UserInfo = styled.div`
     h1 {
       font-size: 1rem;
     }
+    padding: 1rem;
     width: 100%;
     margin-top: 0;
     align-items: flex-start;
     margin-bottom: 0;
   }
+  border: none;
 `;
 
 const TagSet = styled.div`
@@ -121,19 +131,20 @@ const TagWrapper = styled.div`
 
 const Icon = styled.img`
   height: 1.8rem;
-  @media only screen and (max-width: 500px) {
-    height: 1rem;
-  }
+  /* @media only screen and (max-width: 500px) {
+    height: 1.2rem;
+  } */
 `;
 
 const IconSet = styled.div`
-  margin: 10px;
+  /* margin: 10px; */
   width: 100%;
   display: flex;
+  gap: 10px;
   justify-content: space-evenly;
   @media only screen and (max-width: 992px) {
     margin: 0;
-    justify-content: flex-start;
+    /* justify-content: flex-start; */
     gap: 10px;
   }
 `;
@@ -147,6 +158,9 @@ const ListCtn = styled.ul`
   display: flex;
   justify-content: flex-start;
   border-bottom: 1px solid #fffdfd;
+  @media only screen and (max-width: 992px) {
+    justify-content: center;
+  }
 `;
 
 const ListItem = styled.li`
@@ -160,15 +174,11 @@ const ListItem = styled.li`
     ${(props) => (props.active === props.children ? "#f27e59" : "none")};
   color: ${(props) => (props.active === props.children ? "#f27e59" : "black")};
   padding: 0.5rem 1rem;
-  /* box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px; */
-  /* &:last-child {
-    background-color: #dfdfdf;
-  } */
 `;
 
 const SettingBtn = styled(Link)`
   text-decoration: none;
-  color: black;
+  color: #f27e59;
   font-weight: 600;
   cursor: pointer;
   margin: 30px 0;
@@ -176,18 +186,18 @@ const SettingBtn = styled(Link)`
   width: 100%;
   height: 40px;
   display: flex;
+  gap: 10px;
   flex-direction: row;
   border-radius: 4px;
-  border: 1px solid rgb(219, 216, 214);
+  border: 1px solid #f27e59;
   align-items: center;
   justify-content: center;
   &:hover {
-    color: gray;
+    color: white;
+    background-color: #f27e59;
   }
   @media only screen and (max-width: 992px) {
-    margin-left: 10px;
-    width: 100px;
-    /* display: block; */
+    display: none;
   }
 `;
 
@@ -276,10 +286,19 @@ const ProfilePage = () => {
   return (
     <Wrapper>
       <SideCard>
-        <Avatar src={currentUser?.avatar} alt="" />
+        <div>
+          <Avatar src={currentUser?.avatar} alt="" />
+          {me && (
+            <MobileSettingBtn to={`/profile/${userID}/edit`}>
+              設定
+              <IoSettingsOutline />
+            </MobileSettingBtn>
+          )}
+        </div>
         <UserInfo>
           <h1>{currentUser?.displayName} </h1>
           <p>{currentUser?.introduce || "我還在想😜"}</p>
+
           <IconSet>
             {/* {currentUser?.introduce} */}
 
@@ -327,16 +346,19 @@ const ProfilePage = () => {
             <div>社群</div>
           </TagSet>
           <TagSet>
-            <div>創建</div>
+            <div>分享</div>
             <div>{publicMilestone}</div>
-            <div>里程碑</div>
+            <div>文章</div>
           </TagSet>
         </TagWrapper>
         {/* <div>
             <p>Follow me on popular social media sites.</p>
           </div> */}
         {me && (
-          <SettingBtn to={`/profile/${userID}/edit`}>個人頁面設定</SettingBtn>
+          <SettingBtn to={`/profile/${userID}/edit`}>
+            個人頁面設定
+            <IoSettingsOutline />
+          </SettingBtn>
         )}
       </SideCard>
 
@@ -369,11 +391,9 @@ const ProfilePage = () => {
         <ContentCtn>
           {defaultRender.current
             ? userJoinGroups?.map((item) => {
-                console.log("cccccccccccc", item);
                 return <ContentCards item={item} key={item.groupID} />;
               })
             : selected?.map((item) => {
-                console.log("ssssssssssssssss", item);
                 return (
                   <ContentCards
                     item={item}
@@ -388,3 +408,32 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+
+const MobileSettingBtn = styled(Link)`
+  display: none;
+  @media only screen and (max-width: 992px) {
+    display: block;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    width: 60%;
+    margin: 0 20%;
+    /* padding: 6px 3px; */
+    flex-direction: row;
+    border-radius: 4px;
+    border: 1px solid #f27e59;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    justify-content: center;
+    color: #f27e59;
+    &:hover {
+      color: white;
+      background-color: #f27e59;
+    }
+
+    /* &:hover {
+      color: gray;
+    } */
+  }
+`;

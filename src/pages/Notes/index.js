@@ -12,7 +12,7 @@ import {
   BsFillHouseDoorFill,
 } from "react-icons/bs";
 import { Link } from "react-router-dom";
-
+import Swal from "sweetalert2";
 const TopCover = styled.div`
   width: 100%;
   height: 30vw;
@@ -131,12 +131,30 @@ const NotePage = () => {
   // const handleEdit = () => {};
 
   const handleDelete = () => {
-    const check = window.confirm("刪除後將不可恢復，確認要刪除嗎？");
-    if (check) {
-      firebase.deleteDocc("groups", groupID, "notes", postID).then(() => {
-        history.push(`/group/${groupID}/notes`);
-      });
-    }
+    Swal.fire({
+      title: "確定要刪除嗎?",
+      text: "刪除將不可恢復，請再次確認是否刪除！",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "確定",
+      cancelButtonText: "取消",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        firebase.deleteDocc("groups", groupID, "notes", postID).then(() => {
+          history.push(`/group/${groupID}/notes`);
+        });
+        Swal.fire("Deleted!", "文章已經刪除囉！", "success");
+      }
+    });
+
+    // const check = window.confirm("刪除後將不可恢復，確認要刪除嗎？");
+    // if (check) {
+    //   firebase.deleteDocc("groups", groupID, "notes", postID).then(() => {
+    //     history.push(`/group/${groupID}/notes`);
+    //   });
+    // }
   };
 
   console.log(noteContent);

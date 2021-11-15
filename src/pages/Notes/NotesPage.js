@@ -78,10 +78,10 @@ const NotesPage = () => {
           <Empty>
             <div>目前尚未建立社群筆記</div>
             <lottie-player
-              src="https://assets4.lottiefiles.com/private_files/lf30_6npzscwg.json"
+              src="https://assets5.lottiefiles.com/packages/lf20_n2m0isqh.json"
               background="transparent"
               speed="1"
-              style={{ maxWidth: "300px", maxHeight: "300px" }}
+              style={{ maxWidth: "250px", maxHeight: "250px" }}
               loop
               autoplay
             />

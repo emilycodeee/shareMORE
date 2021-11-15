@@ -8,6 +8,7 @@ import { useHistory } from "react-router-dom";
 import { initText } from "../../utils/commonText";
 import { useSelector, useDispatch } from "react-redux";
 import { getGroupsList } from "../../redux/actions";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 const MainContainer = styled.div`
   max-width: 1560px;
@@ -171,12 +172,23 @@ const BuildGroups = () => {
 
   const handleSubmit = () => {
     if (goal.length === 0 || name.length === 0 || goalDate.length === 0) {
-      alert("請填寫完整資訊");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "請填寫完整資訊",
+      });
+
+      // alert("請填寫完整資訊");
       return;
     }
 
     if (selectedCategory === null || selectedSubClass === null) {
-      alert("請填選社群類別");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "請填選社群類別",
+      });
+      // alert("請填選社群類別");
       return;
     }
 
@@ -191,13 +203,15 @@ const BuildGroups = () => {
       creatorID: userData.uid,
       public: true,
     };
-    firebase.createGroup(data, file).then(() => {
-      // firebase
-      //   .getTotalDocSortList("groups")
-      //   .then((res) => d(getGroupsList(res)))
-      //   .catch((err) => console.log(err));
-      alert("新社團建立成功");
-      history.push("/");
+    firebase.createGroup(data, file).then((res) => {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "新社團建立成功",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      history.push(`/group/${res}`);
     });
   };
 

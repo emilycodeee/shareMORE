@@ -12,64 +12,133 @@ import { useSelector, useDispatch } from "react-redux";
 import { getUsersList } from "../../redux/actions";
 import { useState } from "react";
 import * as firebase from "../../utils/firebase";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 const Wrapper = styled.div`
-  border: 1px solid gray;
-  border-radius: 10px;
+  max-width: 1560px;
+  width: 100%;
+  display: flex;
+
   margin: 0 auto;
   margin-top: 2rem;
-  width: 100%;
-  max-width: 1000px;
   padding: 60px 60px 150px;
-  display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 1rem;
+  @media only screen and (max-width: 992px) {
+    margin-top: 0;
+    padding: 0;
+    flex-direction: column;
+  }
 `;
 
 const ContentWrapper = styled.div`
   padding: 10px;
-  width: 100%;
-  box-shadow: 0 2px 10px #a2a2a2;
+  width: 70%;
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const SideCard = styled.div`
-  padding: 1rem;
-  width: 400px;
-  /* height: 550px; */
-  position: relative;
+  margin-top: 3rem;
+  padding: 3rem 1rem 1rem 1rem;
+  width: 30%;
   display: flex;
   flex-direction: column;
-  background: #f5f5f5;
-  box-shadow: 0 2px 10px #a2a2a2;
+  background: #fffdfd;
+  position: relative;
+
+  @media only screen and (max-width: 992px) {
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    margin-top: 0;
+    width: 100%;
+    position: static;
+    flex-direction: row;
+  }
+  @media only screen and (max-width: 500px) {
+    flex-direction: column;
+  }
 `;
 
 const AvatarCtn = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 2rem 0;
+  margin-top: 3rem;
+  position: relative;
+  /* border: 1px solid red; */
+  @media only screen and (max-width: 992px) {
+    margin-top: 0;
+  }
 `;
 
 const Avatar = styled.img`
-  cursor: pointer;
-  width: 160px;
-  height: 160px;
+  width: 10rem;
+  height: 10rem;
+  position: absolute;
+  top: -168px;
+  left: 50%;
+  border: 2px solid #fff;
+  transform: translateX(-50%);
   border-radius: 50%;
+  @media only screen and (max-width: 992px) {
+    position: static;
+    transform: translateX(0);
+    width: 5rem;
+    height: 5rem;
+    align-self: center;
+    margin: 1rem;
+  }
 `;
 
 const UserInfo = styled.div`
-  border-radius: 10px;
+  /* margin-top: 2rem; */
+  border-radius: 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px;
   border: 1px solid rgb(219, 216, 214);
   margin-bottom: 10px;
+  gap: 1rem;
+  h1,
+  p {
+    margin: 0;
+  }
+  @media only screen and (max-width: 992px) {
+    h1,
+    p {
+      margin: 0;
+    }
+    h1 {
+      font-size: 1rem;
+    }
+    padding: 1rem;
+    width: 100%;
+    margin-top: 0;
+    align-items: flex-start;
+    margin-bottom: 0;
+  }
+  border: none;
 `;
 
 const TagWrapper = styled.div`
   padding: 10px;
   display: flex;
   justify-content: space-around;
+  @media only screen and (max-width: 992px) {
+    display: none;
+  }
+`;
+
+const MobileTagWrapper = styled.div`
+  display: none;
+  @media only screen and (max-width: 992px) {
+    align-self: center;
+    display: block;
+  }
 `;
 
 const Icon = styled.img`
@@ -79,14 +148,17 @@ const Icon = styled.img`
 const UploadIcon = styled.img`
   height: 1.8rem;
   position: absolute;
-  top: 185px;
-  left: 165px;
+  top: -40px;
+  left: 60%;
+  @media only screen and (max-width: 992px) {
+    top: 73px;
+  }
 `;
 
 const IconSet = styled.div`
-  margin: 10px;
+  /* margin: 10px; */
   width: 100%;
-
+  gap: 10px;
   display: flex;
   justify-content: space-evenly;
 `;
@@ -113,7 +185,7 @@ const InputField = styled.div`
 const Title = styled.h3`
   font-size: 22px;
   font-weight: 600;
-  color: rgb(255 182 0);
+  color: #f27e59;
 `;
 
 const TagName = styled.div`
@@ -127,7 +199,6 @@ const TagName = styled.div`
   flex-grow: 1;
 `;
 
-// border: 1 px solid #a0a0a0;
 const InputCtn = styled.div`
   width: 75%;
 `;
@@ -139,6 +210,7 @@ const SpanStyle = styled.span`
 const InputText = styled.input`
   margin-left: 10px;
   width: 100%;
+  padding: 8px 10px;
   border-radius: 5px;
   border: 1px solid rgb(219, 216, 214);
 `;
@@ -146,11 +218,14 @@ const InputText = styled.input`
 const AreaText = styled.textarea`
   margin-left: 10px;
   width: 100%;
+  padding: 5px 10px;
+  height: 15vh;
   border-radius: 5px;
   border: 1px solid rgb(219, 216, 214);
 `;
 
 const UploadLabel = styled.label`
+  /* position: relative; */
   margin: 0 auto;
 `;
 
@@ -158,39 +233,40 @@ const ButtonSet = styled.div`
   display: flex;
   margin: 2rem 0 1rem;
   justify-content: center;
+  gap: 30px;
 `;
 
 const ButtonStyle = styled.button`
-  text-decoration: none;
-  color: black;
-  /* font-weight: 600; */
-  cursor: pointer;
-  margin-left: 30px;
-  padding: 0 10px;
-  background-color: #f1f1f1;
-  /* width: 80%; */
-  height: 40px;
   display: flex;
-  flex-direction: row;
-  border-radius: 10px;
-  border: 1px solid rgb(219, 216, 214);
-  align-items: center;
-  justify-content: center;
+  border-radius: 4px;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid #f27e59;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  background-color: transparent;
+  text-decoration: none;
+  cursor: pointer;
+  color: #f27e59;
+
   &:hover {
-    color: gray;
+    background-color: #f27e59;
+    color: white;
   }
 `;
 
 const LinkNone = styled(Link)`
   text-decoration: none;
-  color: black;
+  color: #f27e59;
   &:hover {
-    color: gray;
+    background-color: #f27e59;
+    color: white;
   }
 `;
 
 const PreviewTag = styled.div`
-  color: rgb(255 182 0);
+  color: #f27e59;
   font-weight: 600;
 `;
 
@@ -226,11 +302,19 @@ const ProfileSetting = () => {
     };
 
     firebase.UpdateProfile(userID, data, file).then(() => {
-      alert("更新成功");
-      firebase
-        .getTotalDocList("users")
-        .then((res) => d(getUsersList(res)))
-        .catch((err) => console.log(err));
+      // alert("更新成功");
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "更新成功",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      // firebase
+      //   .getTotalDocList("users")
+      //   .then((res) => d(getUsersList(res)))
+      //   .catch((err) => console.log(err));
       history.push(`/profile/${userID}`);
     });
   };
@@ -242,6 +326,7 @@ const ProfileSetting = () => {
           <UploadLabel htmlFor="upload-img">
             <AvatarCtn>
               <Avatar src={previewImg} alt="" />
+              <UploadIcon src={camera} />
             </AvatarCtn>
             {/* <div> */}
             <input
@@ -252,25 +337,26 @@ const ProfileSetting = () => {
                 setFile(e.target.files[0]);
               }}
             />
-
-            <UploadIcon src={camera} />
           </UploadLabel>
           {/* </div> */}
         </div>
-        <div>
-          <UserInfo>
-            <h1>{displayName}</h1>
-            <p>{introduce || "我還在想😜"}</p>
-            <IconSet>
-              {instagramUrl && <Icon src={ig} />}
-              {facebookUrl && <Icon src={facebookTag} />}
-              {linkedinUrl && <Icon src={linkedin} />}
-              {githubUrl && <Icon src={github} />}
-              {secondEmail && <Icon src={email} />}
-              {webUrl && <Icon src={web} />}
-            </IconSet>
-          </UserInfo>
-        </div>
+
+        <UserInfo>
+          <h1>{displayName}</h1>
+          <p>{introduce || "我還在想😜"}</p>
+          <IconSet>
+            {instagramUrl && <Icon src={ig} />}
+            {facebookUrl && <Icon src={facebookTag} />}
+            {linkedinUrl && <Icon src={linkedin} />}
+            {githubUrl && <Icon src={github} />}
+            {secondEmail && <Icon src={email} />}
+            {webUrl && <Icon src={web} />}
+          </IconSet>
+          <MobileTagWrapper>
+            <PreviewTag>預覽中，更改後記得儲存送出喔！</PreviewTag>
+          </MobileTagWrapper>
+        </UserInfo>
+
         {/* <div>
           <p>Follow me on popular social media sites.</p>
         </div> */}
@@ -278,7 +364,7 @@ const ProfileSetting = () => {
           <PreviewTag>預覽中，更改後記得儲存送出喔！</PreviewTag>
         </TagWrapper>
       </SideCard>
-      <hr />
+
       <ContentWrapper>
         <div>
           <Title>個人資料設定</Title>

@@ -243,7 +243,7 @@ const SearchBook = () => {
               <div>
                 <BookImage
                   src={
-                    bookContent.volumeInfo.imageLinks.thumbnail || defaultBook
+                    bookContent.volumeInfo.imageLinks?.thumbnail || defaultBook
                   }
                 />
               </div>

@@ -7,8 +7,7 @@ import Select from "react-select";
 import Switch from "../../components/Switch";
 import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Fireworks from "../../components/Fireworks";
-
+import Swal from "sweetalert2/dist/sweetalert2.js";
 const ContainerStyled = styled.div`
   gap: 1rem;
   max-width: 1560px;
@@ -195,7 +194,7 @@ const MilestoneEditor = () => {
           setgroupsName(res);
 
           if (res.length === 0) {
-            alert("目前沒有任何所屬社群耶，到廣場看看有興趣的主題吧！");
+            Swal.fire("目前沒有任何所屬社群，到廣場看看有興趣的主題吧！");
             history.push("/");
           }
         });
@@ -231,8 +230,6 @@ const MilestoneEditor = () => {
     };
   }, []);
 
-  // if (groupsName)
-  // console.log("editModeeditModeeditModel", editMode);
   const userData = useSelector((state) => state.userData);
 
   const editorHandler = (e) => {
@@ -241,12 +238,22 @@ const MilestoneEditor = () => {
 
   const handleSubmit = () => {
     if (value.length === 0 || introduce.length === 0) {
-      alert("請填寫完整內容");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "請填寫完整內容!",
+      });
+      // alert("請填寫完整內容");
       return;
     }
 
     if (selected === null) {
-      alert("請選擇社群名稱");
+      // alert("請選擇社群名稱");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "請選擇社群名稱!",
+      });
       return;
     }
 
@@ -263,7 +270,14 @@ const MilestoneEditor = () => {
       firebase
         .editArticles(data, file, milestoneID, originContent.coverImage)
         .then(() => {
-          alert("編輯成功");
+          // alert("編輯成功");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "編輯成功",
+            showConfirmButton: false,
+            timer: 1500,
+          });
           history.push(`/milestone/${milestoneID}`);
         });
     } else {
@@ -278,7 +292,14 @@ const MilestoneEditor = () => {
       };
 
       firebase.postArticles(data, file).then(() => {
-        alert("建立成功");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "建立成功",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        // alert("建立成功");
         history.push("/");
       });
     }
@@ -289,9 +310,7 @@ const MilestoneEditor = () => {
   return (
     <ContainerStyled>
       <MainContainer>
-        {/* <div>回頭看，才發現自己已經走了這麼遠</div> */}
         <LabelCtn>分享我的學習成果</LabelCtn>
-        {/* <InputWrapper> */}
         <InputCtn
           placeholder="請輸入標題..."
           value={title}
@@ -337,7 +356,6 @@ const MilestoneEditor = () => {
           </UploadBtn>
         </SettingWrapper>
         <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
-        {/* <Fireworks /> */}
       </SideSetting>
     </ContainerStyled>
   );

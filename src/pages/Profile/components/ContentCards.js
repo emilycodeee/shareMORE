@@ -9,16 +9,24 @@ const ItemWrapper = styled.div`
   margin-bottom: 1rem;
   display: flex;
   padding: 1rem;
+
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+  }
+
   /* box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px; */
 `;
 
 const CoverContainer = styled.div`
   background-image: url(${(props) => props.item.coverImage});
-  border-radius: 10px;
+  border-radius: 5px;
   height: 150px;
   width: 150px;
   background-size: cover;
   background-position: center;
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+  }
 `;
 
 const ItemInfo = styled.div`
@@ -28,6 +36,12 @@ const ItemInfo = styled.div`
   flex-direction: column;
   /* justify-content: space-evenly; */
   gap: 10px;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const Title = styled.div`

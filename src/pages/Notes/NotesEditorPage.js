@@ -5,7 +5,7 @@ import * as firebase from "../../utils/firebase";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useHistory, useLocation } from "react-router";
 import generateText from "../../utils/commonText";
-
+import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useSelector } from "react-redux";
 
 const ContainerStyled = styled.div`
@@ -185,7 +185,12 @@ const NotesEditorPage = () => {
     console.log(groupID, postID);
 
     if (introduce.length === 0) {
-      alert("請填寫筆記摘要");
+      // alert("請填寫筆記摘要");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "請填寫筆記摘要！",
+      });
       return;
     }
 
@@ -199,7 +204,14 @@ const NotesEditorPage = () => {
       firebase
         .editGroupNotes(data, file, groupID, postID, originContent.coverImage)
         .then(() => {
-          alert("編輯成功");
+          // alert("編輯成功");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "編輯成功",
+            showConfirmButton: false,
+            timer: 1500,
+          });
           history.push(`/group/${groupID}/notes/${postID}`);
         });
     } else {
@@ -217,7 +229,14 @@ const NotesEditorPage = () => {
         //   firebase.removeTopLevelPost(groupID, postID);
         // })
         .then(() => {
-          alert("建立成功");
+          // alert("建立成功");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "建立成功",
+            showConfirmButton: false,
+            timer: 1500,
+          });
           history.push(`/group/${groupID}`);
         });
     }
