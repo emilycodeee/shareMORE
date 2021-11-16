@@ -315,7 +315,6 @@ const MilestonesPage = () => {
     let isMounted = true;
 
     if (isMounted) {
-      // firebase.getContentsListSort("articles", setMilestonesList);
       firebase.getTotalDocList("gorden").then((res) => setGorden(res));
       firebase.getGroupBookShelf().then((res) => {
         setBookList(res);

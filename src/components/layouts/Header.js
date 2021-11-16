@@ -47,7 +47,7 @@ const Header = () => {
   const getGroupName = (gid) => {
     const group = groupsList.find((g) => g.groupID === gid);
 
-    return group.name;
+    return group?.name;
   };
 
   const getArticles = (mileID) => {
@@ -89,6 +89,7 @@ const Header = () => {
   const handleLogout = () => {
     firebase.logOut();
     setShowLogin(false);
+    setShowNotification(false);
     history.push("/");
   };
 
@@ -152,7 +153,6 @@ const Header = () => {
             <NotifiDiv>目前沒有新通知</NotifiDiv>
           )}
           {notificationCtn.map((msg) => {
-            console.log(msg);
             if (msg.docId?.includes("m-")) {
               return (
                 <NotifiLink
@@ -241,8 +241,6 @@ export default Header;
 const NotifiSet = styled.div`
   cursor: pointer;
   position: relative;
-  /* margin: none;
-   */
   width: 1.4rem;
   height: 1.4rem;
   margin: 0;
@@ -302,10 +300,7 @@ const NotificationsArea = styled.div`
 `;
 
 const NotifiDiv = styled.div`
-  /* margin: 10px 0; */
   text-decoration: none;
-  /* align-self: center; */
-  /* height: 30%; */
   color: black;
   padding: 0 0.5rem;
   :hover {
@@ -314,10 +309,7 @@ const NotifiDiv = styled.div`
 `;
 
 const NotifiLink = styled(Link)`
-  /* margin: 10px 0; */
   text-decoration: none;
-  /* align-self: center; */
-  /* height: 30%; */
   color: black;
   padding: 0 0.5rem;
   :hover {
@@ -329,8 +321,6 @@ const ListContainer = styled.ul`
   display: flex;
   align-items: center;
   padding: 0 0 0 1rem;
-  /* gap: 1rem; */
-
   @media only screen and (max-width: 992px) {
     padding: 0;
   }
@@ -342,8 +332,6 @@ const ListStyled = styled(Link)`
   list-style: none;
   text-decoration: none;
   font-size: 1rem;
-  /* color: rgb(17 17 17); */
-  /* #fff4e4 */
   color: white;
   &:hover {
     border-bottom: 3px solid white;
@@ -395,11 +383,6 @@ const InnerWrapper = styled.div`
 `;
 
 const HeaderContainer = styled.div`
-  /* position: -webkit-sticky; */
-  /* position: sticky;
-  top: 0; */
-
-  /* z-index: 99999; */
   display: flex;
   justify-content: center;
   width: 100%;
@@ -448,7 +431,6 @@ const MLogo = styled.img`
 
 const MobileList = styled(Link)`
   text-decoration: none;
-  /* color: rgb(17 17 17); */
   color: #f27e59;
   font-weight: 600;
   cursor: pointer;
@@ -472,7 +454,6 @@ const MobileCtn = styled.div`
   text-decoration: none;
   color: rgb(17 17 17);
   cursor: pointer;
-  /* height: 2rem; */
   width: 100%;
   display: flex;
   align-items: center;
@@ -484,7 +465,6 @@ const IconSet = styled.div`
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  /* padding: 0 1rem; */
   gap: 10px;
 `;
 
@@ -507,24 +487,21 @@ const Close = styled(HiChevronDoubleRight)`
   display: flex;
   justify-content: start;
   color: #f27e59;
-  /* &:hover{
-
-  } */
 `;
 
 const Notifications = styled(MdOutlineNotificationsActive)`
-  /* position: relative; */
   ${iconStyle}
+  color:white;
   width: 1.6rem;
   height: 1.5rem;
   margin: 0;
-  /* margin-top: 7px; */
   cursor: pointer;
 `;
 
 const LogoutBtn = styled(MdLogout)`
   ${iconStyle}
   cursor: pointer;
+  color: white;
   @media only screen and (max-width: 992px) {
   }
 `;
@@ -533,8 +510,7 @@ const MenuBurger = styled(HiMenu)`
   width: 1.5rem;
   height: 1.5rem;
   cursor: pointer;
-  color: #fff4e4;
-  /* margin-right: 1rem; */
+  color: white;
   display: none;
   @media only screen and (max-width: 992px) {
     display: block;

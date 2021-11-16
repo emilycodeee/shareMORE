@@ -5,7 +5,6 @@ import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
 import styled from "styled-components";
 import { TouchBallLoading } from "react-loadingg";
-import greenhouse from "../sources/greenhouse.gif";
 import growing from "../sources/growing.gif";
 
 const Container = styled.div`
@@ -25,7 +24,6 @@ const Container = styled.div`
   @media only screen and (max-width: 992px) {
     width: 80%;
     flex-direction: column;
-    /* border-radius: 0; */
   }
 `;
 
@@ -46,9 +44,6 @@ const AuthCtn = styled.div`
     border-bottom-left-radius: 10px;
     border-top: 4px solid #f27e59;
     padding: 20px;
-    /* border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0; */
-    /* display: none; */
   }
 `;
 
@@ -189,6 +184,7 @@ const SigninPopup = () => {
               }}
             />
             <InputStyled
+              type="password"
               placeholder="請輸入密碼"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -224,6 +220,7 @@ const SigninPopup = () => {
               }}
             />
             <InputStyled
+              type="password"
               placeholder="請輸入密碼"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

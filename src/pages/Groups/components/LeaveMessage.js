@@ -11,6 +11,7 @@ const CommentWrapper = styled.div`
 const AvatorStyled = styled.img`
   border-radius: 50%;
   height: 30px;
+  width: 30px;
   margin-right: 10px;
 `;
 

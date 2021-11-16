@@ -212,9 +212,6 @@ const ProfilePage = () => {
   const currentUser = usersList?.find((item) => item.uid === userID);
   const me = userID === userData?.uid;
 
-  console.log("currentUser", currentUser);
-  console.log("me", me);
-
   const [userJoinGroups, setUserJoinGroups] = useState([]);
   const [userCreateGroups, setUserCreateGroups] = useState([]);
   const [userMilestones, setUserMilestones] = useState([]);
@@ -251,7 +248,6 @@ const ProfilePage = () => {
   }
 
   const handleChoose = (e) => {
-    console.log(e.target.dataset.id);
     // setActive(true);
     defaultRender.current = false;
     switch (e.target.dataset.id) {

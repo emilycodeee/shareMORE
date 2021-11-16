@@ -1,8 +1,6 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
-import bookshelf from "../../sources/bookshelf.jpg";
-import { GiNotebook } from "react-icons/gi";
-import { AiOutlineClose } from "react-icons/ai";
+
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
@@ -13,8 +11,7 @@ import GroupHeader from "../Groups/components/GroupHeader";
 import { BiX } from "react-icons/bi";
 import { JumpCircleLoading } from "react-loadingg";
 import { BsBookHalf } from "react-icons/bs";
-import BookAnimation from "./component/BookAnimation";
-import BookAnimation2 from "./component/BookAnimation2";
+
 const Wrapper = styled.div`
   border-radius: 4px;
   max-width: 1560px;

@@ -128,8 +128,6 @@ const GroupPage = () => {
     slidesToScroll: 1,
   };
 
-  console.log("renderPost", renderPost);
-
   useEffect(() => {
     const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
 
@@ -185,7 +183,6 @@ const GroupPage = () => {
   const stationHead = usersList.find(
     (item) => item?.uid === content?.creatorID
   );
-  console.log("😛stationHead", stationHead);
 
   const dateText = `${dateValue}，還有
             ${dateCounter(dateValue)} 天`;

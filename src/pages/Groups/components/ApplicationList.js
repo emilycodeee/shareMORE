@@ -4,6 +4,7 @@ import * as firebase from "../../../utils/firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { getGroupsList } from "../../../redux/actions";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 const RecApplication = styled.div`
   width: 100%;
@@ -92,9 +93,16 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
       .then(() => {
         firebase
           .sendGroupNotification(groupData.groupID, currentUser.uid)
-          .then((res) => console.log("ssss", res))
+          .then((res) => {
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: "確認完成",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          })
           .catch((err) => console.log(err));
-        alert("確認完成");
       });
   };
 
@@ -102,7 +110,13 @@ const ApplicationList = ({ groupData, applicationData, applicant }) => {
     firebase
       .rejectApplication(groupData.groupID, applicationData.applicantionID)
       .then(() => {
-        alert("拒絕申請並不會通知申請人");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "拒絕申請並不會通知申請人",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       });
   };
 

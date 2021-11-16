@@ -3,6 +3,7 @@ import styled from "styled-components";
 import * as firebase from "../../../utils/firebase";
 import ApplicationList from "./ApplicationList";
 import { useSelector } from "react-redux";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 const SendApplication = styled.div`
   width: 100%;
@@ -79,7 +80,14 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
     };
     firebase.SendApplication(groupData.groupID, data, userData.uid).then(() => {
       firebase.sendLeadNotification(groupData.groupID, groupData.creatorID);
-      alert("送出成功，請等候社長審核");
+      // alert("送出成功，請等候社長審核");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "送出成功，請等候社長審核",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     });
   };
 
