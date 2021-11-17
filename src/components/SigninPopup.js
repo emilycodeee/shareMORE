@@ -5,6 +5,7 @@ import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
 import styled from "styled-components";
 import { TouchBallLoading } from "react-loadingg";
+import { PointSpreadLoading } from "react-loadingg";
 import growing from "../sources/growing.gif";
 
 const Container = styled.div`
@@ -166,6 +167,7 @@ const SigninPopup = () => {
           <>
             <Tree src={growing} />
             {isLoading && <TouchBallLoading />}
+            {/* {isLoading && <PointSpreadLoading />} */}
             <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
               <SocialIconCtn src={googleIcon} />
               Continue with Google
@@ -204,6 +206,7 @@ const SigninPopup = () => {
         {showMore && (
           <>
             <Tree src={growing} />
+            {/* {isLoading && <PointSpreadLoading />} */}
             {isLoading && <TouchBallLoading />}
             <InputStyled
               placeholder="請輸入使用者名稱"

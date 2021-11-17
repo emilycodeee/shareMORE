@@ -29,12 +29,6 @@ const TextCtn = styled.textarea`
 `;
 
 const Button = styled.button`
-  /* padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  color: black; */
   align-self: flex-end;
   cursor: pointer;
   width: 60px;
@@ -50,7 +44,6 @@ const Button = styled.button`
     background-color: #f27e59;
     color: white;
   }
-  /* margin: 0.5rem; */
 `;
 
 const ContentStyled = styled.div`

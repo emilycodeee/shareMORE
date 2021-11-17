@@ -17,9 +17,10 @@ import GroupsPage from "./pages/Groups/GroupsPage";
 import NotePage from "./pages/Notes";
 import GroupMilestone from "./pages/MileStones/GroupMilestone";
 import Bookshelf from "./pages/Bookshelf";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as firebase from "./utils/firebase";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+
 import {
   getGroupsList,
   getUsersList,
@@ -38,6 +39,7 @@ import {
 } from "firebase/firestore";
 
 function App() {
+  const [isLoading, setIsLoading] = useState();
   const d = useDispatch();
 
   useEffect(() => {
@@ -116,59 +118,59 @@ function App() {
   return (
     <Layouts>
       <Switch>
-        <Route path="/" exact>
-          <HomePage />
-        </Route>
-        <Route path="/milestones/post" exact>
-          <MilestoneEditor />
-        </Route>
-        <Route path="/milestone/:milestoneID/edit" exact>
-          <MilestoneEditor />
-        </Route>
-        <Route path="/groups" exact>
-          <GroupsPage />
-        </Route>
-        <Route path="/groups/post" exact>
-          <BuildGroups />
-        </Route>
-        <Route path="/group/:groupID" exact>
-          <GroupPage />
-        </Route>
-
-        <Route path="/group/:groupID/milestones" exact>
-          <GroupMilestone />
-        </Route>
-        <Route path="/group/:groupID/notes" exact>
-          <NotesPage />
-        </Route>
-        <Route path="/group/:groupID/bookshelf" exact>
-          <Bookshelf />
-        </Route>
-        <Route path="/group/:groupID/notes/:postID/post" exact>
-          <NotesEditorPage />
-        </Route>
-        <Route path="/group/:groupID/notes/:postID/edit" exact>
-          <NotesEditorPage />
-        </Route>
-        <Route path="/group/:groupID/notes/post" exact>
-          <NotesEditorPage />
-        </Route>
-        <Route path="/group/:groupID/notes/:postID">
-          <NotePage />
-        </Route>
-        <Route path="/milestones" exact>
-          <MilestonesPage />
-        </Route>
-        <Route path="/milestone/:milestoneID" exact>
-          <MilestonePage />
-        </Route>
-        <Route path="/profile/:userID" exact>
-          <ProfilePage />
-        </Route>
-
-        <Route path="/profile/:userID/edit" exact>
-          <ProfileSetting />
-        </Route>
+        <>
+          <Route path="/" exact>
+            <HomePage />
+          </Route>
+          <Route path="/articles/post" exact>
+            <MilestoneEditor />
+          </Route>
+          <Route path="/article/:milestoneID/edit" exact>
+            <MilestoneEditor />
+          </Route>
+          <Route path="/groups" exact>
+            <GroupsPage />
+          </Route>
+          <Route path="/groups/post" exact>
+            <BuildGroups />
+          </Route>
+          <Route path="/group/:groupID" exact>
+            <GroupPage />
+          </Route>
+          <Route path="/group/:groupID/articles" exact>
+            <GroupMilestone />
+          </Route>
+          <Route path="/group/:groupID/notes" exact>
+            <NotesPage />
+          </Route>
+          <Route path="/group/:groupID/bookshelf" exact>
+            <Bookshelf />
+          </Route>
+          <Route path="/group/:groupID/notes/:postID/post" exact>
+            <NotesEditorPage />
+          </Route>
+          <Route path="/group/:groupID/notes/:postID/edit" exact>
+            <NotesEditorPage />
+          </Route>
+          <Route path="/group/:groupID/notes/post" exact>
+            <NotesEditorPage />
+          </Route>
+          <Route path="/group/:groupID/notes/:postID">
+            <NotePage />
+          </Route>
+          <Route path="/articles" exact>
+            <MilestonesPage />
+          </Route>
+          <Route path="/article/:milestoneID" exact>
+            <MilestonePage />
+          </Route>
+          <Route path="/profile/:userID" exact>
+            <ProfilePage />
+          </Route>
+          <Route path="/profile/:userID/edit" exact>
+            <ProfileSetting />
+          </Route>
+        </>
       </Switch>
     </Layouts>
   );

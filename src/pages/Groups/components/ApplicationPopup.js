@@ -1,5 +1,4 @@
 import React from "react";
-// import * as firebase from "../utils/firebase";
 import { useState } from "react";
 import ApplicationMsg from "./ApplicationMsg";
 
@@ -19,10 +18,8 @@ const Container = styled.div`
   z-index: 99;
   border-radius: 10px;
   min-height: 150px;
-  /* padding: 5px 0; */
   @media only screen and (max-width: 992px) {
     flex-direction: column;
-    /* border-radius: 0; */
   }
   @media only screen and (max-width: 500px) {
     width: 80%;
@@ -41,13 +38,11 @@ const MainCtn = styled.div`
   border-bottom-right-radius: 10px;
   background-color: rgb(255, 255, 255);
   padding: 50px;
-  /* width: auto; */
   @media only screen and (max-width: 992px) {
     width: 100%;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     border-bottom-left-radius: 10px;
-    /* border-top: 4px solid #f27e59; */
   }
 `;
 
@@ -68,19 +63,8 @@ const Sider = styled.div`
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 0;
-
     gap: 0.5rem;
-    /* display: none; */
   }
-`;
-
-const InputStyled = styled.input`
-  margin-bottom: 10px;
-  height: 38px;
-  /* padding: 0px 14px; */
-  border-radius: 4px;
-  border: #dcdee1 1px solid;
-  width: auto;
 `;
 
 const ApplicationPopup = ({ groupData, applicationData, appliedData }) => {
@@ -106,13 +90,10 @@ export default ApplicationPopup;
 
 const Slogan = styled.h2`
   margin: 0;
-  /* margin-bottom: 1rem; */
   color: #ffffff;
   @media only screen and (max-width: 992px) {
     margin: 0 auto;
-    /* margin-bottom: 0.5rem; */
     flex-direction: column;
     font-size: 1rem;
-    /* border-radius: 0; */
   }
 `;

@@ -10,7 +10,7 @@ import Tilt from "react-tilt";
 import main from "../../sources/main.png";
 import bg from "../../sources/bg.jpg";
 import MainText from "./components/MainText";
-import { Animated } from "react-animated-css";
+import { WaveTopBottomLoading } from "react-loadingg";
 
 const Container = styled.div`
   width: 1000px;
@@ -51,7 +51,6 @@ const ListCtn = styled.div`
 const Wrapper = styled.div`
   display: grid;
   width: 80%;
-  /* padding: 1em; */
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-column-gap: 1.4rem;
@@ -77,7 +76,6 @@ const Section = styled.div`
   padding: 20px;
   width: 90%;
   margin-bottom: 10px;
-  /* background-color: #fff4e4; ; */
 `;
 
 const LinkStyled = styled(Link)`
@@ -111,9 +109,11 @@ const HomePage = ({ userList, groupList }) => {
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
   const [groupsIntro, setGroupsIntro] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setGroupsIntro(groupsList);
+    setIsLoading(false);
   }, [groupsList]);
 
   const filterPublicArticles = articlesList.filter((a) => a.public === true);
@@ -198,7 +198,7 @@ const HomePage = ({ userList, groupList }) => {
             );
           })}
         </Wrapper>
-        <LinkStyled to="/milestones">查看更多</LinkStyled>
+        <LinkStyled to="/articles">查看更多</LinkStyled>
       </Section>
     </Container>
   );

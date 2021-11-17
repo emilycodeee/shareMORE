@@ -4,15 +4,10 @@ import styled from "styled-components";
 const MainText = () => {
   return (
     <Container>
-      {/* <h5>Online education for people of all ages</h5> */}
       <h1>Learn</h1>
       <h1>Anything.</h1>
       <h1>Anytime.</h1>
       <h1>Anywhere.</h1>
-      {/* <BtnContainer>
-        <button className="readmore">Exploring</button>
-        <button>Exploring</button>
-      </BtnContainer> */}
     </Container>
   );
 };

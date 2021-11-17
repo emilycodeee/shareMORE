@@ -16,16 +16,16 @@ import {
   limit,
 } from "firebase/firestore";
 
-import { HiOutlineLogout, HiMenu, HiChevronDoubleRight } from "react-icons/hi";
+import { HiMenu, HiChevronDoubleRight } from "react-icons/hi";
 import { MdLogout, MdOutlineNotificationsActive } from "react-icons/md";
-import { BsDoorOpen } from "react-icons/bs";
+
 const Header = () => {
   const history = useHistory();
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
-
+  const [active, setActive] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
@@ -40,13 +40,11 @@ const Header = () => {
 
   const getUserName = (uid) => {
     const user = usersList.find((p) => p.uid === uid);
-
-    return user.displayName;
+    return user?.displayName;
   };
 
   const getGroupName = (gid) => {
     const group = groupsList.find((g) => g.groupID === gid);
-
     return group?.name;
   };
 
@@ -101,6 +99,25 @@ const Header = () => {
     setShowLogin(!showLogin);
   };
 
+  const handleChoose = (e) => {
+    switch (e.target.dataset.id) {
+      case "shares":
+        setActive("分享廣場");
+        break;
+      case "groups":
+        setActive("所有社團");
+        break;
+      case "createGroups":
+        setActive("發起社團");
+        break;
+      case "createShares":
+        setActive("分享成果");
+        break;
+
+      default:
+    }
+  };
+
   if (!userData && showLogin) {
     return (
       <LoginPage
@@ -124,12 +141,40 @@ const Header = () => {
             <LogoCtn src={logo} />
           </Link>
           <ListContainer>
-            <ListStyled to="/milestones">分享廣場</ListStyled>
+            <ListStyled
+              to="/articles"
+              data-id="shares"
+              active={active}
+              onClick={handleChoose}
+            >
+              分享廣場
+            </ListStyled>
             {userData && (
               <>
-                <ListStyled to="/groups">所有社團</ListStyled>
-                <ListStyled to="/groups/post">發起社團</ListStyled>
-                <ListStyled to="/milestones/post">分享成果</ListStyled>
+                <ListStyled
+                  to="/groups"
+                  data-id="groups"
+                  active={active}
+                  onClick={handleChoose}
+                >
+                  所有社團
+                </ListStyled>
+                <ListStyled
+                  to="/groups/post"
+                  data-id="createGroups"
+                  active={active}
+                  onClick={handleChoose}
+                >
+                  發起社團
+                </ListStyled>
+                <ListStyled
+                  to="/articles/post"
+                  data-id="createShares"
+                  active={active}
+                  onClick={handleChoose}
+                >
+                  分享成果
+                </ListStyled>
                 <ListStyled to={`/profile/${userData?.uid}`}>
                   <ImgCtn src={userAvatar} />
                 </ListStyled>
@@ -157,7 +202,7 @@ const Header = () => {
               return (
                 <NotifiLink
                   key={msg.docId}
-                  to={`/milestone/${msg.milestoneID}`}
+                  to={`/article/${msg.milestoneID}`}
                   onClick={handleReadNoti}
                   data-id={msg.docId}
                 >
@@ -216,7 +261,7 @@ const Header = () => {
           <Close />
         </MobileCtn>
         <MLogo src={logo} />
-        <MobileList to="/milestones" onClick={handleClick}>
+        <MobileList to="/articles" onClick={handleClick}>
           分享廣場
         </MobileList>
         <MobileList to="/groups" onClick={handleClick}>
@@ -225,7 +270,7 @@ const Header = () => {
         <MobileList to="/groups/post" onClick={handleClick}>
           發起社團
         </MobileList>
-        <MobileList to="/milestones/post" onClick={handleClick}>
+        <MobileList to="/articles/post" onClick={handleClick}>
           分享成果
         </MobileList>
         <MobileList to={`/profile/${userData?.uid}`} onClick={handleClick}>
@@ -256,6 +301,8 @@ const Count = styled.div`
   border-radius: 50%;
   position: absolute;
   font-size: 0.5rem;
+  font-weight: 600;
+  color: white;
   opacity: 0.9px;
   bottom: 10px;
   right: -4px;
@@ -326,6 +373,9 @@ const ListContainer = styled.ul`
   }
 `;
 
+// border-bottom:3px solid ${(props) =>
+//   props.active === props.children ? "white" : "none"}
+
 const ListStyled = styled(Link)`
   font-weight: 600;
   margin-right: 1rem;
@@ -333,6 +383,10 @@ const ListStyled = styled(Link)`
   text-decoration: none;
   font-size: 1rem;
   color: white;
+  padding-bottom: 3px;
+  border-bottom: 2px solid
+    ${(props) => (props.active === props.children ? "white" : "none")};
+
   &:hover {
     border-bottom: 3px solid white;
   }
@@ -466,6 +520,7 @@ const IconSet = styled.div`
   align-items: center;
   justify-content: center;
   gap: 10px;
+  padding-bottom: 3px;
 `;
 
 const ImgCtn = styled.img`

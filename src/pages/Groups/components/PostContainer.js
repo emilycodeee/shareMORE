@@ -9,7 +9,7 @@ import LeaveMessage from "./LeaveMessage";
 import * as firebase from "../../../utils/firebase";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import Swal from "sweetalert2/dist/sweetalert2.js";
 const Wrapper = styled.div`
   margin: 0 auto;
   padding: 0.8rem 0.8rem 0.3rem 0.8rem;
@@ -244,13 +244,29 @@ const PostContainer = ({ item, content }) => {
   const handleDelete = () => {
     setShowDots(!showDots);
     firebase.deleteComment(item.groupID, item.postID).then(() => {
-      alert("刪除成功");
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "留言掰掰",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      // alert("刪除成功");
     });
   };
 
   const handleEdit = () => {
     firebase.editComment(item.groupID, item.postID, editText);
-    alert("編輯成功");
+
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "編輯成功",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+
     setShowEdit(false);
     setShowDots(false);
   };
@@ -306,7 +322,6 @@ const PostContainer = ({ item, content }) => {
         {showEdit && (
           <EditAreaWrapper>
             <EditContentArea
-              // onBlur={() => setShowEdit(false)}
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
             />

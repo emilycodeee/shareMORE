@@ -12,6 +12,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { GiBookmarklet } from "react-icons/gi";
 import { BiSearchAlt2, BiUndo, BiX } from "react-icons/bi";
+import { ThreeHorseLoading } from "react-loadingg";
 const MainCtn = styled.div`
   max-width: 1560px;
   width: 80%;
@@ -209,7 +210,8 @@ const MilestonesPage = () => {
   const [showBookContent, setShowBookContent] = useState(false);
   const [renderMilestone, setRenderMileStone] = useState([]);
   const [latestFiveMilestone, setLatestFiveMilestone] = useState([]);
-  const [gorden, setGorden] = useState([]);
+  const [gorden, setGorden] = useState({});
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const settings = {
     // dots: true,
@@ -271,30 +273,29 @@ const MilestonesPage = () => {
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
-      algolia.search(e.target.value).then((result) => {
+      setSearchLoading(true);
+      const keyWord = e.target.value.trim();
+      algolia.search(keyWord).then((result) => {
         const key = result.hits.map((r) => r.objectID);
-        // console.log(key);
-
-        const finalFilter = articlesList.filter((el) =>
-          key.includes(el.milestoneID)
-        );
+        const finalFilter = articlesList
+          .filter((el) => key.includes(el.milestoneID))
+          .filter((a) => a.public === true);
+        setSearchLoading(false);
         setRenderMileStone(finalFilter);
       });
     }
   };
 
   const handleSearchBtn = () => {
-    // if (e.key === "Enter") {
-    algolia.search(inputValue).then((result) => {
+    setSearchLoading(true);
+    algolia.search(inputValue.trim()).then((result) => {
       const key = result.hits.map((r) => r.objectID);
-      // console.log(key);
-
-      const finalFilter = articlesList.filter((el) =>
-        key.includes(el.milestoneID)
-      );
+      const finalFilter = articlesList
+        .filter((el) => key.includes(el.milestoneID))
+        .filter((a) => a.public === true);
+      setSearchLoading(false);
       setRenderMileStone(finalFilter);
     });
-    // }
   };
 
   const handleInputChange = (e) => {
@@ -310,12 +311,16 @@ const MilestonesPage = () => {
       articlesList.filter((a) => a.public === true).slice(0, 5)
     );
   }, [articlesList]);
-
+  // const randomGold = getRandomInt(gorden?.length);
   useEffect(() => {
     let isMounted = true;
 
     if (isMounted) {
-      firebase.getTotalDocList("gorden").then((res) => setGorden(res));
+      firebase.getTotalDocList("gorden").then((res) => {
+        const random = Math.floor(Math.random() * res.length);
+
+        setGorden(res[random]);
+      });
       firebase.getGroupBookShelf().then((res) => {
         setBookList(res);
       });
@@ -325,8 +330,6 @@ const MilestonesPage = () => {
       isMounted = false;
     };
   }, []);
-
-  // console.log(milestonesList);
 
   return (
     <MainCtn>
@@ -384,8 +387,8 @@ const MilestonesPage = () => {
               金句放送
             </Label>
             <GoldenCtn>
-              <div>{gorden[0]?.content}</div>
-              <div> ─ {gorden[0]?.from}</div>
+              <div>{gorden?.content}</div>
+              <div> ─ {gorden?.from}</div>
             </GoldenCtn>
           </Golden>
         </SlideShow>
@@ -397,7 +400,7 @@ const MilestonesPage = () => {
                 console.log(item);
                 return (
                   <LinkStyle
-                    to={`/milestone/${item.milestoneID}`}
+                    to={`/article/${item.milestoneID}`}
                     key={item.milestoneID}
                   >
                     <Number>{i + 1}.</Number>
@@ -430,20 +433,28 @@ const MilestonesPage = () => {
             <SearchIcon />
           </SubmitBtn>
         </Container>
-
-        {/* <Search
-          placeholder="文章標題、文章內容..."
-          value={inputValue}
-          onChange={handleInputChange}
-          onKeyPress={handleSearch}
-        /> */}
-        {/* <SerachButton onClick={handleSearchBtn}>搜尋</SerachButton> */}
       </SearchWrapper>
       <div>
-        {renderMilestone.length === 0 && (
+        {searchLoading && (
+          <Empty>
+            <lottie-player
+              src="https://assets6.lottiefiles.com/packages/lf20_aj9jghqr.json"
+              background="transparent"
+              speed="1"
+              style={{ maxWidth: "300px", maxHeight: "300px" }}
+              loop
+              autoplay
+            />
+          </Empty>
+        )}
+        {!searchLoading && renderMilestone.length === 0 && (
           <>
             <Empty>
-              <div>找不到相關的分享文章，就由你來建立第一個吧！</div>
+              {/* {searchLoading && <ThreeHorseLoading />} */}
+              <div>
+                找不到相關的分享文章，就由你來
+                <MoreLink to="/articles/post">建立第一篇</MoreLink>吧！
+              </div>
               <lottie-player
                 src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
                 background="transparent"
@@ -455,17 +466,25 @@ const MilestonesPage = () => {
             </Empty>
           </>
         )}
-        <Wrapper>
-          {renderMilestone.map((item) => {
-            return <Card item={item} key={item.milestoneID} />;
-          })}
-        </Wrapper>
+
+        {!searchLoading && renderMilestone.length > 0 && (
+          <Wrapper>
+            {renderMilestone.map((item) => {
+              return <Card item={item} key={item.milestoneID} />;
+            })}
+          </Wrapper>
+        )}
       </div>
     </MainCtn>
   );
 };
 
 export default MilestonesPage;
+
+const MoreLink = styled(Link)`
+  text-decoration: none;
+  font-weight: 700;
+`;
 
 const Empty = styled.div`
   /* background-color: red; */

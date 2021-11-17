@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import {
-  Link,
-  useLocation,
-  useParams,
-  useRouteMatch,
-  BrowserRouter,
-} from "react-router-dom";
+import { Link, useLocation, useParams, useRouteMatch } from "react-router-dom";
 import ApplicationPopup from "./ApplicationPopup";
 import { useState } from "react";
 import * as firebase from "../../../utils/firebase";
@@ -15,21 +9,14 @@ import { BsFillFolderFill, BsPencilSquare, BsCheckLg } from "react-icons/bs";
 import { AiOutlineTrophy } from "react-icons/ai";
 import { FiShare2 } from "react-icons/fi";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import {
-  BsFillCameraFill,
-  BsFillCheckSquareFill,
-  BsMailbox,
-} from "react-icons/bs";
+import { BsMailbox } from "react-icons/bs";
 import camera from "../../../sources/camera.png";
 import checked from "../../../sources/checked.png";
 import { ImBooks } from "react-icons/im";
 
 const GroupHeader = ({ tag }) => {
-  console.log("tagggg", tag);
   const { groupID } = useParams();
   const { path, url } = useRouteMatch();
-  console.log("path", path);
-  console.log("url", url);
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
@@ -89,16 +76,14 @@ const GroupHeader = ({ tag }) => {
 
   const handleSubmitImg = () => {
     setActEditImage(!actEditImage);
-    firebase.editGroupImage(file, content.groupID).then(
-      () =>
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "修改成功！",
-          showConfirmButton: false,
-          timer: 1500,
-        })
-      // alert("修改成功")
+    firebase.editGroupImage(file, content.groupID).then(() =>
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "修改成功！",
+        showConfirmButton: false,
+        timer: 1500,
+      })
     );
   };
 
@@ -109,7 +94,6 @@ const GroupHeader = ({ tag }) => {
         title: "Oops...",
         text: "請先登入或加入會員",
       });
-      // alert("請先登入或加入會員");
       return;
     }
     setShowApplication(!showApplication);
@@ -205,7 +189,6 @@ const GroupHeader = ({ tag }) => {
               showConfirmButton: false,
               timer: 1500,
             });
-            // alert(`複製連結成功！`);
           }}
         >
           <ShareIcon />
@@ -218,8 +201,7 @@ const GroupHeader = ({ tag }) => {
                 setShowApplication(!showApplication);
               }}
             >
-              待審申請
-              <span>{applicationData?.count}</span>
+              {`待審申請 ${applicationData?.count} 則`}
             </LiStyled>
           </>
         )}
@@ -252,13 +234,9 @@ const GroupHeader = ({ tag }) => {
         </TitleBar>
 
         <UlStyled>
-          {/* <LinkAvatar to={`/profile/${groupOwner?.uid}`}>
-            <AvatarImg src={groupOwner?.avatar} />
-          </LinkAvatar> */}
-
           <LinkStyled
             to={`/group/${groupID}/bookshelf`}
-            tag={tag === "bookShelf"}
+            tag={(tag === "bookShelf").toString()}
           >
             <Bookshelf />
             <span>社團書櫃</span>
@@ -266,37 +244,21 @@ const GroupHeader = ({ tag }) => {
           {checkMember && (
             <>
               <LinkStyled
-                to={`/group/${groupID}/milestones`}
-                tag={tag === "milestone"}
+                to={`/group/${groupID}/articles`}
+                tag={(tag === "milestone").toString()}
               >
                 <Miles />
                 <span> 成果分享</span>
               </LinkStyled>
-              <LinkStyled to={`/group/${groupID}/notes`} tag={tag === "note"}>
+              <LinkStyled
+                to={`/group/${groupID}/notes`}
+                tag={(tag === "note").toString()}
+              >
                 <Folder />
                 <span>社團筆記</span>
               </LinkStyled>
             </>
           )}
-
-          {/* {content?.creatorID === userData?.uid && (
-            <>
-              <LiStyled
-                setShowApplication={setShowApplication}
-                onClick={() => {
-                  setShowApplication(!showApplication);
-                }}
-              >
-                待審申請
-                <span>{applicationData?.count}</span>
-              </LiStyled>
-            </>
-          )}
-          {!checkGeneralMember && !checkOwner && (
-            <LiStyled onClick={handleApplicationBtn}>
-              {appliedData ? "等候審核" : "申請加入"}
-            </LiStyled>
-          )} */}
         </UlStyled>
       </Wrapper>
     </>
@@ -376,7 +338,7 @@ const SaveImage = styled.img`
 
 const TopCover = styled.div`
   opacity: 0.9;
-  /* width: 100vw; */
+  width: 100%;
   height: 30vw;
   background-size: cover;
   background-position: center;
@@ -395,11 +357,7 @@ const DivCtn = styled.div`
   right: 0;
 `;
 
-const CameraIcon = styled.div`
-  /* background-color: gray;
-  border: 1px solid red;
-  padding: 1rem; */
-`;
+const CameraIcon = styled.div``;
 
 const ImgWrapper = styled.div`
   position: relative;
@@ -413,8 +371,6 @@ const Wrapper = styled.div`
   margin-bottom: -1px;
   display: flex;
   justify-content: space-between;
-  /* top: 0; */
-  /* z-index: 9999999999999; */
 `;
 
 const AvatarImg = styled.img`
@@ -422,7 +378,6 @@ const AvatarImg = styled.img`
   width: 3rem;
   border-radius: 50%;
   box-shadow: 0px 2px 6px grey;
-  /* display: none; */
 `;
 
 const NameLogo = styled(Link)`
@@ -480,8 +435,6 @@ const WelcomeToggle = styled.div`
 
 const LiStyled = styled.div`
   display: flex;
-
-  /* background-color: red; */
   border-radius: 4px;
   padding: 0.3rem 0.4rem;
   border: 1px solid #f27e59;
@@ -491,7 +444,6 @@ const LiStyled = styled.div`
   height: auto;
   text-decoration: none;
   cursor: pointer;
-  /* background-color: #f27e59; */
   color: #f27e59;
   &:hover {
     background-color: #f27e59;
@@ -503,34 +455,25 @@ const ShareStyled = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid #f27e59; */
-  /* border-radius: 50%;。 */
-  /* padding: 0.8rem 1rem; */
   list-style: none;
   font-weight: 600;
   font-size: 1rem;
   text-decoration: none;
   cursor: pointer;
-  /* background-color: #f27e59;
-  color: white; */
   &:hover {
-    /* background-color: #f27e59; */
     color: #f27e59;
   }
 `;
 
 const LinkStyled = styled(Link)`
-  /* transform: ${(props) =>
-    props.tag === "bookShelf" ? "translateY(-8px)" : "none"}; */
-  /* transform: translateY(-8px); */
   color: #ffffff;
   text-align: center;
   font-weight: 600;
   text-decoration: none;
   font-size: 1rem;
   display: inline-block;
-  background: ${(props) => (props.tag ? "#f27e59" : "rgb(255 193 174)")};
-  /* rgb(255 193 174); */
+  background: ${(props) =>
+    props.tag === "true" ? "#f27e59" : "rgb(255 193 174)"};
   padding: 0.5rem 1rem;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
@@ -595,6 +538,5 @@ const TitleBar = styled.div`
   margin: 0;
   padding: 0;
   display: flex;
-  /* flex-grow: 1; */
   align-items: center;
 `;

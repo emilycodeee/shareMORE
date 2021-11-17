@@ -10,6 +10,7 @@ import { JumpCircleLoading } from "react-loadingg";
 import BookContent from "./BookContnet";
 import * as firebase from "../../../utils/firebase";
 import HtmlParser from "react-html-parser";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 const Wrapper = styled.div`
   width: 80%;
@@ -182,7 +183,14 @@ const SearchBook = () => {
       // setShowSubmitDialogue(false);
       setSubmitValue("");
       if (true) {
-        alert("書本已經存入書櫃囉");
+        // alert("書本已經存入書櫃囉");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "書本已經存入書櫃囉",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     });
   };

@@ -443,7 +443,7 @@ const MilestonePage = () => {
       .then(() => {
         if (publicStatus) {
           Swal.fire({
-            title: "文章已設為隱藏，若要調整請至個人頁面封存夾",
+            title: "文章已設為隱藏，若要調整請至個人頁面",
             showClass: {
               popup: "animate__animated animate__fadeInDown",
             },
@@ -611,14 +611,6 @@ const IconSet = styled.div`
     box-shadow: rgb(0 0 0 / 16%) 0px -4px 11px 0px;
   }
 `;
-
-// const MobileIconSet = styled.div`
-//   display: none;
-//   @media only screen and (max-width: 992px) {
-//     /* height: 10vh; */
-//     display: block;
-//   }
-// `;
 
 const QlContent = styled.div`
   height: fit-content;

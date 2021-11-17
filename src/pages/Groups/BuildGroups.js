@@ -300,6 +300,7 @@ export default BuildGroups;
 const PreViewCtn = styled.img`
   width: 100%;
   margin: 10px 0;
+  cursor: pointer;
   @media only screen and (max-width: 992px) {
     width: 60%;
   }

@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Animated } from "react-animated-css";
 import algolia from "../../utils/algolia";
 import { BiSearchAlt2, BiUndo, BiX } from "react-icons/bi";
-// import algoliasearch from "algoliasearch";
+import { Link } from "react-router-dom";
 
 const MainCtn = styled.div`
   max-width: 1560px;
@@ -126,22 +126,25 @@ const GroupsPage = () => {
   const [selectedSubClass, setSelectedSubClass] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [renderGroups, setRenderGroups] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
-      const keyWord = e.target.value;
+      setSearchLoading(true);
+      const keyWord = e.target.value.trim();
+      console.log(keyWord.trim());
       const search = groupsList.filter((g) => g.name.includes(keyWord));
+      setSearchLoading(false);
       setRenderGroups(search);
-      // algolia.search(e.target.value).then((result) => {
-      //   console.log(result.hits);
-      // });
     }
   };
 
   const handleSearchBtn = (e) => {
-    const keyWord = inputValue;
+    setSearchLoading(true);
+    const keyWord = inputValue.trim();
     console.log(keyWord);
     const search = groupsList.filter((g) => g.name.includes(keyWord));
+    setSearchLoading(false);
     setRenderGroups(search);
   };
 
@@ -179,14 +182,6 @@ const GroupsPage = () => {
   return (
     <MainCtn>
       <TopCtn>
-        {/* <Search
-          placeholder="請輸入社群名稱..."
-          value={inputValue}
-          onKeyPress={handleSearch}
-          onChange={handleInputChange}
-        />
-        <TopBtn onClick={handleSearchBtn}>搜尋</TopBtn> */}
-
         <SearchWrapper>
           <SContainer>
             <SearchBarInput
@@ -223,10 +218,26 @@ const GroupsPage = () => {
             </div>
           ))}
         </Side>
-        {renderGroups.length === 0 && (
+        {searchLoading && (
+          <Empty>
+            <lottie-player
+              src="https://assets6.lottiefiles.com/packages/lf20_aj9jghqr.json"
+              background="transparent"
+              speed="1"
+              style={{ maxWidth: "300px", maxHeight: "300px" }}
+              loop
+              autoplay
+            />
+          </Empty>
+        )}
+        {!searchLoading && renderGroups.length === 0 ? (
           <>
             <Empty>
-              <div>目前找不到相關社團，就由你來建立第一個吧！</div>
+              <div>
+                目前找不到相關社團，就由你來
+                <MoreLink to="/groups/post">建立第一個</MoreLink>
+                吧！
+              </div>
               <lottie-player
                 src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
                 background="transparent"
@@ -237,9 +248,7 @@ const GroupsPage = () => {
               />
             </Empty>
           </>
-        )}
-
-        {renderGroups.length > 0 && (
+        ) : (
           <Wrapper>
             {renderGroups.map((item) => {
               return <GroupsCard item={item} key={item.groupID} />;
@@ -252,6 +261,11 @@ const GroupsPage = () => {
 };
 
 export default GroupsPage;
+
+const MoreLink = styled(Link)`
+  text-decoration: none;
+  font-weight: 700;
+`;
 
 const Empty = styled.div`
   /* background-color: red; */

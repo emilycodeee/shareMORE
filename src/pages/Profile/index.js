@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const SideCard = styled.div`
   margin-top: 3rem;
-  padding: 3rem 1rem 1rem 1rem;
+  padding: 2rem 1rem 1rem 1rem;
   width: 30%;
   display: flex;
   flex-direction: column;
@@ -65,11 +65,16 @@ const ContentWrapper = styled.div`
   /* box-shadow: 0 2px 10px #a2a2a2; */
 `;
 
-const Avatar = styled.img`
-  width: 10rem;
-  height: 10rem;
+const CoverDiv = styled.div`
+  width: 8rem;
+  height: 8rem;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid red;
+
   position: absolute;
-  top: -75px;
+  top: -65px;
   left: 50%;
   border: 2px solid #fff;
   transform: translateX(-50%);
@@ -85,8 +90,29 @@ const Avatar = styled.img`
   }
 `;
 
+const Avatar = styled.img`
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  /* position: absolute;
+  top: -65px;
+  left: 50%;
+  border: 2px solid #fff;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  /* flex-direction: column; */
+  /* @media only screen and (max-width: 992px) {
+    position: static;
+    transform: translateX(0);
+    width: 5rem;
+    height: 5rem;
+    align-self: center;
+    margin: 1rem;
+  }  */
+`;
+
 const UserInfo = styled.div`
-  margin-top: 4rem;
+  margin-top: 3rem;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -156,7 +182,7 @@ const ContentCtn = styled.div`
 const ListCtn = styled.ul`
   padding: 0;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   border-bottom: 1px solid #fffdfd;
   @media only screen and (max-width: 992px) {
     justify-content: center;
@@ -219,16 +245,15 @@ const ProfilePage = () => {
   //我自己看到
   const [mySaveArticles, setMySaveArticles] = useState([]);
   const [selected, setSelected] = useState([]);
-  const [showSetting, setShowSetting] = useState(false);
   const [active, setActive] = useState("我參加的社團");
 
   const isOwner = useRef(false);
-  const defaultRender = useRef(true);
 
   useEffect(() => {
     const participate = groupsList?.filter((g) =>
       g.membersList?.includes(userID)
     );
+    setSelected(participate);
     setUserJoinGroups(participate);
     const owner = groupsList?.filter((g) => g.creatorID === userID);
     setUserCreateGroups(owner);
@@ -249,7 +274,7 @@ const ProfilePage = () => {
 
   const handleChoose = (e) => {
     // setActive(true);
-    defaultRender.current = false;
+
     switch (e.target.dataset.id) {
       case "part":
         setActive("我參加的社團");
@@ -268,7 +293,7 @@ const ProfilePage = () => {
         setSelected(mySaveArticles);
         break;
       case "archive":
-        setActive("封存");
+        setActive("非公開文章");
         setSelected(userMilestones.filter((item) => item.public === false));
         break;
       default:
@@ -283,7 +308,9 @@ const ProfilePage = () => {
     <Wrapper>
       <SideCard>
         <div>
-          <Avatar src={currentUser?.avatar} alt="" />
+          <CoverDiv>
+            <Avatar src={currentUser?.avatar} alt="" />
+          </CoverDiv>
           {me && (
             <MobileSettingBtn to={`/profile/${userID}/edit`}>
               設定
@@ -291,6 +318,7 @@ const ProfilePage = () => {
             </MobileSettingBtn>
           )}
         </div>
+
         <UserInfo>
           <h1>{currentUser?.displayName} </h1>
           <p>{currentUser?.introduce || "我還在想😜"}</p>
@@ -379,24 +407,34 @@ const ProfilePage = () => {
                 active={active}
                 onClick={handleChoose}
               >
-                封存
+                非公開文章
               </ListItem>
             </>
           )}
         </ListCtn>
         <ContentCtn>
-          {defaultRender.current
-            ? userJoinGroups?.map((item) => {
-                return <ContentCards item={item} key={item.groupID} />;
-              })
-            : selected?.map((item) => {
-                return (
-                  <ContentCards
-                    item={item}
-                    key={item.milestoneID || item.groupID}
-                  />
-                );
-              })}
+          {selected?.map((item) => {
+            return (
+              <ContentCards
+                item={item}
+                key={item.milestoneID || item.groupID}
+              />
+            );
+          })}
+          {selected.length === 0 && (
+            <Empty>
+              {/* {searchLoading && <ThreeHorseLoading />} */}
+              <div> {active} 目前空空的...</div>
+              <lottie-player
+                src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
+                background="transparent"
+                speed="1"
+                style={{ maxWidth: "300px", maxHeight: "300px" }}
+                loop
+                autoplay
+              />
+            </Empty>
+          )}
         </ContentCtn>
       </ContentWrapper>
     </Wrapper>
@@ -404,6 +442,26 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+
+const Empty = styled.div`
+  /* background-color: red; */
+  width: 80%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0 10px;
+  gap: 1rem;
+  div {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: rgb(242, 126, 89);
+  }
+  @media only screen and (max-width: 500px) {
+    font-size: 0.8rem;
+  }
+`;
 
 const MobileSettingBtn = styled(Link)`
   display: none;

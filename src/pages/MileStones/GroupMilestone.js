@@ -52,7 +52,7 @@ const GroupMilestone = () => {
     <>
       <GroupHeader tag="milestone" />
       <Wrapper>
-        <CreateButton to="/milestones/post">分享我的學習成果</CreateButton>
+        <CreateButton to="/articles/post">分享我的學習成果</CreateButton>
         {renderMilestone.length === 0 && (
           <Empty>
             <div>目前尚未有任何成果分享，就從你開始吧！</div>
@@ -66,41 +66,7 @@ const GroupMilestone = () => {
             />
           </Empty>
         )}
-        {/* <ImgWrapper>
-          <Img src={medallion} />
-        </ImgWrapper> */}
-        {/* <WinnerWrapper>
-          <ItemWp>
-            <Link to={`/profile/${maxPost?.userID}`}>
-              <Avatat src={getUserData(maxPost?.userID)?.avatar} />
-            </Link>
-            <div> {getUserData(maxPost?.userID)?.displayName}</div>
-            <Link to={`/group/${groupID}`}>
-              <h3>發起最多討論</h3>
-            </Link>
-            <div>共 {maxPost.point} 則</div>
-          </ItemWp>
-          <ItemWp>
-            <Link to={`/profile/${maxArticles?.userID}`}>
-              <Avatat src={getUserData(maxArticles?.userID)?.avatar} />
-            </Link>
-            <div> {getUserData(maxArticles?.userID)?.displayName}</div>
-            <Link to={`/milestones`}>
-              <h3>分享最多文章</h3>
-            </Link>
-            <div>共 {maxArticles.point} 則</div>
-          </ItemWp>
-          <ItemWp>
-            <Link to={`/profile/${maxBooks?.userID}`}>
-              <Avatat src={getUserData(maxBooks?.userID)?.avatar} />
-            </Link>
-            <div>{getUserData(maxBooks?.userID)?.displayName}</div>
-            <Link to={`/group/${groupID}/bookshelf`}>
-              <h3>分享最多書本</h3>
-            </Link>
-            <div>共 {maxBooks.point} 則</div>
-          </ItemWp>
-        </WinnerWrapper> */}
+
         <ContenWrapper>
           {renderMilestone.map((m) => {
             return <Card item={m} key={m.milestoneID} />;

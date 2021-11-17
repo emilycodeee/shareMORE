@@ -117,13 +117,11 @@ const SettingLb = styled.label`
   margin-bottom: 10px;
   @media only screen and (max-width: 992px) {
     align-self: flex-start;
-    /* margin: 0;
-    width: 100%;
-    align-items: flex-end; */
   }
 `;
 
 const PreViewCtn = styled.img`
+  cursor: pointer;
   width: 100%;
   margin: 10px 0;
   @media only screen and (max-width: 992px) {

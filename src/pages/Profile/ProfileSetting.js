@@ -13,6 +13,7 @@ import { getUsersList } from "../../redux/actions";
 import { useState } from "react";
 import * as firebase from "../../utils/firebase";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { webRegex } from "../../utils/commonText";
 const Wrapper = styled.div`
   max-width: 1560px;
   width: 100%;
@@ -271,6 +272,8 @@ const PreviewTag = styled.div`
 `;
 
 const ProfileSetting = () => {
+  // console.log(webRegex);
+
   const d = useDispatch();
   const { userID } = useParams();
   const usersList = useSelector((state) => state.usersList);
@@ -289,6 +292,86 @@ const ProfileSetting = () => {
   const history = useHistory();
 
   const handleSubmit = () => {
+    // const checkFB = fbRegex.test(facebookUrl);
+
+    if (instagramUrl) {
+      const igRegex = /https\:\/\/www\.instagram\.com\//;
+      const checkIG = igRegex.test(instagramUrl);
+      if (!checkIG) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Instagram 網址好像怪怪的！",
+        });
+        return;
+      }
+    }
+
+    if (facebookUrl) {
+      const fbRegex = /https\:\/\/www\.facebook\.com\//;
+      const checkFB = fbRegex.test(facebookUrl);
+      if (!checkFB) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Facebook 網址好像怪怪的！",
+        });
+        return;
+      }
+    }
+
+    if (linkedinUrl) {
+      const lkRegex = /https\:\/\/www\.linkedin\.com\//;
+      const checkLK = lkRegex.test(linkedinUrl);
+      if (!checkLK) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Linkedin 網址好像怪怪的！",
+        });
+        return;
+      }
+    }
+
+    if (githubUrl) {
+      const ghRegex = /https\:\/\/github\.com\//;
+      const checkGH = ghRegex.test(githubUrl);
+      if (!checkGH) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Github 網址好像怪怪的！",
+        });
+        return;
+      }
+    }
+
+    if (secondEmail) {
+      const emRegex =
+        /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+      const checkEM = emRegex.test(secondEmail);
+      if (!checkEM) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "信箱格式好像怪怪的！",
+        });
+        return;
+      }
+    }
+
+    if (webUrl) {
+      const checkWEB = webRegex.test(webUrl);
+      if (!checkWEB) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "網址格式好像怪怪的，是不是少了 https 或 http 呢? ",
+        });
+        return;
+      }
+    }
+
     const data = {
       displayName,
       introduce: introduce || "",
@@ -302,8 +385,6 @@ const ProfileSetting = () => {
     };
 
     firebase.UpdateProfile(userID, data, file).then(() => {
-      // alert("更新成功");
-
       Swal.fire({
         position: "center",
         icon: "success",
@@ -311,10 +392,6 @@ const ProfileSetting = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      // firebase
-      //   .getTotalDocList("users")
-      //   .then((res) => d(getUsersList(res)))
-      //   .catch((err) => console.log(err));
       history.push(`/profile/${userID}`);
     });
   };

@@ -9,8 +9,7 @@ const ItemWrapper = styled.div`
   margin-bottom: 1rem;
   display: flex;
   padding: 1rem;
-
-  @media only screen and (max-width: 992px) {
+  @media only screen and (max-width: 500px) {
     flex-direction: column;
   }
 
@@ -24,7 +23,7 @@ const CoverContainer = styled.div`
   width: 150px;
   background-size: cover;
   background-position: center;
-  @media only screen and (max-width: 992px) {
+  @media only screen and (max-width: 500px) {
     width: 100%;
   }
 `;
@@ -72,7 +71,7 @@ const LinkStyle = styled(Link)`
 const ContentCards = ({ item }) => {
   let url = `/group/${item.groupID}`;
   if (item.milestoneID) {
-    url = `/milestone/${item.milestoneID}`;
+    url = `/article/${item.milestoneID}`;
   }
 
   return (
