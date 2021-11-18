@@ -241,23 +241,22 @@ const GroupHeader = ({ tag }) => {
             <Bookshelf />
             <span>社團書櫃</span>
           </LinkStyled>
+
+          <LinkStyled
+            to={`/group/${groupID}/articles`}
+            tag={(tag === "milestone").toString()}
+          >
+            <Miles />
+            <span> 成果分享</span>
+          </LinkStyled>
           {checkMember && (
-            <>
-              <LinkStyled
-                to={`/group/${groupID}/articles`}
-                tag={(tag === "milestone").toString()}
-              >
-                <Miles />
-                <span> 成果分享</span>
-              </LinkStyled>
-              <LinkStyled
-                to={`/group/${groupID}/notes`}
-                tag={(tag === "note").toString()}
-              >
-                <Folder />
-                <span>社團筆記</span>
-              </LinkStyled>
-            </>
+            <LinkStyled
+              to={`/group/${groupID}/notes`}
+              tag={(tag === "note").toString()}
+            >
+              <Folder />
+              <span>社團筆記</span>
+            </LinkStyled>
           )}
         </UlStyled>
       </Wrapper>

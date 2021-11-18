@@ -18,29 +18,17 @@ const NotesPage = () => {
   const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
   const currentGroupData = groupsList.find((item) => item?.groupID === groupID);
-  let emptyText = "目前尚未建立社群筆記";
-  const checkGroupCreator = currentGroupData?.creatorID === userData?.uid;
-  console.log(currentGroupData);
+
+  console.log("🎈", userData === undefined);
 
   useEffect(() => {
     let isMounted = true;
 
     if (isMounted) {
-      // if (endpoint.includes("notes")) {
-      console.log("你在筆記葉");
       firebase
         .getGroupNotes("groups", groupID, "notes")
         .then((res) => setContentsList(res))
         .catch((err) => console.log(err));
-      // } else if (endpoint.includes("milestones")) {
-      //   firebase.getGroupMilestones(groupID).then((res) => {
-      //     const filterPublic = res.filter((item) => {
-      //       return item.public === true;
-      //     });
-      //     setContentsList(filterPublic);
-      //     emptyText = "目前尚未存在與社團相關的公開里程碑";
-      //   });
-      // }
     }
 
     return () => {
@@ -59,24 +47,14 @@ const NotesPage = () => {
       <GroupHeader tag="note" />
       <Wrapper>
         {endpoint.includes("notes") && (
-          <CreateButton to={`/group/${groupID}/notes/post`}>
+          <CreateButton to={`/group/${groupID}/new/notes`}>
             建立社團筆記
           </CreateButton>
         )}
-        {/* <TopCtn>
-        checkGroupCreator && 
-          <Search placeholder="請輸入標題名稱、內容..." />
-          <TopBtn>最新發起</TopBtn> */}
-        {/* {endpoint.includes("milestones") && (
-            <TopBtn>
-              <Link to="/milestones/post">建立里程碑</Link>
-            </TopBtn>
-          )} */}
-        {/* </TopCtn> */}
 
         {contentsList?.length === 0 && (
           <Empty>
-            <div>目前尚未建立社群筆記</div>
+            <div>目前尚未建立社群筆記，就從你開始吧</div>
             <lottie-player
               src="https://assets5.lottiefiles.com/packages/lf20_n2m0isqh.json"
               background="transparent"
@@ -88,14 +66,13 @@ const NotesPage = () => {
           </Empty>
         )}
 
-        {/* {contentsList?.length === 0 && <div>{emptyText}</div>} */}
         <NotesArea>
           {contentsList?.map((item) => {
             let url;
             if (endpoint.includes("notes")) {
               url = `/group/${groupID}/notes/${item?.noteID}`;
             } else if (endpoint.includes("milestones")) {
-              url = `/milestone/${item.milestoneID}`;
+              url = `/article/${item.milestoneID}`;
             }
             return (
               <Notes key={item?.noteID || item?.milestoneID} to={url}>
@@ -252,11 +229,4 @@ const TimeTag = styled.p`
   }
 `;
 
-const TextTag = styled.p`
-  /* margin-top: 1rem; */
-  /* display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis; */
-`;
+const TextTag = styled.p``;

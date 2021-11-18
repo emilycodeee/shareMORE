@@ -1,7 +1,7 @@
 import "./normalize.css";
 import "./index.css";
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import Layouts from "./components/layouts/Layouts";
 import HomePage from "./pages/Home";
 import GroupPage from "./pages/Groups";
@@ -20,7 +20,8 @@ import Bookshelf from "./pages/Bookshelf";
 import { useEffect, useState } from "react";
 import * as firebase from "./utils/firebase";
 import { useDispatch } from "react-redux";
-
+import { useSelector } from "react-redux";
+import { DisappearedLoading } from "react-loadingg";
 import {
   getGroupsList,
   getUsersList,
@@ -39,7 +40,9 @@ import {
 } from "firebase/firestore";
 
 function App() {
-  const [isLoading, setIsLoading] = useState();
+  const userData = useSelector((state) => state.userData);
+  const history = useHistory();
+  const [loginState, setLoginState] = useState();
   const d = useDispatch();
 
   useEffect(() => {
@@ -48,18 +51,18 @@ function App() {
       firebase
         .getOptionsName("categories")
         .then((res) => {
-          //redux
           d(getCategoryList(res));
         })
         .catch((err) => console.log(err));
 
       firebase.subscribeToUser((currentUser) => {
-        if (currentUser) {
-          //redux
-          d(getUserData(currentUser));
-        } else {
-          d(getUserData(null));
-        }
+        setLoginState(currentUser);
+        d(getUserData(currentUser));
+        // if (currentUser) {
+        //   d(getUserData(currentUser));
+        // } else {
+        //   d(getUserData(null));
+        // }
       });
     }
     return () => {
@@ -68,7 +71,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    //usersList
     const userq = query(
       collection(firebase.db, "users"),
       orderBy("creationTime", "desc")
@@ -84,7 +86,6 @@ function App() {
     //articles
     const groupq = query(
       collection(firebase.db, "articles"),
-      // where("public", "==", true),
       orderBy("creationTime", "desc")
     );
     const groupStatusUnsubscribe = onSnapshot(groupq, (querySnapshot) => {
@@ -122,29 +123,35 @@ function App() {
           <Route path="/" exact>
             <HomePage />
           </Route>
+          <Route path="/groups" exact>
+            <GroupsPage />
+          </Route>
+          <Route path="/group/:groupID" exact>
+            <GroupPage />
+          </Route>
+          <Route path="/group/:groupID/bookshelf" exact>
+            <Bookshelf />
+          </Route>
+          <Route path="/group/:groupID/articles" exact>
+            <GroupMilestone />
+          </Route>
+          <Route path="/article/:milestoneID" exact>
+            <MilestonePage />
+          </Route>
+          <Route path="/articles" exact>
+            <MilestonesPage />
+          </Route>
           <Route path="/articles/post" exact>
             <MilestoneEditor />
           </Route>
           <Route path="/article/:milestoneID/edit" exact>
             <MilestoneEditor />
           </Route>
-          <Route path="/groups" exact>
-            <GroupsPage />
-          </Route>
           <Route path="/groups/post" exact>
             <BuildGroups />
           </Route>
-          <Route path="/group/:groupID" exact>
-            <GroupPage />
-          </Route>
-          <Route path="/group/:groupID/articles" exact>
-            <GroupMilestone />
-          </Route>
           <Route path="/group/:groupID/notes" exact>
             <NotesPage />
-          </Route>
-          <Route path="/group/:groupID/bookshelf" exact>
-            <Bookshelf />
           </Route>
           <Route path="/group/:groupID/notes/:postID/post" exact>
             <NotesEditorPage />
@@ -152,17 +159,11 @@ function App() {
           <Route path="/group/:groupID/notes/:postID/edit" exact>
             <NotesEditorPage />
           </Route>
-          <Route path="/group/:groupID/notes/post" exact>
+          <Route path="/group/:groupID/new/notes" exact>
             <NotesEditorPage />
           </Route>
-          <Route path="/group/:groupID/notes/:postID">
+          <Route path="/group/:groupID/notes/:postID" exact>
             <NotePage />
-          </Route>
-          <Route path="/articles" exact>
-            <MilestonesPage />
-          </Route>
-          <Route path="/article/:milestoneID" exact>
-            <MilestonePage />
           </Route>
           <Route path="/profile/:userID" exact>
             <ProfilePage />

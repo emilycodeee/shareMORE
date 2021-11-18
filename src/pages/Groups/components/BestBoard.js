@@ -14,6 +14,7 @@ const BestBoard = ({ renderPost }) => {
   const [maxPost, setMaxPost] = useState({});
   const [maxArticles, setMaxArticles] = useState({});
   const [maxBooks, setMaxBooks] = useState({});
+  const [isInsder, setIsInsider] = useState(false);
 
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
@@ -25,6 +26,14 @@ const BestBoard = ({ renderPost }) => {
   };
 
   useEffect(() => {
+    if (groupsList) {
+      const groupDetail = groupsList.find((g) => g.groupID === groupID);
+      const checkMembership =
+        groupDetail?.membersList?.includes(userData?.uid) ||
+        groupDetail?.creatorID === userData?.uid;
+      setIsInsider(checkMembership);
+    }
+
     const userArr = renderPost.map((i) => i.creatorID);
     setMaxPost(arrCaculator(userArr));
 
@@ -39,7 +48,7 @@ const BestBoard = ({ renderPost }) => {
       const articlesArr = filterPublicArticles.map((a) => a.creatorID);
       setMaxArticles(arrCaculator(articlesArr));
     });
-  }, [articlesList, renderPost]);
+  }, [articlesList, renderPost, groupsList, userData]);
 
   return (
     <WinnerWrapper>
@@ -58,7 +67,9 @@ const BestBoard = ({ renderPost }) => {
           <TextDivStyle winner={maxPost}>
             {maxPost.point > 0
               ? `發起最多討論 累計 ${maxPost.point} 則`
-              : `現在就在留言區發起第一篇討論`}
+              : isInsder
+              ? `現在就在留言區發起第一篇討論`
+              : `加入社團，一起參與討論吧`}
           </TextDivStyle>
         </Detail>
       </ItemWp>
@@ -73,9 +84,17 @@ const BestBoard = ({ renderPost }) => {
           </PersonName>
           <TextStyle> {getUserData(maxArticles?.userID)?.introduce}</TextStyle>
           <TextDivStyle to={`/milestones`} winner={maxArticles}>
-            {maxArticles.point > 0
-              ? `分享最多文章 累計 ${maxArticles.point} 則`
-              : `成為第一個分享學習成果的人吧`}
+            {maxArticles.point > 0 ? (
+              `分享最多文章 累計 ${maxArticles.point} 則`
+            ) : isInsder ? (
+              <span>
+                成為第一個
+                <EmptyLink to="/articles/post">分享學習成果</EmptyLink>
+                的人吧
+              </span>
+            ) : (
+              "加入社團，卡位貢獻排行榜"
+            )}
           </TextDivStyle>
         </Detail>
       </ItemWp>
@@ -87,9 +106,19 @@ const BestBoard = ({ renderPost }) => {
           <PersonName>{getUserData(maxBooks?.userID)?.displayName}</PersonName>
           <TextStyle>{getUserData(maxBooks?.userID)?.introduce}</TextStyle>
           <TextDivStyle winner={maxBooks}>
-            {maxBooks.point > 0
-              ? `推薦最多書籍 累計 ${maxBooks.point} 本`
-              : `書櫃空空的，開始建立社團的第一本書`}
+            {maxBooks.point > 0 ? (
+              `推薦最多書籍 累計 ${maxBooks.point} 本`
+            ) : isInsder ? (
+              <span>
+                成為建立
+                <EmptyLink to={`/group/${groupID}/bookshelf`}>
+                  社團第一本書
+                </EmptyLink>
+                的人吧
+              </span>
+            ) : (
+              "加入社團，卡位貢獻排行榜"
+            )}
           </TextDivStyle>
         </Detail>
       </ItemWp>
@@ -99,12 +128,17 @@ const BestBoard = ({ renderPost }) => {
 
 export default BestBoard;
 
+const EmptyLink = styled(Link)`
+  text-decoration: none;
+  color: #f27e59;
+  font-weight: 600;
+`;
+
 const SloganLabel = styled.div`
   font-weight: 800;
   line-height: 20px;
   font-size: 1rem;
   color: black;
-  /* padding-bottom: 1rem。; */
   text-align: center;
   img {
     height: 2rem;

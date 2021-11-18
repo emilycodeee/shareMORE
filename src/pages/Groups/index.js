@@ -213,40 +213,20 @@ const GroupPage = () => {
 
   return (
     <>
-      {/* <ImgWrapper>
-        <input
-          type="file"
-          id="uploadImg"
-          style={{ display: "none" }}
-          onChange={(e) => {
-            setFile(e.target.files[0]);
-            setActEditImage(!actEditImage);
-          }}
-        />
-        <TopCover style={{ backgroundImage: `url(${previewImg})` }} />
-        {checkOwner && !actEditImage && (
-          <DivCtn as="label" htmlFor="uploadImg">
-            <EditImage />
-          </DivCtn>
-        )}
-        {checkOwner && actEditImage && <SaveImage onClick={handleSubmitImg} />}
-      </ImgWrapper> */}
       <GroupHeader />
       <Wrapper>
         <MobileBlock>
-          {/* <BestBoard /> */}
           <LabelStyled>學習夥伴</LabelStyled>
           <MemberContainer>
-            {/* <StyledSlider {...settings}> */}
-            <HeadDiv>
-              <HeadAvatar src={stationHead?.avatar} />
-              <Crown />
+            <HeadDiv Link to={`/profile/${stationHead?.uid}`}>
+              <Link to={`/profile/${stationHead?.uid}`}>
+                <HeadAvatar src={stationHead?.avatar} />
+              </Link>
             </HeadDiv>
 
             {renderMember.map((item) => (
               <MemberAvatar key={item.memberID} data={item} />
             ))}
-            {/* </StyledSlider> */}
           </MemberContainer>
         </MobileBlock>
         <MainBlock>
@@ -270,10 +250,9 @@ const GroupPage = () => {
                 onChange={(e) => setAboutValue(e.target.value)}
               />
             )}
-            {!actEdit && <div>{aboutValue}</div>}
+            {!actEdit && <AboutContent>{aboutValue}</AboutContent>}
           </SectionStyled>
           <SectionStyled>
-            {/* <GoalDate> */}
             <LabelStyled>
               學習目標
               {checkOwner && !actEditGoal && (
@@ -346,18 +325,15 @@ const GroupPage = () => {
           <BestBoard renderPost={renderPost} />
           <LabelStyled>學習夥伴</LabelStyled>
           <MemberContainer>
-            {/* <StyledSlider {...settings}> */}
             <HeadDiv>
               <Link to={`/profile/${stationHead?.uid}`}>
                 <HeadAvatar src={stationHead?.avatar} />
               </Link>
-              <Crown />
             </HeadDiv>
 
             {renderMember.map((item) => (
               <MemberAvatar key={item.memberID} data={item} />
             ))}
-            {/* </StyledSlider> */}
           </MemberContainer>
           <LabelStyled>社群類別</LabelStyled>
           <CateTag>
@@ -422,6 +398,10 @@ const MainBlock = styled.div`
   @media only screen and (max-width: 992px) {
     width: 100%;
   }
+`;
+
+const AboutContent = styled.div`
+  white-space: pre-wrap;
 `;
 
 const SideBlock = styled.div`

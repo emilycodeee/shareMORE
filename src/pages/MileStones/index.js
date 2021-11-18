@@ -16,6 +16,9 @@ import comment from "../../sources/comment.png";
 import CommentReply from "./components/CommentReply";
 import Swal from "sweetalert2";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
+import { FaRegThumbsUp, FaThumbsUp, FaRegCommentAlt } from "react-icons/fa";
+import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { RiShareForwardFill } from "react-icons/ri";
 
 const Container = styled.div`
   /* position: relative; */
@@ -109,6 +112,12 @@ const IconWord = styled.div`
   cursor: pointer;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  span {
+    color: #f27e59;
+    font-weight: 600;
+  }
   @media only screen and (max-width: 992px) {
     /* width: 1rem */
     /* margin: 1rem; */
@@ -122,7 +131,10 @@ const CountWrapper = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  gap: 3px;
   span {
+    color: #f27e59;
+    font-weight: 600;
     display: none;
   }
   @media only screen and (max-width: 992px) {
@@ -140,9 +152,9 @@ const Count = styled.div`
   top: -17px;
   right: -5px;
   font-size: 14px;
-  @media only screen and (max-width: 992px) {
-    /* display: none; */
-  }
+  color: #f27e59;
+  font-weight: 600;
+  /* display: none; */
 `;
 
 const Avatar = styled.img`
@@ -388,12 +400,39 @@ const MilestonePage = () => {
   const root = window.location.host;
   const pathname = useLocation().pathname;
 
+  // const memberCheckAlert = () => {
+  //   if (userData === null) {
+  //     Swal.fire({
+  //       icon: "info",
+  //       title: "Oops...",
+  //       text: "請先登入或註冊會員！",
+  //     });
+  //     return;
+  //   }
+  // };
+
   const handleSave = () => {
-    firebase.clapsForMilestone(milestoneID, userData.uid, "saveBy");
+    if (userData === null) {
+      Swal.fire({
+        icon: "info",
+        title: "Oops...",
+        text: "請先登入或註冊會員！",
+      });
+      return;
+    }
+    firebase.clapsForMilestone(milestoneID, userData?.uid, "saveBy");
   };
-  console.log("contentcontent", content);
+  // console.log("contentcontent", content);
   const handleClap = () => {
-    firebase.clapsForMilestone(milestoneID, userData.uid, "clapBy");
+    if (userData === null) {
+      Swal.fire({
+        icon: "info",
+        title: "Oops...",
+        text: "請先登入或註冊會員！",
+      });
+      return;
+    }
+    firebase.clapsForMilestone(milestoneID, userData?.uid, "clapBy");
   };
 
   const handleSendComment = () => {
@@ -456,6 +495,21 @@ const MilestonePage = () => {
       });
   };
 
+  const handleActiveComment = () => {
+    if (userData === null) {
+      Swal.fire({
+        icon: "info",
+        title: "Oops...",
+        text: "請先登入或註冊會員！",
+      });
+      return;
+    } else {
+      setShowCmt(!showCmt);
+    }
+    // if (userData) {
+    // }
+  };
+
   useEffect(() => {
     firebase.milestoneListener("articles", milestoneID, setContent);
     firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
@@ -500,7 +554,7 @@ const MilestonePage = () => {
           </AuthorDataCtn>
           {userData?.uid === authorData?.uid && (
             <ButtonSet>
-              <EditLink to={`/milestone/${milestoneID}/edit`}>編輯</EditLink>
+              <EditLink to={`/article/${milestoneID}/edit`}>編輯</EditLink>
               <EditBtn onClick={handleDelete}>刪除</EditBtn>
               <EditBtn onClick={handlePrivate}>
                 設為{publicStatus ? "非公開" : "公開"}
@@ -536,26 +590,29 @@ const MilestonePage = () => {
               });
             }}
           >
-            <Icon src={share} />
+            <Share />
+
             <span>分享</span>
           </IconWord>
           <IconWord onClick={handleSave}>
-            <Icon
-              src={content?.saveBy?.includes(userData?.uid) ? saved : save}
-            />
+            {content?.saveBy?.includes(userData?.uid) ? <Saved /> : <Save />}
+
             <span>收藏</span>
           </IconWord>
           <CountWrapper onClick={handleClap}>
-            <Icon
-              src={content?.clapBy?.includes(userData?.uid) ? claped : clap}
-            />
-            <span>拍手</span>
+            {content?.clapBy?.includes(userData?.uid) ? (
+              <ThumbsUpFilled />
+            ) : (
+              <ThumbsUp />
+            )}
+            <span>給讚</span>
             <Count>
               {content?.clapBy?.length > 0 && content?.clapBy.length}
             </Count>
           </CountWrapper>
-          <CountWrapper onClick={() => setShowCmt(!showCmt)}>
-            <Icon src={comment} />
+          <CountWrapper onClick={handleActiveComment}>
+            <Comment />
+            {/* <Icon src={comment} /> */}
             <span>留言</span>
             <Count>{renderPost.length > 0 && renderPost.length}</Count>
           </CountWrapper>
@@ -592,6 +649,41 @@ const MilestonePage = () => {
 };
 
 export default MilestonePage;
+
+const iconStyle = {
+  width: "1.4rem",
+  height: "1.4rem",
+  color: "#f27e59",
+};
+
+const ThumbsUpFilled = styled(FaThumbsUp)`
+  ${iconStyle}
+`;
+
+const ThumbsUp = styled(FaRegThumbsUp)`
+  ${iconStyle}
+`;
+
+const Comment = styled(FaRegCommentAlt)`
+  ${iconStyle}
+`;
+
+const Save = styled(BsBookmark)`
+  ${iconStyle}
+`;
+
+const Saved = styled(BsBookmarkFill)`
+  ${iconStyle}
+`;
+
+const Share = styled(RiShareForwardFill)`
+  ${iconStyle}
+  width: 1.5rem;
+  height: 1.5rem;
+`;
+
+// import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
+// import { RiShareForwardFill } from "react-icons/ri";
 
 const IconSet = styled.div`
   display: flex;

@@ -55,10 +55,14 @@ const LeaveMessage = ({ itemData }) => {
             </UserText>
           </UserDetail>
         </UserWrapper>
-        <div>{itemData.content}</div>
+        <TextContent>{itemData.content}</TextContent>
       </CommentWrapper>
     </Wrapper>
   );
 };
 
 export default LeaveMessage;
+
+const TextContent = styled.div`
+  white-space: pre-wrap;
+`;

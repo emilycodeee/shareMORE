@@ -9,6 +9,8 @@ const defaultBook =
   "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
 
 const BookContent = ({ bookContent, setShowBookContent }) => {
+  console.log(bookContent.volumeInfo.description);
+
   return (
     <ContentWrapper>
       <BookDetail>

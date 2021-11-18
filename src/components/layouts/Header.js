@@ -292,7 +292,7 @@ const NotifiSet = styled.div`
 `;
 
 const Count = styled.div`
-  background-color: #f9c68f;
+  background-color: rgb(255 0 0);
   width: 15px;
   height: 15px;
   display: ${(props) => (props.count > 0 ? "flex" : "none")};

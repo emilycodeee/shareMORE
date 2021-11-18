@@ -97,6 +97,7 @@ const IconsWrapper = styled.div`
 `;
 
 const NotePage = () => {
+  console.log("筆記業");
   const { groupID, postID } = useParams();
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
@@ -182,7 +183,7 @@ const NotePage = () => {
         </IconLink>
       </IconsWrapper>
       <TopArea>
-        <h2>{noteContent.title}</h2>
+        <h2>{noteContent?.title}</h2>
       </TopArea>
       <label>撰寫自：{noteCreator?.displayName}</label>
       <label>{convertTime(noteContent?.creationTime)}</label>

@@ -25,6 +25,6 @@ body {
 }
 
 .ql-editor .ql-video {
-  width: 80%;
-  height: 40%;
+  max-width: 800px;
+  max-height: 450px;
 }

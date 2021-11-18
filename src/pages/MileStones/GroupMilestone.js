@@ -8,13 +8,15 @@ import { arrCaculator } from "../../utils/commonText";
 import Card from "../Home/components/Card";
 import { Link } from "react-router-dom";
 import GroupHeader from "../Groups/components/GroupHeader";
+import { DisappearedLoading } from "react-loadingg";
 
 const GroupMilestone = () => {
   const { groupID } = useParams();
-  const [maxPost, setMaxPost] = useState({});
-  const [maxArticles, setMaxArticles] = useState({});
-  const [maxBooks, setMaxBooks] = useState({});
   const [renderMilestone, setRenderMilestone] = useState([]);
+  const [isInsider, setIsInsider] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loginState, setLoginState] = useState();
+
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
@@ -23,64 +25,76 @@ const GroupMilestone = () => {
   const getUserData = (uid) => {
     return usersList.find((p) => p.uid === uid);
   };
+  console.log(userData === undefined);
 
   useEffect(() => {
-    firebase.getGroupPost(groupID).then((res) => {
-      const userArr = res.map((i) => i.creatorID);
-      setMaxPost(arrCaculator(userArr));
-    });
+    let isMounted = true;
+    if (isMounted) {
+      firebase.subscribeToUser((currentUser) => {
+        setLoginState(currentUser);
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    firebase.getGroupBookShelf().then((res) => {
-      const groupBook = res.filter((b) => b.groupID === groupID);
-      const userArr = groupBook.map((i) => i.groupSharerUid);
-      setMaxBooks(arrCaculator(userArr));
+  useEffect(() => {
+    if (groupsList) {
+      const groupDetail = groupsList.find((g) => g.groupID === groupID);
+      const checkMembership =
+        groupDetail?.membersList?.includes(userData?.uid) ||
+        groupDetail?.creatorID === userData?.uid;
       const filterPublicArticles = articlesList.filter(
         (a) => a.groupID === groupID && a.public === true
       );
       setRenderMilestone(filterPublicArticles);
-      const articlesArr = filterPublicArticles.map((a) => a.creatorID);
-      setMaxArticles(arrCaculator(articlesArr));
-    });
-  }, [articlesList]);
-  // console.log(maxPost);
-  // console.log("🎈🎈hk4g", filterPublicArticles);
-  // 發起最多里程杯、發起最多討論、推薦最多書籍
+      setIsInsider(checkMembership);
+      setIsLoading(false);
+    }
+  }, [userData, groupsList, articlesList]);
 
-  // console.log(maxArticles);
+  if (loginState === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading) {
+    return (
+      <>
+        <GroupHeader tag="milestone" />
+        <Wrapper>
+          {isInsider && loginState !== null && (
+            <CreateButton to="/articles/post">分享我的學習成果</CreateButton>
+          )}
+          {renderMilestone.length === 0 && (
+            <Empty>
+              <div>
+                目前尚未有任何成果分享
+                {isInsider && loginState !== null && `，就從你開始吧！`}
+              </div>
+              <lottie-player
+                src="https://assets5.lottiefiles.com/packages/lf20_n2m0isqh.json"
+                background="transparent"
+                speed="1"
+                style={{ maxWidth: "250px", maxHeight: "250px" }}
+                loop
+                autoplay
+              />
+            </Empty>
+          )}
 
-  return (
-    <>
-      <GroupHeader tag="milestone" />
-      <Wrapper>
-        <CreateButton to="/articles/post">分享我的學習成果</CreateButton>
-        {renderMilestone.length === 0 && (
-          <Empty>
-            <div>目前尚未有任何成果分享，就從你開始吧！</div>
-            <lottie-player
-              src="https://assets5.lottiefiles.com/packages/lf20_n2m0isqh.json"
-              background="transparent"
-              speed="1"
-              style={{ maxWidth: "250px", maxHeight: "250px" }}
-              loop
-              autoplay
-            />
-          </Empty>
-        )}
-
-        <ContenWrapper>
-          {renderMilestone.map((m) => {
-            return <Card item={m} key={m.milestoneID} />;
-          })}
-        </ContenWrapper>
-      </Wrapper>
-    </>
-  );
+          <ContenWrapper>
+            {renderMilestone.map((m) => {
+              return <Card item={m} key={m.milestoneID} />;
+            })}
+          </ContenWrapper>
+        </Wrapper>
+      </>
+    );
+  }
 };
 
 export default GroupMilestone;
 
 const Empty = styled.div`
-  /* background-color: red; */
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -128,7 +142,6 @@ const Wrapper = styled.div`
   border-radius: 4px;
   max-width: 1560px;
   width: 80%;
-  /* padding: 0 3rem; */
   margin: 0 auto;
   margin-bottom: 1.5rem;
   display: flex;
@@ -137,14 +150,10 @@ const Wrapper = styled.div`
   background-color: #fff;
   padding: 1rem 0;
   flex-direction: column;
-  /* @media only screen and (max-width: 992px) {
-    flex-direction: column;
-  } */
 `;
 
 const ContenWrapper = styled.div`
   display: grid;
-  /* width: 90%; */
   padding: 1em;
   align-items: center;
   grid-template-columns: 1fr 1fr 1fr 1fr;

@@ -195,6 +195,8 @@ const SearchBook = () => {
     });
   };
 
+  console.log(bookContent.volumeInfo?.description);
+
   const defaultBook =
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
   // console.log(bookContent.volumeInfo.webReaderLink);
@@ -204,8 +206,6 @@ const SearchBook = () => {
       <Wrapper>
         {!showBookContent && (
           <>
-            {/* <label>查找書目</label> */}
-            {/* <Run>找書更方便！一起建立社團書櫃！</Run> */}
             <SearchBookInput>
               <SearchInput
                 value={value}
@@ -214,20 +214,17 @@ const SearchBook = () => {
                 placeholder="書名、作者、ISBN..."
               />
               <AdvancedIcon onClick={submit} />
-              {/* <button onClick={submit}>搜尋</button> */}
             </SearchBookInput>
             {isLoading && <JumpCircleLoading />}
             <ResultWrapper>
               {content?.length > 1 &&
                 content?.map((b, i) => {
-                  // console.log(b.volumeInfo.title);
                   return (
                     <ResultBookCtn
                       key={i}
                       onClick={() => {
                         setShowBookContent(true);
                         setBookContent(b);
-                        // console.log(showBookContent);
                       }}
                     >
                       <ImgDe
@@ -279,9 +276,7 @@ const SearchBook = () => {
                 </ActionIcon>
               </div>
             </BookDetail>
-            <ContentText>
-              {HtmlParser(bookContent.volumeInfo.description)}
-            </ContentText>
+            <ContentText>{bookContent.volumeInfo.description}</ContentText>
             <RevertIcon
               onClick={() => {
                 setShowBookContent(false);
@@ -392,6 +387,11 @@ const Titlestyle = styled.p`
 `;
 
 const ContentText = styled.div`
+  /* color: red; */
+  /* white-space: pre-wrap; */
+  /* white-space:pre-wrap */
+  white-space: pre-line;
+
   width: 80%;
   line-height: 1.2rem;
 `;

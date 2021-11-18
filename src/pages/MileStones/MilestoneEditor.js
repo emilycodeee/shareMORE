@@ -235,6 +235,15 @@ const MilestoneEditor = () => {
   };
 
   const handleSubmit = () => {
+    if (userData === null) {
+      Swal.fire({
+        icon: "info",
+        title: "Oops...",
+        text: "請先登入或註冊會員！",
+      });
+      return;
+    }
+
     if (value.length === 0 || introduce.length === 0) {
       Swal.fire({
         icon: "error",
@@ -276,7 +285,7 @@ const MilestoneEditor = () => {
             showConfirmButton: false,
             timer: 1500,
           });
-          history.push(`/milestone/${milestoneID}`);
+          history.push(`/article/${milestoneID}`);
         });
     } else {
       const data = {

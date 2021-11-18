@@ -9,7 +9,7 @@ import { initText } from "../../utils/commonText";
 import { useSelector, useDispatch } from "react-redux";
 import { getGroupsList } from "../../redux/actions";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-
+import { DisappearedLoading } from "react-loadingg";
 const MainContainer = styled.div`
   max-width: 1560px;
   width: 80%;
@@ -142,12 +142,27 @@ const BuildGroups = () => {
   const [subClassesName, setSubClassesName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubClass, setSelectedSubClass] = useState(null);
-
+  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  console.log(userData);
   //status
   const [name, setName] = useState("");
   const [goal, setGoal] = useState(initText);
   const [goalDate, setGoalDate] = useState("");
   const [introduce, setIntroduce] = useState("");
+
+  // useEffect(() => {
+  //   if (userData !== null) {
+  //     setIsLoading(false);
+  //   } else if (userData === null) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "Oops...",
+  //       text: "請先登入或註冊會員！",
+  //     });
+
+  //   }
+  // }, [userData]);
 
   useEffect(() => {
     let isMounted = true;
@@ -155,7 +170,6 @@ const BuildGroups = () => {
       const subCategoryObj = categoryList.find(
         (item) => item.name === selectedCategory
       );
-      // console.log(subCategoryObj);
       const subCategoryOpt = subCategoryObj?.subClasses.map((item) => {
         return { value: item, label: item };
       });
@@ -171,6 +185,15 @@ const BuildGroups = () => {
     : "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66";
 
   const handleSubmit = () => {
+    if (userData === null) {
+      Swal.fire({
+        icon: "info",
+        title: "Oops...",
+        text: "請先登入或註冊會員！",
+      });
+      return;
+    }
+
     if (goal.length === 0 || name.length === 0 || goalDate.length === 0) {
       Swal.fire({
         icon: "error",
@@ -215,6 +238,12 @@ const BuildGroups = () => {
     });
   };
 
+  const today = new Date().toISOString().split("T")[0];
+  // document.getElementsByName("somedate")[0].setAttribute("min", today);
+
+  // if (isLoading) {
+  //   return <DisappearedLoading />;
+  // } else {
   return (
     <MainContainer>
       <Slogan>shareMore。一起，走得更遠</Slogan>
@@ -261,6 +290,7 @@ const BuildGroups = () => {
         <LabelCtn>目標完成日</LabelCtn>
         <InputCtn
           type="date"
+          min={today}
           onChange={(e) => {
             setGoalDate(e.target.value);
           }}
@@ -293,6 +323,7 @@ const BuildGroups = () => {
       <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
     </MainContainer>
   );
+  // }
 };
 
 export default BuildGroups;

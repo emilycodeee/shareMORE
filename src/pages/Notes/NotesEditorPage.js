@@ -149,7 +149,6 @@ const NotesEditorPage = () => {
   const editorHandler = (e) => {
     setValue(e);
   };
-  console.log(value);
   useEffect(() => {
     let isMounted = true;
 

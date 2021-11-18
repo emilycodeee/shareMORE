@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import clap from "../../../sources/clap.png";
 import claped from "../../../sources/claped.png";
+import { AiOutlineComment } from "react-icons/ai";
+import { FaRegThumbsUp, FaThumbsUp, FaRegCommentAlt } from "react-icons/fa";
 import comment from "../../../sources/comment.png";
 import dots from "../../../sources/dots.png";
 import { useState, useEffect } from "react";
@@ -121,7 +123,9 @@ const MoreBtn = styled.div`
 
 const Count = styled.div`
   position: absolute;
-  top: 0;
+  color: #f27e59;
+  font-weight: 500;
+  top: -5px;
   right: -10px;
   font-size: 12px;
 `;
@@ -145,7 +149,7 @@ const ButtonStyled = styled.button`
   cursor: pointer;
   width: 60px;
   height: 30px;
-  background-color: #fff4e4;
+  background-color: transparent;
   font-weight: 600;
   outline: none;
   border: 1px solid #f27e59;
@@ -160,8 +164,11 @@ const ButtonStyled = styled.button`
 `;
 
 const ContentArea = styled.div`
+  width: 100%;
   line-height: 1.4rem;
   padding: 0.5rem 0.5rem;
+
+  white-space: pre-wrap;
 `;
 
 const EditContentArea = styled.textarea`
@@ -251,8 +258,6 @@ const PostContainer = ({ item, content }) => {
         showConfirmButton: false,
         timer: 1500,
       });
-
-      // alert("刪除成功");
     });
   };
 
@@ -276,7 +281,6 @@ const PostContainer = ({ item, content }) => {
     setShowDots(false);
   };
 
-  // console.log(renderPost);
   const checkPostSender = postSender?.uid === userData?.uid;
 
   const checkGroupOwner = content?.creatorID === userData?.uid;
@@ -337,9 +341,12 @@ const PostContainer = ({ item, content }) => {
             }}
           >
             <CountWrapper>
-              <Icon
-                src={item.clapBy?.includes(userData?.uid) ? claped : clap}
-              />
+              {item.clapBy?.includes(userData?.uid) ? (
+                <ThumbsUpFilled />
+              ) : (
+                <ThumbsUp />
+              )}
+
               <Count>{item.clapBy?.length > 0 && item.clapBy.length}</Count>
             </CountWrapper>
           </IconDiv>
@@ -350,7 +357,8 @@ const PostContainer = ({ item, content }) => {
           >
             <CountWrapper>
               <Count>{renderPost.length > 0 && renderPost.length}</Count>
-              <Icon src={comment} />
+
+              <Comment />
             </CountWrapper>
           </IconDiv>
         </IconWrapper>
@@ -395,7 +403,26 @@ const PostContainer = ({ item, content }) => {
 
 export default PostContainer;
 
+const iconStyle = {
+  width: "1.3rem",
+  height: "1.3rem",
+  color: "#f27e59",
+};
+
+const ThumbsUpFilled = styled(FaThumbsUp)`
+  ${iconStyle}
+`;
+
+const ThumbsUp = styled(FaRegThumbsUp)`
+  ${iconStyle}
+`;
+
+const Comment = styled(FaRegCommentAlt)`
+  ${iconStyle}
+`;
+
 const OuterWrapper = styled.div`
+  max-width: 100%;
   background-color: rgba(255, 244, 228, 0.5);
   margin-top: 10px;
 `;

@@ -194,9 +194,6 @@ const Bookshelf = () => {
     <>
       <GroupHeader tag="bookShelf" />
       <Wrapper>
-        {/* <TopCover style={{ backgroundImage: `url(${bookshelf})` }}>
-          <Run>找書更方便！一起建立社團書櫃！</Run>
-        </TopCover> */}
         {isLoading && <JumpCircleLoading />}
         {isInsider && (
           <SerchButton
@@ -223,7 +220,10 @@ const Bookshelf = () => {
         {renderBookData.length === 0 && (
           <>
             <Empty>
-              <div>目前書櫃空空的，一起建立我們的社團書櫃！</div>
+              <div>
+                社團書櫃空空的
+                {isInsider && `，一起建立我們的社團書櫃！`}
+              </div>
               <lottie-player
                 src="https://assets5.lottiefiles.com/packages/lf20_tnrzlN.json"
                 background="transparent"
@@ -346,6 +346,7 @@ const BookTitle = styled.div`
 `;
 
 const RecommendText = styled.div`
+  /* white-space: pre-wrap; */
   line-height: 1.3rem;
   margin-top: 0.5rem;
   text-align: start;
