@@ -1,10 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import clap from "../../../sources/clap.png";
-import claped from "../../../sources/claped.png";
-import { AiOutlineComment } from "react-icons/ai";
 import { FaRegThumbsUp, FaThumbsUp, FaRegCommentAlt } from "react-icons/fa";
-import comment from "../../../sources/comment.png";
 import dots from "../../../sources/dots.png";
 import { useState, useEffect } from "react";
 import LeaveMessage from "./LeaveMessage";

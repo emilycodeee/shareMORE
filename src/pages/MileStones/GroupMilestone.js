@@ -3,8 +3,6 @@ import styled from "styled-components";
 import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import * as firebase from "../../utils/firebase";
-import { arrCaculator } from "../../utils/commonText";
 import Card from "../Home/components/Card";
 import { Link } from "react-router-dom";
 import GroupHeader from "../Groups/components/GroupHeader";
@@ -13,34 +11,14 @@ import { DisappearedLoading } from "react-loadingg";
 const GroupMilestone = () => {
   const { groupID } = useParams();
   const [renderMilestone, setRenderMilestone] = useState([]);
-  const [isInsider, setIsInsider] = useState(null);
+  const [isInsider, setIsInsider] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loginState, setLoginState] = useState();
-
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
-  const usersList = useSelector((state) => state.usersList);
-
-  const getUserData = (uid) => {
-    return usersList.find((p) => p.uid === uid);
-  };
-  console.log(userData === undefined);
 
   useEffect(() => {
-    let isMounted = true;
-    if (isMounted) {
-      firebase.subscribeToUser((currentUser) => {
-        setLoginState(currentUser);
-      });
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (groupsList) {
+    if (groupsList.length > 0) {
       const groupDetail = groupsList.find((g) => g.groupID === groupID);
       const checkMembership =
         groupDetail?.membersList?.includes(userData?.uid) ||
@@ -54,21 +32,21 @@ const GroupMilestone = () => {
     }
   }, [userData, groupsList, articlesList]);
 
-  if (loginState === undefined || isLoading) {
+  if (userData === undefined || isLoading) {
     return <DisappearedLoading />;
   } else if (!isLoading) {
     return (
       <>
         <GroupHeader tag="milestone" />
         <Wrapper>
-          {isInsider && loginState !== null && (
+          {isInsider && (
             <CreateButton to="/articles/post">分享我的學習成果</CreateButton>
           )}
           {renderMilestone.length === 0 && (
             <Empty>
               <div>
                 目前尚未有任何成果分享
-                {isInsider && loginState !== null && `，就從你開始吧！`}
+                {isInsider && `，就從你開始吧！`}
               </div>
               <lottie-player
                 src="https://assets5.lottiefiles.com/packages/lf20_n2m0isqh.json"

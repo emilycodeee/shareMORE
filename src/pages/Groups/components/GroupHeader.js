@@ -16,7 +16,6 @@ import { ImBooks } from "react-icons/im";
 
 const GroupHeader = ({ tag }) => {
   const { groupID } = useParams();
-  const { path, url } = useRouteMatch();
   const userData = useSelector((state) => state.userData);
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
@@ -34,18 +33,19 @@ const GroupHeader = ({ tag }) => {
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      firebase.getTotalApplicationList(groupID, setApplicationData);
-      // firebase.getBookApplication(groupID, setBookListData);
-      const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
+      if (groupsList.length > 0) {
+        firebase.getTotalApplicationList(groupID, setApplicationData);
+        const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
 
-      if (currentGroupData) {
-        setTitleValue(currentGroupData?.name);
-        setContent(currentGroupData);
-        setImageCover(currentGroupData.coverImage);
-        const owner = usersList.find(
-          (p) => p.uid === currentGroupData.creatorID
-        );
-        setGroupOwner(owner);
+        if (currentGroupData) {
+          setTitleValue(currentGroupData?.name);
+          setContent(currentGroupData);
+          setImageCover(currentGroupData.coverImage);
+          const owner = usersList.find(
+            (p) => p.uid === currentGroupData.creatorID
+          );
+          setGroupOwner(owner);
+        }
       }
     }
     return () => {
@@ -55,7 +55,6 @@ const GroupHeader = ({ tag }) => {
 
   useEffect(() => {
     let isMounted = true;
-
     if (isMounted) {
       const data = applicationData.data?.find(
         (each) => each.applicantID === userData?.uid
@@ -64,12 +63,10 @@ const GroupHeader = ({ tag }) => {
         setAppliedData(data);
       }
     }
-
     return () => {
       isMounted = false;
     };
   }, [applicationData]);
-  console.log(applicationData);
 
   const root = window.location.host;
   const pathname = useLocation().pathname;
@@ -154,7 +151,6 @@ const GroupHeader = ({ tag }) => {
     );
   }
   return (
-    // <>
     <>
       <ImgWrapper>
         <input
@@ -193,18 +189,19 @@ const GroupHeader = ({ tag }) => {
         >
           <ShareIcon />
         </ShareStyled>
-        {content?.creatorID === userData?.uid && (
-          <>
-            <LiStyled
-              setShowApplication={setShowApplication}
-              onClick={() => {
-                setShowApplication(!showApplication);
-              }}
-            >
-              {`待審申請 ${applicationData?.count} 則`}
-            </LiStyled>
-          </>
-        )}
+        {content?.creatorID === userData?.uid &&
+          applicationData?.count !== undefined && (
+            <>
+              <LiStyled
+                setShowApplication={setShowApplication}
+                onClick={() => {
+                  setShowApplication(!showApplication);
+                }}
+              >
+                {`待審申請 ${applicationData?.count} 則`}
+              </LiStyled>
+            </>
+          )}
         {!checkGeneralMember && !checkOwner && (
           <LiStyled onClick={handleApplicationBtn}>
             {appliedData ? "等候審核" : "申請加入"}

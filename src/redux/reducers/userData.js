@@ -1,4 +1,4 @@
-const userDataReducer = (state = null, action) => {
+const userDataReducer = (state = {}, action) => {
   switch (action.type) {
     case "GET_USER_DATA":
       return (state = action.payload);

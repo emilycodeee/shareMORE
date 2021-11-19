@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
@@ -17,6 +17,8 @@ import Slider from "react-slick";
 import { useSelector } from "react-redux";
 import SimpleEditor from "../../components/SimpleEditor";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { DisappearedLoading } from "react-loadingg";
+
 const SectionStyled = styled.section`
   display: flex;
   flex-direction: column;
@@ -119,26 +121,18 @@ const GroupPage = () => {
   const [dateValue, setDateValue] = useState("");
   const [goal, setGoal] = useState("");
   const [imageCover, setImageCover] = useState("");
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-  };
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
-
-    if (currentGroupData) {
+    if (groupsList.length > 0) {
+      const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
       setContent(currentGroupData);
       setAboutValue(currentGroupData.introduce);
       setDateValue(currentGroupData.goalDate);
       setGoal(currentGroupData.goal);
       setImageCover(currentGroupData.coverImage);
+      setIsLoading(false);
     }
-
     const postQ = query(
       collection(firebase.db, "groups", groupID, "posts"),
       orderBy("creationTime", "desc")
@@ -211,139 +205,144 @@ const GroupPage = () => {
     content?.creatorID === userData?.uid;
   const checkOwner = content.creatorID === userData?.uid;
 
-  return (
-    <>
-      <GroupHeader />
-      <Wrapper>
-        <MobileBlock>
-          <LabelStyled>學習夥伴</LabelStyled>
-          <MemberContainer>
-            <HeadDiv Link to={`/profile/${stationHead?.uid}`}>
-              <Link to={`/profile/${stationHead?.uid}`}>
-                <HeadAvatar src={stationHead?.avatar} />
-              </Link>
-            </HeadDiv>
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <>
+        <GroupHeader />
+        <Wrapper>
+          <MobileBlock>
+            <LabelStyled>學習夥伴</LabelStyled>
+            <MemberContainer>
+              <HeadDiv Link to={`/profile/${stationHead?.uid}`}>
+                <Link to={`/profile/${stationHead?.uid}`}>
+                  <HeadAvatar src={stationHead?.avatar} />
+                </Link>
+              </HeadDiv>
 
-            {renderMember.map((item) => (
-              <MemberAvatar key={item.memberID} data={item} />
-            ))}
-          </MemberContainer>
-        </MobileBlock>
-        <MainBlock>
-          <SectionStyled>
-            <LabelStyled>
-              關於我們
-              {checkOwner && !actEdit && (
-                <EditIcon
-                  onClick={() => {
-                    setActEdit(!actEdit);
-                  }}
-                />
-              )}
-              {checkOwner && actEdit && <ConfirmIcon onClick={handleSubmit} />}
-            </LabelStyled>
-            {actEdit && (
-              <ContentCtn
-                actEdit={actEdit}
-                readOnly={!actEdit}
-                value={aboutValue}
-                onChange={(e) => setAboutValue(e.target.value)}
-              />
-            )}
-            {!actEdit && <AboutContent>{aboutValue}</AboutContent>}
-          </SectionStyled>
-          <SectionStyled>
-            <LabelStyled>
-              學習目標
-              {checkOwner && !actEditGoal && (
-                <EditIcon
-                  onClick={() => {
-                    setActEditGoal(!actEditGoal);
-                  }}
-                />
-              )}
-              {checkOwner && actEditGoal && (
-                <ConfirmIcon onClick={handleSubmit} />
-              )}
-            </LabelStyled>
-
-            {/* </GoalDate> */}
-            {!actEditGoal && (
-              <ContentStyled className="ql-editor">
-                {HtmlParser(goal)}
-              </ContentStyled>
-            )}
-            {actEditGoal && <SimpleEditor goal={goal} setGoal={setGoal} />}
-          </SectionStyled>
-          <SectionStyled>
-            <LabelStyled>
-              預計完成日：
-              {!actEditDate && dateText}
-              {checkOwner && !actEditDate && (
-                <EditIcon
-                  onClick={() => {
-                    setActEditDate(!actEditDate);
-                  }}
-                />
-              )}
-            </LabelStyled>
-            {checkOwner && actEditDate && (
-              <div>
-                <input
-                  type="date"
-                  onChange={(e) => setDateValue(e.target.value)}
-                />
-                <ConfirmIcon onClick={handleSubmit} />
-              </div>
-            )}
-          </SectionStyled>
-          {checkMember && (
+              {renderMember.map((item) => (
+                <MemberAvatar key={item.memberID} data={item} />
+              ))}
+            </MemberContainer>
+          </MobileBlock>
+          <MainBlock>
             <SectionStyled>
-              <PostArea
-                value={textValue}
-                placeholder="開始新的討論吧..."
-                onFocus={() => {
-                  setShowBtn(true);
-                }}
-                onChange={(e) => setTextValue(e.target.value)}
-              />
-              {showBtn && <PostBtn onClick={postHandler}>留言</PostBtn>}
-
-              {renderPost?.map((item) => {
-                return (
-                  <PostContainer
-                    key={item.postID}
-                    item={item}
-                    content={content}
+              <LabelStyled>
+                關於我們
+                {checkOwner && !actEdit && (
+                  <EditIcon
+                    onClick={() => {
+                      setActEdit(!actEdit);
+                    }}
                   />
-                );
-              })}
+                )}
+                {checkOwner && actEdit && (
+                  <ConfirmIcon onClick={handleSubmit} />
+                )}
+              </LabelStyled>
+              {actEdit && (
+                <ContentCtn
+                  actEdit={actEdit}
+                  readOnly={!actEdit}
+                  value={aboutValue}
+                  onChange={(e) => setAboutValue(e.target.value)}
+                />
+              )}
+              {!actEdit && <AboutContent>{aboutValue}</AboutContent>}
             </SectionStyled>
-          )}
-        </MainBlock>
-        <SideBlock>
-          <BestBoard renderPost={renderPost} />
-          <LabelStyled>學習夥伴</LabelStyled>
-          <MemberContainer>
-            <HeadDiv>
-              <Link to={`/profile/${stationHead?.uid}`}>
-                <HeadAvatar src={stationHead?.avatar} />
-              </Link>
-            </HeadDiv>
+            <SectionStyled>
+              <LabelStyled>
+                學習目標
+                {checkOwner && !actEditGoal && (
+                  <EditIcon
+                    onClick={() => {
+                      setActEditGoal(!actEditGoal);
+                    }}
+                  />
+                )}
+                {checkOwner && actEditGoal && (
+                  <ConfirmIcon onClick={handleSubmit} />
+                )}
+              </LabelStyled>
 
-            {renderMember.map((item) => (
-              <MemberAvatar key={item.memberID} data={item} />
-            ))}
-          </MemberContainer>
-          <LabelStyled>社群類別</LabelStyled>
-          <CateTag>
-            <TagStyle>{content.category}</TagStyle>
-            <TagStyle>{content.subClass}</TagStyle>
-          </CateTag>
-        </SideBlock>
-      </Wrapper>
-    </>
-  );
+              {/* </GoalDate> */}
+              {!actEditGoal && (
+                <ContentStyled className="ql-editor">
+                  {HtmlParser(goal)}
+                </ContentStyled>
+              )}
+              {actEditGoal && <SimpleEditor goal={goal} setGoal={setGoal} />}
+            </SectionStyled>
+            <SectionStyled>
+              <LabelStyled>
+                預計完成日：
+                {!actEditDate && dateText}
+                {checkOwner && !actEditDate && (
+                  <EditIcon
+                    onClick={() => {
+                      setActEditDate(!actEditDate);
+                    }}
+                  />
+                )}
+              </LabelStyled>
+              {checkOwner && actEditDate && (
+                <div>
+                  <input
+                    type="date"
+                    onChange={(e) => setDateValue(e.target.value)}
+                  />
+                  <ConfirmIcon onClick={handleSubmit} />
+                </div>
+              )}
+            </SectionStyled>
+            {checkMember && (
+              <SectionStyled>
+                <PostArea
+                  value={textValue}
+                  placeholder="開始新的討論吧..."
+                  onFocus={() => {
+                    setShowBtn(true);
+                  }}
+                  onChange={(e) => setTextValue(e.target.value)}
+                />
+                {showBtn && <PostBtn onClick={postHandler}>留言</PostBtn>}
+
+                {renderPost?.map((item) => {
+                  return (
+                    <PostContainer
+                      key={item.postID}
+                      item={item}
+                      content={content}
+                    />
+                  );
+                })}
+              </SectionStyled>
+            )}
+          </MainBlock>
+          <SideBlock>
+            <BestBoard renderPost={renderPost} />
+            <LabelStyled>學習夥伴</LabelStyled>
+            <MemberContainer>
+              <HeadDiv>
+                <Link to={`/profile/${stationHead?.uid}`}>
+                  <HeadAvatar src={stationHead?.avatar} />
+                </Link>
+              </HeadDiv>
+
+              {renderMember.map((item) => (
+                <MemberAvatar key={item.memberID} data={item} />
+              ))}
+            </MemberContainer>
+            <LabelStyled>社群類別</LabelStyled>
+            <CateTag>
+              <TagStyle>{content.category}</TagStyle>
+              <TagStyle>{content.subClass}</TagStyle>
+            </CateTag>
+          </SideBlock>
+        </Wrapper>
+      </>
+    );
 };
 
 export default GroupPage;

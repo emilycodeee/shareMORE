@@ -1,18 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import { useLocation, useParams, useHistory } from "react-router";
+import { useParams, useHistory } from "react-router";
 import { useState, useEffect } from "react";
 import * as firebase from "../../utils/firebase";
 import { useSelector } from "react-redux";
 import HtmlParser from "react-html-parser";
 import { convertTime } from "../../utils/commonText";
-import {
-  BsPencilSquare,
-  BsFillTrashFill,
-  BsFillHouseDoorFill,
-} from "react-icons/bs";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { DisappearedLoading } from "react-loadingg";
+
 const TopCover = styled.div`
   width: 100%;
   height: 30vw;
@@ -31,8 +28,22 @@ const TopCover = styled.div`
   /* margin-top: 2rem; */
 `;
 
-const Wrapper = styled.div`
+const Container = styled.div`
   max-width: 1560px;
+  width: 80%;
+  padding: 1rem;
+  height: fit-content;
+  /* display: flex; */
+  margin: 0 auto;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  gap: 1rem;
+  background-color: #fffdfd;
+  @media only screen and (max-width: 992px) {
+    /* flex-direction: column; */
+    /* padding-bottom: 0; */
+  }
+  /* max-width: 1560px;
   width: 80%;
   margin: 0 auto;
   padding: 1rem;
@@ -40,7 +51,19 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fff;
+  background-color: #fff; */
+`;
+
+const Wrapper = styled.div`
+  border-radius: 4px;
+  padding: 30px;
+  background-color: #fffdfd;
+  border: none;
+
+  @media only screen and (max-width: 992px) {
+    /* position: fixed; */
+    width: 100%;
+  }
 `;
 
 const ContentStyle = styled.div`
@@ -49,6 +72,14 @@ const ContentStyle = styled.div`
   background-color: #fff;
   img {
     max-width: 100%;
+  }
+
+  .ql-editor {
+    padding: 12px 0;
+    .ql-video {
+      width: 800px;
+      height: 400px;
+    }
   }
 `;
 
@@ -75,6 +106,64 @@ const IconCtn = styled.button`
   cursor: pointer;
 `;
 
+const EditLink = styled(Link)`
+  height: 2rem;
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+  /* height: auto; */
+  text-decoration: none;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: none;
+  /* min-width: 80px; */
+  padding: 5px;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
+  @media only screen and (max-width: 992px) {
+    padding: 2px;
+    font-size: 0.6rem;
+  }
+`;
+
+const EditBtn = styled.button`
+  height: 2rem;
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+  /* height: auto; */
+  text-decoration: none;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: none;
+  /* min-width: 80px; */
+  padding: 5px;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
+  @media only screen and (max-width: 992px) {
+    padding: 2px;
+    font-size: 0.6rem;
+  }
+`;
+
 const IconLink = styled(Link)`
   background-color: transparent;
   border: none;
@@ -83,7 +172,7 @@ const IconLink = styled(Link)`
   cursor: pointer;
 `;
 
-const IconsWrapper = styled.div`
+const BtnWrapper = styled.div`
   align-self: flex-end;
   display: flex;
   gap: 10px;
@@ -97,39 +186,52 @@ const IconsWrapper = styled.div`
 `;
 
 const NotePage = () => {
-  console.log("筆記業");
   const { groupID, postID } = useParams();
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
-  const currentGroupData = groupsList.find((item) => item.groupID === groupID);
   const usersList = useSelector((state) => state.usersList);
-  console.log(currentGroupData);
   const [noteContent, setNoteContent] = useState("");
   const [noteCreator, setNoteCreator] = useState({});
   const [checkNoteCreator, setCheckNoteCreator] = useState(false);
+  const [checkGroupCreator, setCheckGroupCreator] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
-  const checkGroupCreator = currentGroupData?.creatorID === userData?.uid;
-  // const checkCreator = currentGroupData?.creatorID === userData?.uid;
-  console.log(checkGroupCreator);
+
   useEffect(() => {
-    let isMounted = true;
-    if (isMounted) {
-      firebase
-        .getGroupsNoteContent("groups", groupID, "notes", postID)
-        .then((res) => {
-          setNoteContent(res);
-          setCheckNoteCreator(res.creatorID === userData?.uid);
-          setNoteCreator(usersList.find((p) => p.uid === res.creatorID));
-        })
-        .catch((err) => console.log(err));
+    if (userData === null) {
+      history.push("/");
+    } else if (
+      userData !== undefined &&
+      Object.keys(userData).length > 0 &&
+      groupsList.length > 0
+    ) {
+      const currentG = groupsList.find((g) => g.groupID === groupID);
+      setCheckGroupCreator(currentG.creatorID === userData.uid);
+      if (
+        !currentG.membersList?.includes(userData.uid) &&
+        currentG.creatorID !== userData.uid
+      ) {
+        history.push("/");
+      } else {
+        let isMounted = true;
+        if (isMounted) {
+          firebase
+            .getGroupsNoteContent("groups", groupID, "notes", postID)
+            .then((res) => {
+              setNoteContent(res);
+              setCheckNoteCreator(res.creatorID === userData.uid);
+              setNoteCreator(usersList.find((p) => p.uid === res.creatorID));
+              setIsLoading(false);
+            })
+            .catch((err) => console.log(err));
+        }
+
+        return () => {
+          isMounted = false;
+        };
+      }
     }
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // const handleEdit = () => {};
+  }, [userData, groupsList]);
 
   const handleDelete = () => {
     Swal.fire({
@@ -149,51 +251,66 @@ const NotePage = () => {
         Swal.fire("Deleted!", "文章已經刪除囉！", "success");
       }
     });
-
-    // const check = window.confirm("刪除後將不可恢復，確認要刪除嗎？");
-    // if (check) {
-    //   firebase.deleteDocc("groups", groupID, "notes", postID).then(() => {
-    //     history.push(`/group/${groupID}/notes`);
-    //   });
-    // }
   };
 
   console.log(noteContent);
 
-  return (
-    <Wrapper>
-      <TopCover
-        style={{ backgroundImage: `url(${noteContent?.coverImage})` }}
-      />
-      <IconsWrapper>
-        {(checkGroupCreator || checkNoteCreator) && (
-          <>
-            {checkNoteCreator && (
-              <IconLink to={`/group/${groupID}/notes/${postID}/edit`}>
-                <BsPencilSquare />
-              </IconLink>
-            )}
-            <IconCtn>
-              <BsFillTrashFill onClick={handleDelete} />
-            </IconCtn>
-          </>
-        )}
-        <IconLink to={`/group/${groupID}`}>
-          <BsFillHouseDoorFill />
-        </IconLink>
-      </IconsWrapper>
-      <TopArea>
-        <h2>{noteContent?.title}</h2>
-      </TopArea>
-      <label>撰寫自：{noteCreator?.displayName}</label>
-      <label>{convertTime(noteContent?.creationTime)}</label>
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <Container>
+        <Wrapper>
+          <TopArea>
+            <h1>{noteContent?.title}</h1>
+          </TopArea>
+          <TopCover
+            style={{ backgroundImage: `url(${noteContent?.coverImage})` }}
+          />
+          <TopWrapper>
+            <AuthorArea>
+              <div>
+                撰寫自：<span>{noteCreator?.displayName}</span>
+              </div>
+              <Time>{convertTime(noteContent?.creationTime)}</Time>
+            </AuthorArea>
+            <BtnWrapper>
+              {(checkGroupCreator || checkNoteCreator) && (
+                <>
+                  {checkNoteCreator && (
+                    <EditLink to={`/group/${groupID}/notes/${postID}/edit`}>
+                      編輯
+                    </EditLink>
+                  )}
 
-      <ContentStyle>
-        <div className="ql-editor">{HtmlParser(noteContent?.content)}</div>
-      </ContentStyle>
-      <hr />
-    </Wrapper>
-  );
+                  <EditBtn onClick={handleDelete}>刪除</EditBtn>
+                </>
+              )}
+            </BtnWrapper>
+          </TopWrapper>
+          <ContentStyle>
+            <div className="ql-editor">{HtmlParser(noteContent?.content)}</div>
+          </ContentStyle>
+        </Wrapper>
+      </Container>
+    );
 };
 
 export default NotePage;
+
+const AuthorArea = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+`;
+
+const Time = styled.div`
+  font-size: 0.8rem;
+`;
+
+const TopWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+`;

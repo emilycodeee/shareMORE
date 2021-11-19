@@ -7,7 +7,7 @@ import { useParams, useHistory, useLocation } from "react-router";
 import generateText from "../../utils/commonText";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useSelector } from "react-redux";
-
+import { DisappearedLoading } from "react-loadingg";
 const ContainerStyled = styled.div`
   max-width: 1560px;
   width: 80%;
@@ -122,24 +122,18 @@ const Introduce = styled.textarea`
   border: none;
   background-color: #fff;
   padding: 10px;
-  /* height: 4rem; */
-  /* overflow-y: auto; */
-  /* margin: 10px; */
-  /* width: 300px; */
 `;
 
 const NotesEditorPage = () => {
   const userData = useSelector((state) => state.userData);
-
+  const groupsList = useSelector((state) => state.groupsList);
   const { groupID, postID } = useParams();
   const pathname = useLocation().pathname;
-  console.log("pathname", pathname.includes("edit"));
   const history = useHistory();
-  console.log(groupID, postID);
-
   const [title, setTitle] = useState("");
   const [value, setValue] = useState("");
   const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [introduce, setIntroduce] = useState("");
   const [originContent, setOriginContent] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(
@@ -149,42 +143,67 @@ const NotesEditorPage = () => {
   const editorHandler = (e) => {
     setValue(e);
   };
+
+  useEffect(() => {
+    if (userData === null) {
+      history.push("/");
+    } else if (
+      userData !== undefined &&
+      Object.keys(userData).length > 0 &&
+      groupsList.length > 0
+    ) {
+      const currentG = groupsList.find((g) => g.groupID === groupID);
+      if (
+        !currentG.membersList?.includes(userData.uid) &&
+        currentG.creatorID !== userData.uid
+      ) {
+        history.push("/");
+      }
+    }
+  }, [userData, groupsList]);
+
   useEffect(() => {
     let isMounted = true;
-
     if (isMounted) {
       if (pathname.includes("edit")) {
         firebase
           .getGroupsNoteContent("groups", groupID, "notes", postID)
           .then((res) => {
-            setTitle(res.title);
-            setValue(res.content);
-            setIntroduce(res.introduce);
-            setPreviewUrl(res.coverImage);
-            setOriginContent(res);
-            editMode.current = true;
-            console.log(res);
+            if (userData !== undefined && Object.keys(userData).length > 0) {
+              if (res.creatorID !== userData.uid) {
+                history.push("/");
+              }
+
+              setTitle(res.title);
+              setValue(res.content);
+              setIntroduce(res.introduce);
+              setPreviewUrl(res.coverImage);
+              setOriginContent(res);
+              setIsLoading(false);
+              editMode.current = true;
+            }
           })
           .catch((err) => console.log(err));
       } else if (postID) {
         firebase.getRawGroupNotes(groupID, postID).then((res) => {
           const { mainPost, comments } = res;
           const html = generateText(mainPost, comments);
+          setIsLoading(false);
           setValue(html);
         });
       }
+      setIsLoading(false);
     }
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [userData, groupsList]);
 
   const handleSubmit = () => {
     console.log(groupID, postID);
 
     if (introduce.length === 0) {
-      // alert("請填寫筆記摘要");
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -203,7 +222,6 @@ const NotesEditorPage = () => {
       firebase
         .editGroupNotes(data, file, groupID, postID, originContent.coverImage)
         .then(() => {
-          // alert("編輯成功");
           Swal.fire({
             position: "center",
             icon: "success",
@@ -222,67 +240,60 @@ const NotesEditorPage = () => {
         introduce,
       };
 
-      firebase
-        .postGroupNotes(groupID, data, file)
-        // .then(() => {
-        //   firebase.removeTopLevelPost(groupID, postID);
-        // })
-        .then(() => {
-          // alert("建立成功");
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "建立成功",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          history.push(`/group/${groupID}`);
+      firebase.postGroupNotes(groupID, data, file).then((res) => {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "建立成功",
+          showConfirmButton: false,
+          timer: 1500,
         });
+        history.push(`/group/${groupID}/notes/${res}`);
+      });
     }
   };
   const previewImg = file ? URL.createObjectURL(file) : previewUrl;
 
-  // const { groupID, postID } = useParams();
-  // console.log(groupID, postID);
-
-  return (
-    <ContainerStyled>
-      <MainContainer>
-        <LabelCtn>建立社群筆記</LabelCtn>
-
-        <InputCtn
-          placeholder="請輸入標題..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <EditorArea>
-          <RichTextEditor value={value} editorHandler={editorHandler} />
-        </EditorArea>
-      </MainContainer>
-      <SideSetting>
-        <SideLabel>筆記文章設定</SideLabel>
-        <SettingWrapper>
-          <Introduce
-            value={introduce}
-            placeholder="請輸入文章摘要"
-            onChange={(e) => setIntroduce(e.target.value)}
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <ContainerStyled>
+        <MainContainer>
+          <LabelCtn>建立社群筆記</LabelCtn>
+          <InputCtn
+            placeholder="請輸入標題..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <input
-            type="file"
-            id="upload-img"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              setFile(e.target.files[0]);
-            }}
-          />
-          <UploadBtn htmlFor="upload-img">
-            <PreViewCtn src={previewImg} />
-          </UploadBtn>
-        </SettingWrapper>
-        <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
-      </SideSetting>
-    </ContainerStyled>
-  );
+          <EditorArea>
+            <RichTextEditor value={value} editorHandler={editorHandler} />
+          </EditorArea>
+        </MainContainer>
+        <SideSetting>
+          <SideLabel>筆記文章設定</SideLabel>
+          <SettingWrapper>
+            <Introduce
+              value={introduce}
+              placeholder="請輸入文章摘要"
+              onChange={(e) => setIntroduce(e.target.value)}
+            />
+            <input
+              type="file"
+              id="upload-img"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                setFile(e.target.files[0]);
+              }}
+            />
+            <UploadBtn htmlFor="upload-img">
+              <PreViewCtn src={previewImg} />
+            </UploadBtn>
+          </SettingWrapper>
+          <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
+        </SideSetting>
+      </ContainerStyled>
+    );
 };
 
 export default NotesEditorPage;

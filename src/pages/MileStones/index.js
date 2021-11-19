@@ -7,12 +7,7 @@ import { useLocation, useHistory } from "react-router";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import styled from "styled-components";
-import save from "../../sources/save.png";
-import share from "../../sources/share.png";
-import saved from "../../sources/saved.png";
-import clap from "../../sources/clap.png";
-import claped from "../../sources/claped.png";
-import comment from "../../sources/comment.png";
+
 import CommentReply from "./components/CommentReply";
 import Swal from "sweetalert2";
 import "../../../node_modules/react-quill/dist/quill.snow.css";
@@ -21,7 +16,6 @@ import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { RiShareForwardFill } from "react-icons/ri";
 
 const Container = styled.div`
-  /* position: relative; */
   max-width: 1560px;
   width: 80%;
   padding: 1rem;
@@ -29,6 +23,7 @@ const Container = styled.div`
   display: flex;
   margin: 0 auto;
   margin-top: 3rem;
+  margin-bottom: 3rem;
   gap: 1rem;
   @media only screen and (max-width: 992px) {
     flex-direction: column;
@@ -102,12 +97,6 @@ const SideSetting = styled.div`
   }
 `;
 
-const Icon = styled.img`
-  height: 1.5rem;
-  margin: 0 auto;
-  cursor: pointer;
-`;
-
 const IconWord = styled.div`
   cursor: pointer;
   display: flex;
@@ -128,6 +117,7 @@ const CountWrapper = styled.div`
   cursor: pointer;
   margin-top: 10px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
@@ -135,7 +125,7 @@ const CountWrapper = styled.div`
   span {
     color: #f27e59;
     font-weight: 600;
-    display: none;
+    /* display: none; */
   }
   @media only screen and (max-width: 992px) {
     margin-top: 0;
@@ -400,17 +390,6 @@ const MilestonePage = () => {
   const root = window.location.host;
   const pathname = useLocation().pathname;
 
-  // const memberCheckAlert = () => {
-  //   if (userData === null) {
-  //     Swal.fire({
-  //       icon: "info",
-  //       title: "Oops...",
-  //       text: "請先登入或註冊會員！",
-  //     });
-  //     return;
-  //   }
-  // };
-
   const handleSave = () => {
     if (userData === null) {
       Swal.fire({
@@ -422,7 +401,7 @@ const MilestonePage = () => {
     }
     firebase.clapsForMilestone(milestoneID, userData?.uid, "saveBy");
   };
-  // console.log("contentcontent", content);
+
   const handleClap = () => {
     if (userData === null) {
       Swal.fire({
@@ -466,8 +445,7 @@ const MilestonePage = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         firebase.deleteMilestone("articles", milestoneID).then(() => {
-          history.push("/");
-          // alert("文章已經刪除囉！");
+          history.push(`/group/${content?.groupID}/articles`);
         });
         Swal.fire("Deleted!", "文章已經刪除囉！", "success");
       }
@@ -506,14 +484,11 @@ const MilestonePage = () => {
     } else {
       setShowCmt(!showCmt);
     }
-    // if (userData) {
-    // }
   };
 
   useEffect(() => {
     firebase.milestoneListener("articles", milestoneID, setContent);
     firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
-    // console.log("contentcontent", content);
   }, []);
 
   useEffect(() => {
@@ -612,7 +587,7 @@ const MilestonePage = () => {
           </CountWrapper>
           <CountWrapper onClick={handleActiveComment}>
             <Comment />
-            {/* <Icon src={comment} /> */}
+
             <span>留言</span>
             <Count>{renderPost.length > 0 && renderPost.length}</Count>
           </CountWrapper>

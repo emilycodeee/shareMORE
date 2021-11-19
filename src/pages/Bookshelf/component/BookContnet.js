@@ -11,6 +11,16 @@ const defaultBook =
 const BookContent = ({ bookContent, setShowBookContent }) => {
   console.log(bookContent.volumeInfo.description);
 
+  const test = bookContent.volumeInfo.description
+    .replace(/。|\.|\?/g, "。<br>")
+    .replace(/<br>/g, "\n\r");
+  // .replace(/。|\.|\?/g, "。<br>")
+  // .replace(/ /g, "\n\r");
+  // .replace(/推薦/g, "\n");
+
+  // .replace(/。|\.|\?/g, "。<br>")
+  // .replace(/<br>/g, "\n\r");
+
   return (
     <ContentWrapper>
       <BookDetail>
@@ -33,9 +43,7 @@ const BookContent = ({ bookContent, setShowBookContent }) => {
           </div>
         </div>
       </BookDetail>
-      <ContentText>
-        {HtmlParser(bookContent.volumeInfo.description)}
-      </ContentText>
+      <ContentText>{test}</ContentText>
       <IconBtn
         onClick={() => {
           setShowBookContent(false);
@@ -146,8 +154,12 @@ const Pstyle = styled.p`
 `;
 
 const ContentText = styled.div`
+  /* color: red; */
+  /* margin: 0 auto; */
+  /* text-align: center; */
   width: 80%;
   line-height: 1.4rem;
+  white-space: pre-wrap;
   /* border: 1px solid red; */
 `;
 

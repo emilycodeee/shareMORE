@@ -160,21 +160,6 @@ const TextDivStyle = styled.div`
     props.winner?.point > 0 ? "#f27e59" : "rgba(117,117,117,1)"};
 `;
 
-const TextLinkStyle = styled(Link)`
-  font-weight: 400;
-  line-height: 20px;
-  font-size: 0.8rem;
-  color: rgba(117, 117, 117, 1);
-  text-decoration: none;
-`;
-const TextLabelStyle = styled.div`
-  font-weight: 400;
-  line-height: 20px;
-  font-size: 0.8rem;
-  color: rgba(117, 117, 117, 1);
-  text-decoration: none;
-`;
-
 const TextStyle = styled.div`
   font-weight: 400;
   line-height: 20px;

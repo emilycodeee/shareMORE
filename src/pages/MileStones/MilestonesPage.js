@@ -12,7 +12,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { GiBookmarklet } from "react-icons/gi";
 import { BiSearchAlt2, BiUndo, BiX } from "react-icons/bi";
-import { ThreeHorseLoading } from "react-loadingg";
+import { DisappearedLoading } from "react-loadingg";
 const MainCtn = styled.div`
   max-width: 1560px;
   width: 80%;
@@ -192,18 +192,14 @@ const StyledSlider = styled(Slider)`
   .slick-next:before {
     color: black;
   }
-  /* .slick-dots li button:before {
-    height: 2px;
-    width: 2px;
-  } */
 `;
 
 const MilestonesPage = () => {
-  const [milestonesList, setMilestonesList] = useState([]);
   const groupsList = useSelector((state) => state.groupsList);
-  const categoryList = useSelector((state) => state.categoryList);
   const articlesList = useSelector((state) => state.articlesList);
   const usersList = useSelector((state) => state.usersList);
+  const userData = useSelector((state) => state.userData);
+  const [isLoading, setIsLoading] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [bookList, setBookList] = useState([]);
   const [bookContent, setBookContent] = useState({});
@@ -306,12 +302,15 @@ const MilestonesPage = () => {
   };
 
   useEffect(() => {
-    setRenderMileStone(articlesList.filter((a) => a.public === true));
-    setLatestFiveMilestone(
-      articlesList.filter((a) => a.public === true).slice(0, 5)
-    );
-  }, [articlesList]);
-  // const randomGold = getRandomInt(gorden?.length);
+    if (groupsList.length > 0) {
+      setRenderMileStone(articlesList.filter((a) => a.public === true));
+      setLatestFiveMilestone(
+        articlesList.filter((a) => a.public === true).slice(0, 5)
+      );
+      setIsLoading(false);
+    }
+  }, [articlesList, groupsList]);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -331,132 +330,119 @@ const MilestonesPage = () => {
     };
   }, []);
 
-  return (
-    <MainCtn>
-      {showBookContent && (
-        <ContentShield
-          data-target="shield-content"
-          onClick={(e) => {
-            e.target.dataset.target === "shield-content" &&
-              setShowBookContent(!showBookContent);
-          }}
-        >
-          <BookContent
-            bookContent={bookContent}
-            setShowBookContent={setShowBookContent}
-          />
-        </ContentShield>
-      )}
-      <TopSection>
-        <SlideShow>
-          <Div1>
-            <BookLabel>看看大家在看什麼書？</BookLabel>
-          </Div1>
-          <StyledSlider {...settings}>
-            {bookList.length > 0 &&
-              bookList.map((b) => {
-                return (
-                  <SelectedBook key={b.groupBookID}>
-                    <BookImgWrapper
-                      onClick={() => {
-                        setShowBookContent(true);
-                        setBookContent(b);
-                      }}
-                    >
-                      <BookImg src={b.volumeInfo.imageLinks?.thumbnail} />
-                    </BookImgWrapper>
-                    <BookBrief>
-                      <Title>{b.volumeInfo.title}</Title>
-                      <SubTitle>
-                        作者/譯者：{b.volumeInfo.authors?.join(",")}
-                      </SubTitle>
-                      <GroupLink to={`/group/${b.groupID}`}>
-                        <SubTitleLink>
-                          選自：{convertGroupName(b.groupID)}
-                        </SubTitleLink>
-                      </GroupLink>
-                    </BookBrief>
-                  </SelectedBook>
-                );
-              })}
-          </StyledSlider>
-
-          <Golden>
-            <Label>
-              <Bookmark />
-              金句放送
-            </Label>
-            <GoldenCtn>
-              <div>{gorden?.content}</div>
-              <div> ─ {gorden?.from}</div>
-            </GoldenCtn>
-          </Golden>
-        </SlideShow>
-        <LastBlock>
-          <ArticleList>
-            <LastLabel>Latest 5</LastLabel>
-            <ArticleCtn>
-              {latestFiveMilestone.map((item, i) => {
-                console.log(item);
-                return (
-                  <LinkStyle
-                    to={`/article/${item.milestoneID}`}
-                    key={item.milestoneID}
-                  >
-                    <Number>{i + 1}.</Number>
-                    <div>
-                      <TitleStyle>{item.title}</TitleStyle>
-                      <PStyle>啟發自：{findGroup(item)}</PStyle>
-                      <Author>
-                        <Ptag>作者：{findAuthor(item)}</Ptag>
-                        <Ptag>
-                          {item.creationTime?.toDate().toLocaleString("zh-TW")}
-                        </Ptag>
-                      </Author>
-                    </div>
-                  </LinkStyle>
-                );
-              })}
-            </ArticleCtn>
-          </ArticleList>
-        </LastBlock>
-      </TopSection>
-      <SearchWrapper>
-        <Container>
-          <SearchBarInput
-            placeholder="文章標題、文章內容..."
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyPress={handleSearch}
-          />
-          <SubmitBtn onClick={handleSearchBtn}>
-            <SearchIcon />
-          </SubmitBtn>
-        </Container>
-      </SearchWrapper>
-      <div>
-        {searchLoading && (
-          <Empty>
-            <lottie-player
-              src="https://assets6.lottiefiles.com/packages/lf20_aj9jghqr.json"
-              background="transparent"
-              speed="1"
-              style={{ maxWidth: "300px", maxHeight: "300px" }}
-              loop
-              autoplay
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <MainCtn>
+        {showBookContent && (
+          <ContentShield
+            data-target="shield-content"
+            onClick={(e) => {
+              e.target.dataset.target === "shield-content" &&
+                setShowBookContent(!showBookContent);
+            }}
+          >
+            <BookContent
+              bookContent={bookContent}
+              setShowBookContent={setShowBookContent}
             />
-          </Empty>
+          </ContentShield>
         )}
-        {!searchLoading && renderMilestone.length === 0 && (
-          <>
+        <TopSection>
+          <SlideShow>
+            <Div1>
+              <BookLabel>看看大家在看什麼書？</BookLabel>
+            </Div1>
+            <StyledSlider {...settings}>
+              {bookList.length > 0 &&
+                bookList.map((b) => {
+                  return (
+                    <SelectedBook key={b.groupBookID}>
+                      <BookImgWrapper
+                        onClick={() => {
+                          setShowBookContent(true);
+                          setBookContent(b);
+                        }}
+                      >
+                        <BookImg src={b.volumeInfo.imageLinks?.thumbnail} />
+                      </BookImgWrapper>
+                      <BookBrief>
+                        <Title>{b.volumeInfo.title}</Title>
+                        <SubTitle>
+                          作者/譯者：{b.volumeInfo.authors?.join(",")}
+                        </SubTitle>
+                        <GroupLink to={`/group/${b.groupID}`}>
+                          <SubTitleLink>
+                            選自：{convertGroupName(b.groupID)}
+                          </SubTitleLink>
+                        </GroupLink>
+                      </BookBrief>
+                    </SelectedBook>
+                  );
+                })}
+            </StyledSlider>
+
+            <Golden>
+              <Label>
+                <Bookmark />
+                金句放送
+              </Label>
+              <GoldenCtn>
+                <div>{gorden?.content}</div>
+                <div> ─ {gorden?.from}</div>
+              </GoldenCtn>
+            </Golden>
+          </SlideShow>
+          <LastBlock>
+            <ArticleList>
+              <LastLabel>Latest 5</LastLabel>
+              <ArticleCtn>
+                {latestFiveMilestone.map((item, i) => {
+                  console.log(item);
+                  return (
+                    <LinkStyle
+                      to={`/article/${item.milestoneID}`}
+                      key={item.milestoneID}
+                    >
+                      <Number>{i + 1}.</Number>
+                      <div>
+                        <TitleStyle>{item.title}</TitleStyle>
+                        <PStyle>啟發自：{findGroup(item)}</PStyle>
+                        <Author>
+                          <Ptag>作者：{findAuthor(item)}</Ptag>
+                          <Ptag>
+                            {item.creationTime
+                              ?.toDate()
+                              .toLocaleString("zh-TW")}
+                          </Ptag>
+                        </Author>
+                      </div>
+                    </LinkStyle>
+                  );
+                })}
+              </ArticleCtn>
+            </ArticleList>
+          </LastBlock>
+        </TopSection>
+        <SearchWrapper>
+          <Container>
+            <SearchBarInput
+              placeholder="文章標題、文章內容..."
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyPress={handleSearch}
+            />
+            <SubmitBtn onClick={handleSearchBtn}>
+              <SearchIcon />
+            </SubmitBtn>
+          </Container>
+        </SearchWrapper>
+        <div>
+          {searchLoading && (
             <Empty>
-              {/* {searchLoading && <ThreeHorseLoading />} */}
-              <div>
-                找不到相關的分享文章，就由你來
-                <MoreLink to="/articles/post">建立第一篇</MoreLink>吧！
-              </div>
               <lottie-player
-                src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
+                src="https://assets6.lottiefiles.com/packages/lf20_aj9jghqr.json"
                 background="transparent"
                 speed="1"
                 style={{ maxWidth: "300px", maxHeight: "300px" }}
@@ -464,19 +450,37 @@ const MilestonesPage = () => {
                 autoplay
               />
             </Empty>
-          </>
-        )}
+          )}
+          {!searchLoading && renderMilestone.length === 0 && (
+            <>
+              <Empty>
+                {/* {searchLoading && <ThreeHorseLoading />} */}
+                <div>
+                  找不到相關的分享文章，就由你來
+                  <MoreLink to="/articles/post">建立第一篇</MoreLink>吧！
+                </div>
+                <lottie-player
+                  src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
+                  background="transparent"
+                  speed="1"
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                  loop
+                  autoplay
+                />
+              </Empty>
+            </>
+          )}
 
-        {!searchLoading && renderMilestone.length > 0 && (
-          <Wrapper>
-            {renderMilestone.map((item) => {
-              return <Card item={item} key={item.milestoneID} />;
-            })}
-          </Wrapper>
-        )}
-      </div>
-    </MainCtn>
-  );
+          {!searchLoading && renderMilestone.length > 0 && (
+            <Wrapper>
+              {renderMilestone.map((item) => {
+                return <Card item={item} key={item.milestoneID} />;
+              })}
+            </Wrapper>
+          )}
+        </div>
+      </MainCtn>
+    );
 };
 
 export default MilestonesPage;

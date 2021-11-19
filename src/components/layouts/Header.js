@@ -50,7 +50,7 @@ const Header = () => {
 
   const getArticles = (mileID) => {
     const articles = articlesList.find((a) => a.milestoneID === mileID);
-    return articles.title;
+    return articles?.title;
   };
 
   const handleReadNoti = (e) => {
@@ -64,7 +64,11 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (userData) {
+    if (
+      userData !== undefined &&
+      userData !== null &&
+      Object.keys(userData).length > 0
+    ) {
       const q = query(
         collection(firebase.db, "users", userData.uid, "notification"),
         orderBy("creationTime", "desc"),
@@ -149,16 +153,18 @@ const Header = () => {
             >
               分享廣場
             </ListStyled>
+
+            <ListStyled
+              to="/groups"
+              data-id="groups"
+              active={active}
+              onClick={handleChoose}
+            >
+              所有社團
+            </ListStyled>
+
             {userData && (
               <>
-                <ListStyled
-                  to="/groups"
-                  data-id="groups"
-                  active={active}
-                  onClick={handleChoose}
-                >
-                  所有社團
-                </ListStyled>
                 <ListStyled
                   to="/groups/post"
                   data-id="createGroups"

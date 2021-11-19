@@ -145,7 +145,6 @@ export const logIn = async (email, password, setFunction) => {
 export const logOut = () => {
   signOut(auth)
     .then(() => {
-      // alert("Sign-out successful.");
       Swal.fire({
         position: "center",
         icon: "success",
@@ -184,7 +183,8 @@ export const postArticles = async (data, file) => {
     coverImage: imgURL,
   };
 
-  const response = await setDoc(doc(db, "articles", docRefId), finalData);
+  await setDoc(doc(db, "articles", docRefId), finalData);
+  return docRefId;
 };
 
 export const editArticles = async (data, file, milestoneID, imgURL) => {
@@ -341,7 +341,7 @@ export const postGroupNotes = async (groupID, data, file) => {
     doc(db, "groups", groupID, "notes", docRefId),
     finalData
   );
-  return response;
+  return docRefId;
 };
 
 export const editGroupNotes = async (data, file, groupID, postID, imgURL) => {

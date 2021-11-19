@@ -4,16 +4,18 @@ import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useRef } from "react";
-import facebookTag from "../../sources/facebookTag.png";
-import email from "../../sources/email.png";
-import ig from "../../sources/ig.png";
-import linkedin from "../../sources/linkedin.png";
-import web from "../../sources/web.png";
-import github from "../../sources/github.png";
 import * as firebase from "../../utils/firebase";
 import ContentCards from "./components/ContentCards";
 import { IoSettingsOutline } from "react-icons/io5";
-
+import {
+  FaGithubSquare,
+  FaLinkedin,
+  FaFacebookSquare,
+  FaMailBulk,
+  FaInstagram,
+} from "react-icons/fa";
+import { DisappearedLoading } from "react-loadingg";
+import { BsGlobe } from "react-icons/bs";
 import { v4 as uuidv4 } from "uuid";
 
 const SideCard = styled.div`
@@ -62,7 +64,6 @@ const ContentWrapper = styled.div`
   @media only screen and (max-width: 992px) {
     width: 100%;
   }
-  /* box-shadow: 0 2px 10px #a2a2a2; */
 `;
 
 const CoverDiv = styled.div`
@@ -79,7 +80,6 @@ const CoverDiv = styled.div`
   border: 2px solid #fff;
   transform: translateX(-50%);
   border-radius: 50%;
-  /* flex-direction: column; */
   @media only screen and (max-width: 992px) {
     position: static;
     transform: translateX(0);
@@ -94,21 +94,6 @@ const Avatar = styled.img`
   object-fit: cover;
   width: 100%;
   height: 100%;
-  /* position: absolute;
-  top: -65px;
-  left: 50%;
-  border: 2px solid #fff;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  /* flex-direction: column; */
-  /* @media only screen and (max-width: 992px) {
-    position: static;
-    transform: translateX(0);
-    width: 5rem;
-    height: 5rem;
-    align-self: center;
-    margin: 1rem;
-  }  */
 `;
 
 const UserInfo = styled.div`
@@ -155,22 +140,13 @@ const TagWrapper = styled.div`
   }
 `;
 
-const Icon = styled.img`
-  height: 1.8rem;
-  /* @media only screen and (max-width: 500px) {
-    height: 1.2rem;
-  } */
-`;
-
 const IconSet = styled.div`
-  /* margin: 10px; */
   width: 100%;
   display: flex;
   gap: 10px;
   justify-content: space-evenly;
   @media only screen and (max-width: 992px) {
     margin: 0;
-    /* justify-content: flex-start; */
     gap: 10px;
   }
 `;
@@ -191,8 +167,6 @@ const ListCtn = styled.ul`
 
 const ListItem = styled.li`
   cursor: pointer;
-  /* margin-left: 1rem; */
-  /* border-radius: 30px; */
   list-style: none;
   background-color: none;
   font-weight: 600;
@@ -234,6 +208,7 @@ const ProfilePage = () => {
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
+  const [isLoading, setIsLoading] = useState(true);
   //本頁id連動的user
   const currentUser = usersList?.find((item) => item.uid === userID);
   const me = userID === userData?.uid;
@@ -247,34 +222,28 @@ const ProfilePage = () => {
   const [selected, setSelected] = useState([]);
   const [active, setActive] = useState("我參加的社團");
 
-  const isOwner = useRef(false);
-
   useEffect(() => {
     const participate = groupsList?.filter((g) =>
       g.membersList?.includes(userID)
     );
     setSelected(participate);
     setUserJoinGroups(participate);
+
     const owner = groupsList?.filter((g) => g.creatorID === userID);
     setUserCreateGroups(owner);
-    const userMile = articlesList.filter((a) => a.creatorID === userID);
 
+    const userMile = articlesList.filter((a) => a.creatorID === userID);
     setUserMilestones(userMile);
 
-    const mySave = articlesList.filter((a) =>
-      a.saveBy?.includes(userData?.uid)
+    const mySave = articlesList.filter(
+      (a) => a.saveBy?.includes(userData?.uid) && a.public === true
     );
-    const publicChecker = mySave.filter((a) => a.public === true);
-    setMySaveArticles(publicChecker);
+    setMySaveArticles(mySave);
+
+    if (groupsList.length > 0) setIsLoading(false);
   }, [articlesList, groupsList]);
 
-  if (userData?.uid === userID) {
-    isOwner.current = true;
-  }
-
   const handleChoose = (e) => {
-    // setActive(true);
-
     switch (e.target.dataset.id) {
       case "part":
         setActive("我參加的社團");
@@ -304,147 +273,143 @@ const ProfilePage = () => {
     (item) => item.public === true
   ).length;
 
-  return (
-    <Wrapper>
-      <SideCard>
-        <div>
-          <CoverDiv>
-            <Avatar src={currentUser?.avatar} alt="" />
-          </CoverDiv>
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <Wrapper>
+        <SideCard>
+          <div>
+            <CoverDiv>
+              <Avatar src={currentUser?.avatar} alt="" />
+            </CoverDiv>
+            {me && (
+              <MobileSettingBtn to={`/profile/${userID}/edit`}>
+                設定
+                <IoSettingsOutline />
+              </MobileSettingBtn>
+            )}
+          </div>
+
+          <UserInfo>
+            <h1>{currentUser?.displayName} </h1>
+            <p>{currentUser?.introduce || "我還在想😜"}</p>
+
+            <IconSet>
+              {currentUser?.instagram && (
+                <a href={currentUser?.instagram} target="_blank">
+                  <InstagramIcon />
+                </a>
+              )}
+              {currentUser?.facebook && (
+                <a href={currentUser?.facebook} target="_blank">
+                  <FacebookIcon />
+                </a>
+              )}
+              {currentUser?.linkedin && (
+                <a href={currentUser?.linkedin} target="_blank">
+                  <LinkedinIcon />
+                </a>
+              )}
+              {currentUser?.github && (
+                <a href={currentUser?.github} target="_blank">
+                  <GitIcon />
+                </a>
+              )}
+              {currentUser?.secondEmail && (
+                <a href={`mailto:${currentUser?.secondEmail}`}>
+                  <MailIcon />
+                </a>
+              )}
+              {currentUser?.webUrl && (
+                <a href={currentUser?.webUrl} target="_blank">
+                  <WebIcon />
+                </a>
+              )}
+            </IconSet>
+          </UserInfo>
+          <TagWrapper>
+            <TagSet>
+              <div>參加</div>
+              <div>{userJoinGroups.length}</div>
+              <div>社群</div>
+            </TagSet>
+            <TagSet>
+              <div>發起</div>
+              <div>{userCreateGroups.length}</div>
+              <div>社群</div>
+            </TagSet>
+            <TagSet>
+              <div>分享</div>
+              <div>{publicMilestone}</div>
+              <div>文章</div>
+            </TagSet>
+          </TagWrapper>
           {me && (
-            <MobileSettingBtn to={`/profile/${userID}/edit`}>
-              設定
+            <SettingBtn to={`/profile/${userID}/edit`}>
+              個人頁面設定
               <IoSettingsOutline />
-            </MobileSettingBtn>
+            </SettingBtn>
           )}
-        </div>
+        </SideCard>
 
-        <UserInfo>
-          <h1>{currentUser?.displayName} </h1>
-          <p>{currentUser?.introduce || "我還在想😜"}</p>
-
-          <IconSet>
-            {/* {currentUser?.introduce} */}
-
-            {currentUser?.instagram && (
-              <a href={currentUser?.instagram} target="_blank">
-                <Icon src={ig} />
-              </a>
+        <ContentWrapper>
+          <ListCtn>
+            <ListItem data-id="part" active={active} onClick={handleChoose}>
+              我參加的社團
+            </ListItem>
+            <ListItem data-id="own" active={active} onClick={handleChoose}>
+              我創建的社團
+            </ListItem>
+            <ListItem data-id="stone" active={active} onClick={handleChoose}>
+              我的分享
+            </ListItem>
+            {me && (
+              <>
+                <ListItem data-id="save" active={active} onClick={handleChoose}>
+                  我的收藏
+                </ListItem>
+                <ListItem
+                  data-id="archive"
+                  active={active}
+                  onClick={handleChoose}
+                >
+                  非公開文章
+                </ListItem>
+              </>
             )}
-            {currentUser?.facebook && (
-              <a href={currentUser?.facebook} target="_blank">
-                <Icon src={facebookTag} />
-              </a>
+          </ListCtn>
+          <ContentCtn>
+            {selected?.map((item) => {
+              return (
+                <ContentCards
+                  item={item}
+                  key={item.milestoneID || item.groupID}
+                />
+              );
+            })}
+            {selected.length === 0 && (
+              <Empty>
+                <div> {active} 目前空空的...</div>
+                <lottie-player
+                  src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
+                  background="transparent"
+                  speed="1"
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                  loop
+                  autoplay
+                />
+              </Empty>
             )}
-            {currentUser?.linkedin && (
-              <a href={currentUser?.linkedin} target="_blank">
-                <Icon src={linkedin} />
-              </a>
-            )}
-            {currentUser?.github && (
-              <a href={currentUser?.github} target="_blank">
-                <Icon src={github} />
-              </a>
-            )}
-            {currentUser?.secondEmail && (
-              <a href={`mailto:${currentUser?.secondEmail}`}>
-                <Icon src={email} />
-              </a>
-            )}
-            {currentUser?.webUrl && (
-              <a href={currentUser?.webUrl} target="_blank">
-                <Icon src={web} />
-              </a>
-            )}
-          </IconSet>
-        </UserInfo>
-        <TagWrapper>
-          <TagSet>
-            <div>參加</div>
-            <div>{userJoinGroups.length}</div>
-            <div>社群</div>
-          </TagSet>
-          <TagSet>
-            <div>發起</div>
-            <div>{userCreateGroups.length}</div>
-            <div>社群</div>
-          </TagSet>
-          <TagSet>
-            <div>分享</div>
-            <div>{publicMilestone}</div>
-            <div>文章</div>
-          </TagSet>
-        </TagWrapper>
-        {/* <div>
-            <p>Follow me on popular social media sites.</p>
-          </div> */}
-        {me && (
-          <SettingBtn to={`/profile/${userID}/edit`}>
-            個人頁面設定
-            <IoSettingsOutline />
-          </SettingBtn>
-        )}
-      </SideCard>
-
-      <ContentWrapper>
-        <ListCtn>
-          <ListItem data-id="part" active={active} onClick={handleChoose}>
-            我參加的社團
-          </ListItem>
-          <ListItem data-id="own" active={active} onClick={handleChoose}>
-            我創建的社團
-          </ListItem>
-          <ListItem data-id="stone" active={active} onClick={handleChoose}>
-            我的分享
-          </ListItem>
-          {me && (
-            <>
-              <ListItem data-id="save" active={active} onClick={handleChoose}>
-                我的收藏
-              </ListItem>
-              <ListItem
-                data-id="archive"
-                active={active}
-                onClick={handleChoose}
-              >
-                非公開文章
-              </ListItem>
-            </>
-          )}
-        </ListCtn>
-        <ContentCtn>
-          {selected?.map((item) => {
-            return (
-              <ContentCards
-                item={item}
-                key={item.milestoneID || item.groupID}
-              />
-            );
-          })}
-          {selected.length === 0 && (
-            <Empty>
-              {/* {searchLoading && <ThreeHorseLoading />} */}
-              <div> {active} 目前空空的...</div>
-              <lottie-player
-                src="https://assets6.lottiefiles.com/private_files/lf30_bn5winlb.json"
-                background="transparent"
-                speed="1"
-                style={{ maxWidth: "300px", maxHeight: "300px" }}
-                loop
-                autoplay
-              />
-            </Empty>
-          )}
-        </ContentCtn>
-      </ContentWrapper>
-    </Wrapper>
-  );
+          </ContentCtn>
+        </ContentWrapper>
+      </Wrapper>
+    );
 };
 
 export default ProfilePage;
 
 const Empty = styled.div`
-  /* background-color: red; */
   width: 80%;
   display: flex;
   justify-content: flex-start;
@@ -472,12 +437,10 @@ const MobileSettingBtn = styled(Link)`
     cursor: pointer;
     width: 60%;
     margin: 0 20%;
-    /* padding: 6px 3px; */
     flex-direction: row;
     border-radius: 4px;
     border: 1px solid #f27e59;
     display: flex;
-    /* justify-content: center; */
     align-items: center;
     justify-content: center;
     color: #f27e59;
@@ -485,9 +448,35 @@ const MobileSettingBtn = styled(Link)`
       color: white;
       background-color: #f27e59;
     }
-
-    /* &:hover {
-      color: gray;
-    } */
   }
+`;
+const style = {
+  width: "1.4rem",
+  height: "1.4rem",
+  color: "black",
+  marginTop: "10px",
+};
+
+const WebIcon = styled(BsGlobe)`
+  ${style}
+`;
+
+const MailIcon = styled(FaMailBulk)`
+  ${style}
+`;
+
+const InstagramIcon = styled(FaInstagram)`
+  ${style}
+`;
+
+const LinkedinIcon = styled(FaLinkedin)`
+  ${style}
+`;
+
+const FacebookIcon = styled(FaFacebookSquare)`
+  ${style}
+`;
+
+const GitIcon = styled(FaGithubSquare)`
+  ${style}
 `;

@@ -10,6 +10,7 @@ import BookContent from "./component/BookContnet";
 import GroupHeader from "../Groups/components/GroupHeader";
 import { BiX } from "react-icons/bi";
 import { JumpCircleLoading } from "react-loadingg";
+import { DisappearedLoading } from "react-loadingg";
 import { BsBookHalf } from "react-icons/bs";
 import Swal from "sweetalert2";
 
@@ -118,7 +119,6 @@ const Bookshelf = () => {
   const [showBookContent, setShowBookContent] = useState(false);
   const [renderBookData, setRenderBookData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  // const [groupDetail, setGroupDetail] = useState({});
   const [showDelete, setShowDelete] = useState(false);
   const [isInsider, setIsInsider] = useState(null);
   const [isOwner, setIsOwner] = useState(null);
@@ -149,15 +149,18 @@ const Bookshelf = () => {
   };
 
   useEffect(() => {
-    const groupDetail = groupsList.find((g) => g.groupID === groupID);
+    if (groupsList.length > 0) {
+      const groupDetail = groupsList.find((g) => g.groupID === groupID);
 
-    const checkMembership =
-      groupDetail?.membersList?.includes(userData?.uid) ||
-      groupDetail?.creatorID === userData?.uid;
-    setIsInsider(checkMembership);
+      const checkMembership =
+        groupDetail?.membersList?.includes(userData?.uid) ||
+        groupDetail?.creatorID === userData?.uid;
+      setIsInsider(checkMembership);
 
-    const groupOwner = groupDetail?.creatorID === userData?.uid;
-    setIsOwner(groupOwner);
+      const groupOwner = groupDetail?.creatorID === userData?.uid;
+      setIsOwner(groupOwner);
+      setIsLoading(false);
+    }
   }, [groupsList]);
 
   const getRecommender = (uid) => {
@@ -169,18 +172,7 @@ const Bookshelf = () => {
     let isMounted = true;
     if (isMounted) {
       firebase.getGroupBook(groupID, setRenderBookData);
-      setIsLoading(false);
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted) {
-      firebase.getGroupBook(groupID, setRenderBookData);
-      setIsLoading(false);
+      // .then(() => setIsLoading(false));
     }
     return () => {
       isMounted = false;
@@ -190,120 +182,121 @@ const Bookshelf = () => {
   const defaultBook =
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
 
-  return (
-    <>
-      <GroupHeader tag="bookShelf" />
-      <Wrapper>
-        {isLoading && <JumpCircleLoading />}
-        {isInsider && (
-          <SerchButton
-            onClick={() => {
-              setShowSearchPage(true);
-            }}
-          >
-            推薦選書
-            <BsBookHalf />
-          </SerchButton>
-        )}
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <>
+        <GroupHeader tag="bookShelf" />
+        <Wrapper>
+          {isLoading && <JumpCircleLoading />}
+          {isInsider && (
+            <SerchButton
+              onClick={() => {
+                setShowSearchPage(true);
+              }}
+            >
+              推薦選書
+              <BsBookHalf />
+            </SerchButton>
+          )}
 
-        {showSearchPage && (
-          <PageShield
-            data-target="shield"
-            onClick={(e) => {
-              e.target.dataset.target === "shield" &&
-                setShowSearchPage(!showSearchPage);
-            }}
-          >
-            <SearchBook />
-          </PageShield>
-        )}
-        {renderBookData.length === 0 && (
-          <>
-            <Empty>
-              <div>
-                社團書櫃空空的
-                {isInsider && `，一起建立我們的社團書櫃！`}
-              </div>
-              <lottie-player
-                src="https://assets5.lottiefiles.com/packages/lf20_tnrzlN.json"
-                background="transparent"
-                speed="1"
-                style={{ maxWidth: "300px", maxHeight: "300px" }}
-                loop
-                autoplay
-              />
-            </Empty>
-            {/* <div>社群書櫃目前還空空的</div> */}
-            {/* <BookWelcome>紀錄書單更方便，一起建立我們的社團書櫃！</BookWelcome>
-            <BookAnimation /> */}
-            {/* <BookAnimation2 /> */}
-          </>
-        )}
-
-        <ShelfWrapper>
-          {renderBookData.map((b) => {
-            return (
-              <BookItem
-                key={b.groupBookID}
-                onMouseOver={() => setShowDelete(true)}
-                onMouseLeave={() => setShowDelete(false)}
-              >
-                {isOwner && showDelete && (
-                  <DeleteIcon
-                    onClick={handleDeleteBook}
-                    data-bookid={b.groupBookID}
-                  />
-                )}
-                <SelectedBook
-                  key={b.groupBookID}
-                  onClick={() => {
-                    setShowBookContent(true);
-                    setBookContent(b);
-                  }}
-                >
-                  <div>
-                    <BookImage
-                      src={b.volumeInfo.imageLinks?.thumbnail || defaultBook}
-                    />
-                  </div>
-                  <div>
-                    <div>
-                      <BookTitle>{b.volumeInfo.title}</BookTitle>
-                      <BookAuthor>
-                        作者/譯者：{b.volumeInfo.authors?.join(",")}
-                      </BookAuthor>
-                    </div>
-                  </div>
-                </SelectedBook>
+          {showSearchPage && (
+            <PageShield
+              data-target="shield"
+              onClick={(e) => {
+                e.target.dataset.target === "shield" &&
+                  setShowSearchPage(!showSearchPage);
+              }}
+            >
+              <SearchBook />
+            </PageShield>
+          )}
+          {renderBookData.length === 0 && (
+            <>
+              <Empty>
                 <div>
-                  <RecommenderDetail>
-                    <Avatar src={getRecommender(b.groupSharerUid)?.avatar} />
-                    <p>{getRecommender(b.groupSharerUid)?.displayName} 說：</p>
-                  </RecommenderDetail>
-                  <RecommendText>{b.recReason}</RecommendText>
+                  社團書櫃空空的
+                  {isInsider && `，一起建立我們的社團書櫃！`}
                 </div>
-              </BookItem>
-            );
-          })}
-        </ShelfWrapper>
+                <lottie-player
+                  src="https://assets5.lottiefiles.com/packages/lf20_tnrzlN.json"
+                  background="transparent"
+                  speed="1"
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                  loop
+                  autoplay
+                />
+              </Empty>
+            </>
+          )}
 
-        {showBookContent && (
-          <PageShield
-            data-target="shield-content"
-            onClick={(e) => {
-              e.target.dataset.target === "shield-content" &&
-                setShowBookContent(!showBookContent);
-            }}
-          >
-            <BookContent
-              bookContent={bookContent}
-              setShowBookContent={setShowBookContent}
-            />
-          </PageShield>
-        )}
-      </Wrapper>
-    </>
-  );
+          <ShelfWrapper>
+            {renderBookData.map((b) => {
+              return (
+                <BookItem
+                  key={b.groupBookID}
+                  onMouseOver={() => setShowDelete(true)}
+                  onMouseLeave={() => setShowDelete(false)}
+                >
+                  {isOwner && showDelete && (
+                    <DeleteIcon
+                      onClick={handleDeleteBook}
+                      data-bookid={b.groupBookID}
+                    />
+                  )}
+                  <SelectedBook
+                    key={b.groupBookID}
+                    onClick={() => {
+                      setShowBookContent(true);
+                      setBookContent(b);
+                    }}
+                  >
+                    <div>
+                      <BookImage
+                        src={b.volumeInfo.imageLinks?.thumbnail || defaultBook}
+                      />
+                    </div>
+                    <div>
+                      <div>
+                        <BookTitle>{b.volumeInfo.title}</BookTitle>
+                        <BookAuthor>
+                          作者/譯者：{b.volumeInfo.authors?.join(",")}
+                        </BookAuthor>
+                      </div>
+                    </div>
+                  </SelectedBook>
+                  <div>
+                    <RecommenderDetail>
+                      <Avatar src={getRecommender(b.groupSharerUid)?.avatar} />
+                      <p>
+                        {getRecommender(b.groupSharerUid)?.displayName} 說：
+                      </p>
+                    </RecommenderDetail>
+                    <RecommendText>{b.recReason}</RecommendText>
+                  </div>
+                </BookItem>
+              );
+            })}
+          </ShelfWrapper>
+
+          {showBookContent && (
+            <PageShield
+              data-target="shield-content"
+              onClick={(e) => {
+                e.target.dataset.target === "shield-content" &&
+                  setShowBookContent(!showBookContent);
+              }}
+            >
+              <BookContent
+                bookContent={bookContent}
+                setShowBookContent={setShowBookContent}
+              />
+            </PageShield>
+          )}
+        </Wrapper>
+      </>
+    );
 };
 
 export default Bookshelf;

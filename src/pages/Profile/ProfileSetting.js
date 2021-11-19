@@ -1,19 +1,23 @@
 import React from "react";
 import styled from "styled-components";
-import facebookTag from "../../sources/facebookTag.png";
-import email from "../../sources/email.png";
-import ig from "../../sources/ig.png";
-import linkedin from "../../sources/linkedin.png";
-import web from "../../sources/web.png";
-import github from "../../sources/github.png";
 import camera from "../../sources/camera.png";
 import { Link, useParams, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { getUsersList } from "../../redux/actions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  FaGithubSquare,
+  FaLinkedin,
+  FaFacebookSquare,
+  FaMailBulk,
+  FaInstagram,
+} from "react-icons/fa";
+
+import { BsGlobe } from "react-icons/bs";
 import * as firebase from "../../utils/firebase";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { webRegex } from "../../utils/commonText";
+import { DisappearedLoading } from "react-loadingg";
+
 const Wrapper = styled.div`
   max-width: 1560px;
   width: 100%;
@@ -142,10 +146,6 @@ const MobileTagWrapper = styled.div`
   }
 `;
 
-const Icon = styled.img`
-  height: 1.8rem;
-`;
-
 const UploadIcon = styled.img`
   height: 1.8rem;
   position: absolute;
@@ -157,25 +157,10 @@ const UploadIcon = styled.img`
 `;
 
 const IconSet = styled.div`
-  /* margin: 10px; */
   width: 100%;
   gap: 10px;
   display: flex;
   justify-content: space-evenly;
-`;
-
-const SettingBtn = styled.button`
-  cursor: pointer;
-  margin: 30px 0;
-  padding: 10px 0;
-  width: 80%;
-  height: 40px;
-  display: flex;
-  flex-direction: row;
-  border-radius: 10px;
-  border: 1px solid rgb(219, 216, 214);
-  align-items: center;
-  justify-content: center;
 `;
 
 const InputField = styled.div`
@@ -226,7 +211,6 @@ const AreaText = styled.textarea`
 `;
 
 const UploadLabel = styled.label`
-  /* position: relative; */
   margin: 0 auto;
 `;
 
@@ -272,28 +256,53 @@ const PreviewTag = styled.div`
 `;
 
 const ProfileSetting = () => {
-  // console.log(webRegex);
-
   const d = useDispatch();
   const { userID } = useParams();
   const usersList = useSelector((state) => state.usersList);
-  const currentData = usersList.find((item) => item.uid === userID);
-  const [displayName, setDisplayName] = useState(currentData?.displayName);
-  const [secondEmail, setSecondEmail] = useState(currentData?.secondEmail);
-  const [linkedinUrl, setLinkedin] = useState(currentData?.linkedin);
-  const [instagramUrl, setInstagram] = useState(currentData?.instagram);
-  const [introduce, setIntroduce] = useState(currentData?.introduce);
-  const [facebookUrl, setFacebook] = useState(currentData?.facebook);
-  const [webUrl, setWebUrl] = useState(currentData?.webUrl);
-  const [githubUrl, setGithubUrl] = useState(currentData?.github);
+  // const currentData = usersList.find((item) => item.uid === userID);
+  const userData = useSelector((state) => state.userData);
+  const [currentData, setCurrentData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [displayName, setDisplayName] = useState("");
+  const [secondEmail, setSecondEmail] = useState("");
+  const [linkedinUrl, setLinkedin] = useState("");
+  const [instagramUrl, setInstagram] = useState("");
+  const [introduce, setIntroduce] = useState("");
+  const [facebookUrl, setFacebook] = useState("");
+  const [webUrl, setWebUrl] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
   const [file, setFile] = useState(null);
 
   const previewImg = file ? URL.createObjectURL(file) : currentData?.avatar;
   const history = useHistory();
 
-  const handleSubmit = () => {
-    // const checkFB = fbRegex.test(facebookUrl);
+  useEffect(() => {
+    if (userData === null) {
+      history.push("/");
+    } else if (
+      userData !== undefined &&
+      Object.keys(userData).length > 0 &&
+      usersList.length > 0
+    ) {
+      const owner = usersList.find((item) => item.uid === userID);
+      if (owner.uid !== userData.uid) {
+        history.push("/");
+      } else {
+        setCurrentData(owner);
+        setDisplayName(owner.displayName);
+        setSecondEmail(owner.secondEmail);
+        setLinkedin(owner.linkedin);
+        setInstagram(owner.instagram);
+        setIntroduce(owner.introduce);
+        setFacebook(owner.facebook);
+        setWebUrl(owner.webUrl);
+        setGithubUrl(owner.github);
+        setIsLoading(false);
+      }
+    }
+  }, [usersList, userData]);
 
+  const handleSubmit = () => {
     if (instagramUrl) {
       const igRegex = /https\:\/\/www\.instagram\.com\//;
       const checkIG = igRegex.test(instagramUrl);
@@ -396,152 +405,178 @@ const ProfileSetting = () => {
     });
   };
 
-  return (
-    <Wrapper>
-      <SideCard>
-        <div>
-          <UploadLabel htmlFor="upload-img">
-            <AvatarCtn>
-              <Avatar src={previewImg} alt="" />
-              <UploadIcon src={camera} />
-            </AvatarCtn>
-            {/* <div> */}
-            <input
-              type="file"
-              id="upload-img"
-              style={{ display: "none" }}
-              onChange={(e) => {
-                setFile(e.target.files[0]);
-              }}
-            />
-          </UploadLabel>
-          {/* </div> */}
-        </div>
-
-        <UserInfo>
-          <h1>{displayName}</h1>
-          <p>{introduce || "我還在想😜"}</p>
-          <IconSet>
-            {instagramUrl && <Icon src={ig} />}
-            {facebookUrl && <Icon src={facebookTag} />}
-            {linkedinUrl && <Icon src={linkedin} />}
-            {githubUrl && <Icon src={github} />}
-            {secondEmail && <Icon src={email} />}
-            {webUrl && <Icon src={web} />}
-          </IconSet>
-          <MobileTagWrapper>
-            <PreviewTag>預覽中，更改後記得儲存送出喔！</PreviewTag>
-          </MobileTagWrapper>
-        </UserInfo>
-
-        {/* <div>
-          <p>Follow me on popular social media sites.</p>
-        </div> */}
-        <TagWrapper>
-          <PreviewTag>預覽中，更改後記得儲存送出喔！</PreviewTag>
-        </TagWrapper>
-      </SideCard>
-
-      <ContentWrapper>
-        <div>
-          <Title>個人資料設定</Title>
-          <InputField>
-            <TagName>帳號</TagName>
-            <InputCtn>
-              <SpanStyle>{currentData?.email}</SpanStyle>
-            </InputCtn>
-          </InputField>
-          <InputField>
-            <TagName>暱稱</TagName>
-            <InputCtn>
-              <InputText
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="請輸入暱稱"
-              ></InputText>
-            </InputCtn>
-          </InputField>
-          <InputField>
-            <TagName>自我介紹</TagName>
-            <InputCtn>
-              <AreaText
-                value={introduce}
-                onChange={(e) => setIntroduce(e.target.value)}
-                placeholder="請輸入自我介紹"
-              ></AreaText>
-            </InputCtn>
-          </InputField>
-        </div>
-        <hr />
-        <div>
-          <Title>社群連結設定</Title>
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <Wrapper>
+        <SideCard>
           <div>
+            <UploadLabel htmlFor="upload-img">
+              <AvatarCtn>
+                <Avatar src={previewImg} alt="" />
+                <UploadIcon src={camera} />
+              </AvatarCtn>
+              <input
+                type="file"
+                id="upload-img"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  setFile(e.target.files[0]);
+                }}
+              />
+            </UploadLabel>
+            {/* </div> */}
+          </div>
+
+          <UserInfo>
+            <h1>{displayName}</h1>
+            <p>{introduce || "我還在想😜"}</p>
+            <IconSet>
+              {instagramUrl && <InstagramIcon />}
+              {facebookUrl && <FacebookIcon />}
+              {linkedinUrl && <LinkedinIcon />}
+              {githubUrl && <GitIcon />}
+              {secondEmail && <MailIcon />}
+              {webUrl && <WebIcon />}
+            </IconSet>
+            <MobileTagWrapper>
+              <PreviewTag>預覽中，更改後記得儲存送出喔！</PreviewTag>
+            </MobileTagWrapper>
+          </UserInfo>
+          <TagWrapper>
+            <PreviewTag>預覽中，更改後記得儲存送出喔！</PreviewTag>
+          </TagWrapper>
+        </SideCard>
+
+        <ContentWrapper>
+          <div>
+            <Title>個人資料設定</Title>
             <InputField>
-              <TagName>Instagram</TagName>
+              <TagName>帳號</TagName>
+              <InputCtn>
+                <SpanStyle>{currentData?.email}</SpanStyle>
+              </InputCtn>
+            </InputField>
+            <InputField>
+              <TagName>暱稱</TagName>
               <InputCtn>
                 <InputText
-                  value={instagramUrl}
-                  onChange={(e) => setInstagram(e.target.value)}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="請輸入暱稱"
                 ></InputText>
               </InputCtn>
             </InputField>
             <InputField>
-              <TagName>Facebook</TagName>
+              <TagName>自我介紹</TagName>
               <InputCtn>
-                <InputText
-                  value={facebookUrl}
-                  onChange={(e) => setFacebook(e.target.value)}
-                ></InputText>
-              </InputCtn>
-            </InputField>
-            <InputField>
-              <TagName>linkedin</TagName>
-              <InputCtn>
-                <InputText
-                  value={linkedinUrl}
-                  onChange={(e) => setLinkedin(e.target.value)}
-                ></InputText>
-              </InputCtn>
-            </InputField>
-            <InputField>
-              <TagName>GitHub</TagName>
-              <InputCtn>
-                <InputText
-                  value={githubUrl}
-                  onChange={(e) => setGithubUrl(e.target.value)}
-                ></InputText>
-              </InputCtn>
-            </InputField>
-            <InputField>
-              <TagName>其他聯絡信箱</TagName>
-              <InputCtn>
-                <InputText
-                  value={secondEmail}
-                  onChange={(e) => setSecondEmail(e.target.value)}
-                ></InputText>
-              </InputCtn>
-            </InputField>
-            <InputField>
-              <TagName>個人網站</TagName>
-              <InputCtn>
-                <InputText
-                  value={webUrl}
-                  onChange={(e) => setWebUrl(e.target.value)}
-                ></InputText>
+                <AreaText
+                  value={introduce}
+                  onChange={(e) => setIntroduce(e.target.value)}
+                  placeholder="請輸入自我介紹"
+                ></AreaText>
               </InputCtn>
             </InputField>
           </div>
-        </div>
-        <ButtonSet>
-          <ButtonStyle onClick={handleSubmit}>確認送出</ButtonStyle>
-          {/* <ButtonStyle>取消</ButtonStyle> */}
-          <ButtonStyle>
-            <LinkNone to={`/profile/${userID}`}>返回個人頁面</LinkNone>
-          </ButtonStyle>
-        </ButtonSet>
-      </ContentWrapper>
-    </Wrapper>
-  );
+          <hr />
+          <div>
+            <Title>社群連結設定</Title>
+            <div>
+              <InputField>
+                <TagName>Instagram</TagName>
+                <InputCtn>
+                  <InputText
+                    value={instagramUrl}
+                    onChange={(e) => setInstagram(e.target.value)}
+                  ></InputText>
+                </InputCtn>
+              </InputField>
+              <InputField>
+                <TagName>Facebook</TagName>
+                <InputCtn>
+                  <InputText
+                    value={facebookUrl}
+                    onChange={(e) => setFacebook(e.target.value)}
+                  ></InputText>
+                </InputCtn>
+              </InputField>
+              <InputField>
+                <TagName>linkedin</TagName>
+                <InputCtn>
+                  <InputText
+                    value={linkedinUrl}
+                    onChange={(e) => setLinkedin(e.target.value)}
+                  ></InputText>
+                </InputCtn>
+              </InputField>
+              <InputField>
+                <TagName>GitHub</TagName>
+                <InputCtn>
+                  <InputText
+                    value={githubUrl}
+                    onChange={(e) => setGithubUrl(e.target.value)}
+                  ></InputText>
+                </InputCtn>
+              </InputField>
+              <InputField>
+                <TagName>其他聯絡信箱</TagName>
+                <InputCtn>
+                  <InputText
+                    value={secondEmail}
+                    onChange={(e) => setSecondEmail(e.target.value)}
+                  ></InputText>
+                </InputCtn>
+              </InputField>
+              <InputField>
+                <TagName>個人網站</TagName>
+                <InputCtn>
+                  <InputText
+                    value={webUrl}
+                    onChange={(e) => setWebUrl(e.target.value)}
+                  ></InputText>
+                </InputCtn>
+              </InputField>
+            </div>
+          </div>
+          <ButtonSet>
+            <ButtonStyle onClick={handleSubmit}>確認送出</ButtonStyle>
+            <ButtonStyle>
+              <LinkNone to={`/profile/${userID}`}>返回個人頁面</LinkNone>
+            </ButtonStyle>
+          </ButtonSet>
+        </ContentWrapper>
+      </Wrapper>
+    );
 };
 
 export default ProfileSetting;
+const style = {
+  marginTop: "10px",
+  width: "1.4rem",
+  height: "1.4rem",
+};
+
+const WebIcon = styled(BsGlobe)`
+  ${style}
+`;
+
+const MailIcon = styled(FaMailBulk)`
+  ${style}
+`;
+
+const InstagramIcon = styled(FaInstagram)`
+  ${style}
+`;
+
+const LinkedinIcon = styled(FaLinkedin)`
+  ${style}
+`;
+
+const FacebookIcon = styled(FaFacebookSquare)`
+  ${style}
+`;
+
+const GitIcon = styled(FaGithubSquare)`
+  ${style}
+`;

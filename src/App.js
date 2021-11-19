@@ -42,7 +42,6 @@ import {
 function App() {
   const userData = useSelector((state) => state.userData);
   const history = useHistory();
-  const [loginState, setLoginState] = useState();
   const d = useDispatch();
 
   useEffect(() => {
@@ -56,13 +55,7 @@ function App() {
         .catch((err) => console.log(err));
 
       firebase.subscribeToUser((currentUser) => {
-        setLoginState(currentUser);
         d(getUserData(currentUser));
-        // if (currentUser) {
-        //   d(getUserData(currentUser));
-        // } else {
-        //   d(getUserData(null));
-        // }
       });
     }
     return () => {
@@ -144,20 +137,11 @@ function App() {
           <Route path="/articles/post" exact>
             <MilestoneEditor />
           </Route>
-          <Route path="/article/:milestoneID/edit" exact>
-            <MilestoneEditor />
-          </Route>
           <Route path="/groups/post" exact>
             <BuildGroups />
           </Route>
           <Route path="/group/:groupID/notes" exact>
             <NotesPage />
-          </Route>
-          <Route path="/group/:groupID/notes/:postID/post" exact>
-            <NotesEditorPage />
-          </Route>
-          <Route path="/group/:groupID/notes/:postID/edit" exact>
-            <NotesEditorPage />
           </Route>
           <Route path="/group/:groupID/new/notes" exact>
             <NotesEditorPage />
@@ -167,6 +151,15 @@ function App() {
           </Route>
           <Route path="/profile/:userID" exact>
             <ProfilePage />
+          </Route>
+          <Route path="/article/:milestoneID/edit" exact>
+            <MilestoneEditor />
+          </Route>
+          <Route path="/group/:groupID/notes/:postID/post" exact>
+            <NotesEditorPage />
+          </Route>
+          <Route path="/group/:groupID/notes/:postID/edit" exact>
+            <NotesEditorPage />
           </Route>
           <Route path="/profile/:userID/edit" exact>
             <ProfileSetting />

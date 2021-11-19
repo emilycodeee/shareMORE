@@ -8,13 +8,12 @@ import Switch from "../../components/Switch";
 import { useHistory, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2/dist/sweetalert2.js";
+import { DisappearedLoading } from "react-loadingg";
 const ContainerStyled = styled.div`
   gap: 1rem;
   max-width: 1560px;
   width: 80%;
-  /* border: 1px solid red; */
   display: flex;
-  /* padding: 3rem 5rem; */
   margin: 0 auto;
   margin-top: 3rem;
   @media only screen and (max-width: 992px) {
@@ -57,12 +56,6 @@ const InputCtn = styled.input`
   margin: 1rem 0;
   border: 1px solid #b5b2b0;
   border-radius: 4px;
-  /* border: 1px solid #b5b2b0; */
-`;
-
-const InputWrapper = styled.div`
-  border-radius: 4px;
-  /* padding: 8px; */
 `;
 
 const UploadBtn = styled.label`
@@ -153,8 +146,6 @@ const Introduce = styled.textarea`
   border: none;
   background-color: #fff;
   padding: 10px;
-  /* resize: none; */
-  /* margin: 10px; */
 `;
 
 const OriginLabel = styled.label`
@@ -166,6 +157,7 @@ const OriginLabel = styled.label`
 const MilestoneEditor = () => {
   const history = useHistory();
   const groupsList = useSelector((state) => state.groupsList);
+  const userData = useSelector((state) => state.userData);
   const { milestoneID } = useParams();
   const [originContent, setOriginContent] = useState(null);
   const [title, setTitle] = useState("");
@@ -176,24 +168,40 @@ const MilestoneEditor = () => {
   const [selected, setSelected] = useState(null);
   const [check, setCheck] = useState(true);
   const [originLabel, setOriginLabel] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState(
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fdefault.jpg?alt=media&token=da2e2f35-7239-4961-94bb-89af13aaca66"
   );
-  // init
   const editMode = useRef(false);
+
+  if (userData === null) {
+    history.push("/");
+  }
+
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      if (!userData) {
-        history.push("/");
-      }
-      if (userData) {
-        firebase.getMyGroupsName(userData?.uid).then((res) => {
-          setgroupsName(res);
-
-          if (res.length === 0) {
-            Swal.fire("目前沒有任何所屬社群，到廣場看看有興趣的主題吧！");
-            history.push("/");
+      if (milestoneID) {
+        firebase.getMilestone("articles", milestoneID).then((res) => {
+          if (
+            userData !== undefined &&
+            groupsList.length > 0 &&
+            Object.keys(userData).length > 0
+          ) {
+            if (res.creatorID !== userData.uid) history.push("/");
+            setTitle(res.title);
+            setIntroduce(res.introduce);
+            setOriginLabel(
+              groupsList.find((item) => item.groupID === res.groupID)?.name
+            );
+            setSelected(res.groupID);
+            setValue(res.content);
+            setCheck(res.public);
+            setOriginContent(res);
+            console.log(res.coverImage);
+            setPreviewUrl(res.coverImage);
+            setIsLoading(false);
+            editMode.current = true;
           }
         });
       }
@@ -201,34 +209,39 @@ const MilestoneEditor = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [userData, groupsList]);
 
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      if (milestoneID) {
-        firebase.getMilestone("articles", milestoneID).then((res) => {
-          setTitle(res.title);
-          setIntroduce(res.introduce);
-          setOriginLabel(
-            groupsList.find((item) => item.groupID === res.groupID)?.name
-          );
-          setSelected(res.groupID);
-          setValue(res.content);
-          setCheck(res.public);
-          setOriginContent(res);
-          console.log(res.coverImage);
-          setPreviewUrl(res.coverImage);
-          editMode.current = true;
+      if (
+        userData !== undefined &&
+        groupsList.length > 0 &&
+        Object.keys(userData).length > 0
+      ) {
+        const myGroups = groupsList.filter((g) =>
+          g.membersList?.includes(userData.uid)
+        );
+        const myCreateGroups = groupsList.filter(
+          (g) => g.creatorID === userData.uid
+        );
+
+        const groupOpt = [...myGroups, ...myCreateGroups].map((g) => {
+          return { value: g.groupID, label: g.name };
         });
+
+        if (groupOpt.length === 0) {
+          Swal.fire("目前沒有任何所屬社群，到廣場看看有興趣的主題吧！");
+          history.push("/");
+        }
+        setgroupsName(groupOpt);
+        setIsLoading(false);
       }
     }
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  const userData = useSelector((state) => state.userData);
+  }, [userData, groupsList]);
 
   const editorHandler = (e) => {
     setValue(e);
@@ -250,12 +263,10 @@ const MilestoneEditor = () => {
         title: "Oops...",
         text: "請填寫完整內容!",
       });
-      // alert("請填寫完整內容");
       return;
     }
 
     if (selected === null) {
-      // alert("請選擇社群名稱");
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -298,7 +309,7 @@ const MilestoneEditor = () => {
         introduce,
       };
 
-      firebase.postArticles(data, file).then(() => {
+      firebase.postArticles(data, file).then((res) => {
         Swal.fire({
           position: "center",
           icon: "success",
@@ -307,65 +318,67 @@ const MilestoneEditor = () => {
           timer: 1500,
         });
         // alert("建立成功");
-        history.push("/");
+        history.push(`/article/${res}`);
       });
     }
   };
 
   const previewImg = file ? URL.createObjectURL(file) : previewUrl;
-
-  return (
-    <ContainerStyled>
-      <MainContainer>
-        <LabelCtn>分享我的學習成果</LabelCtn>
-        <InputCtn
-          placeholder="請輸入標題..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        {/* </InputWrapper> */}
-        <EditorArea>
-          <RichTextEditor value={value} editorHandler={editorHandler} />
-        </EditorArea>
-      </MainContainer>
-      <SideSetting>
-        <SettingLb> 文章設定</SettingLb>
-        <SettingWrapper>
-          <SwitchCtn>
-            <div>設為公開</div>
-            <Switch check={check} setCheck={setCheck} />
-          </SwitchCtn>
-          {editMode.current && (
-            <OriginLabel>原社團設定為：{originLabel}</OriginLabel>
-          )}
-          <Select
-            defaultValue={selected}
-            onChange={(e) => {
-              setSelected(e.value);
-            }}
-            options={groupsName}
+  if (userData === undefined || isLoading) {
+    return <DisappearedLoading />;
+  } else if (!isLoading)
+    return (
+      <ContainerStyled>
+        <MainContainer>
+          <LabelCtn>分享我的學習成果</LabelCtn>
+          <InputCtn
+            placeholder="請輸入標題..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <Introduce
-            value={introduce}
-            placeholder="請輸入文章摘要"
-            onChange={(e) => setIntroduce(e.target.value)}
-          />
-          <input
-            type="file"
-            id="upload-img"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              setFile(e.target.files[0]);
-            }}
-          />
-          <UploadBtn htmlFor="upload-img">
-            <PreViewCtn src={previewImg} />
-          </UploadBtn>
-        </SettingWrapper>
-        <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
-      </SideSetting>
-    </ContainerStyled>
-  );
+          {/* </InputWrapper> */}
+          <EditorArea>
+            <RichTextEditor value={value} editorHandler={editorHandler} />
+          </EditorArea>
+        </MainContainer>
+        <SideSetting>
+          <SettingLb> 文章設定</SettingLb>
+          <SettingWrapper>
+            <SwitchCtn>
+              <div>設為公開</div>
+              <Switch check={check} setCheck={setCheck} />
+            </SwitchCtn>
+            {editMode.current && (
+              <OriginLabel>原社團設定為：{originLabel}</OriginLabel>
+            )}
+            <Select
+              defaultValue={selected}
+              onChange={(e) => {
+                setSelected(e.value);
+              }}
+              options={groupsName}
+            />
+            <Introduce
+              value={introduce}
+              placeholder="請輸入文章摘要"
+              onChange={(e) => setIntroduce(e.target.value)}
+            />
+            <input
+              type="file"
+              id="upload-img"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                setFile(e.target.files[0]);
+              }}
+            />
+            <UploadBtn htmlFor="upload-img">
+              <PreViewCtn src={previewImg} />
+            </UploadBtn>
+          </SettingWrapper>
+          <SubmitBtn onClick={handleSubmit}>確認送出</SubmitBtn>
+        </SideSetting>
+      </ContainerStyled>
+    );
 };
 
 export default MilestoneEditor;
