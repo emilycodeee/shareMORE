@@ -81,7 +81,6 @@ const CommentReply = ({ item, author }) => {
 
   const checkOwner = item.creatorID === userData.uid;
   const checkAuthor = author.uid === userData.uid;
-  console.log(author);
   const handleDeleteComment = () => {
     // item.postID
     const check = window.confirm("刪除留言將不可回復，確定要刪除嗎？");

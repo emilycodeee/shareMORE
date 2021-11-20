@@ -159,6 +159,7 @@ const EditBtn = styled.button`
     color: white;
   }
   @media only screen and (max-width: 992px) {
+    /* height: 1rem; */
     padding: 2px;
     font-size: 0.6rem;
   }
@@ -218,6 +219,9 @@ const NotePage = () => {
           firebase
             .getGroupsNoteContent("groups", groupID, "notes", postID)
             .then((res) => {
+              if (res === undefined) {
+                history.push("/404");
+              }
               setNoteContent(res);
               setCheckNoteCreator(res.creatorID === userData.uid);
               setNoteCreator(usersList.find((p) => p.uid === res.creatorID));
@@ -253,8 +257,6 @@ const NotePage = () => {
     });
   };
 
-  console.log(noteContent);
-
   if (userData === undefined || isLoading) {
     return <DisappearedLoading />;
   } else if (!isLoading)
@@ -284,6 +286,7 @@ const NotePage = () => {
                   )}
 
                   <EditBtn onClick={handleDelete}>刪除</EditBtn>
+                  <EditLink to={`/group/${groupID}/notes`}>筆記列表</EditLink>
                 </>
               )}
             </BtnWrapper>

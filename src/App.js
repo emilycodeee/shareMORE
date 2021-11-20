@@ -17,6 +17,7 @@ import GroupsPage from "./pages/Groups/GroupsPage";
 import NotePage from "./pages/Notes";
 import GroupMilestone from "./pages/MileStones/GroupMilestone";
 import Bookshelf from "./pages/Bookshelf";
+import NotFound from "./components/NotFound";
 import { useEffect, useState } from "react";
 import * as firebase from "./utils/firebase";
 import { useDispatch } from "react-redux";
@@ -112,59 +113,65 @@ function App() {
   return (
     <Layouts>
       <Switch>
-        <>
-          <Route path="/" exact>
-            <HomePage />
-          </Route>
-          <Route path="/groups" exact>
-            <GroupsPage />
-          </Route>
-          <Route path="/group/:groupID" exact>
-            <GroupPage />
-          </Route>
-          <Route path="/group/:groupID/bookshelf" exact>
-            <Bookshelf />
-          </Route>
-          <Route path="/group/:groupID/articles" exact>
-            <GroupMilestone />
-          </Route>
-          <Route path="/article/:milestoneID" exact>
-            <MilestonePage />
-          </Route>
-          <Route path="/articles" exact>
-            <MilestonesPage />
-          </Route>
-          <Route path="/articles/post" exact>
-            <MilestoneEditor />
-          </Route>
-          <Route path="/groups/post" exact>
-            <BuildGroups />
-          </Route>
-          <Route path="/group/:groupID/notes" exact>
-            <NotesPage />
-          </Route>
-          <Route path="/group/:groupID/new/notes" exact>
-            <NotesEditorPage />
-          </Route>
-          <Route path="/group/:groupID/notes/:postID" exact>
-            <NotePage />
-          </Route>
-          <Route path="/profile/:userID" exact>
-            <ProfilePage />
-          </Route>
-          <Route path="/article/:milestoneID/edit" exact>
-            <MilestoneEditor />
-          </Route>
-          <Route path="/group/:groupID/notes/:postID/post" exact>
-            <NotesEditorPage />
-          </Route>
-          <Route path="/group/:groupID/notes/:postID/edit" exact>
-            <NotesEditorPage />
-          </Route>
-          <Route path="/profile/:userID/edit" exact>
-            <ProfileSetting />
-          </Route>
-        </>
+        {/* <> */}
+        <Route path="/" exact>
+          <HomePage />
+        </Route>
+        <Route path="/groups" exact>
+          <GroupsPage />
+        </Route>
+        <Route path="/group/:groupID" exact>
+          <GroupPage />
+        </Route>
+        <Route path="/group/:groupID/bookshelf" exact>
+          <Bookshelf />
+        </Route>
+        <Route path="/group/:groupID/articles" exact>
+          <GroupMilestone />
+        </Route>
+        <Route path="/article/:milestoneID" exact>
+          <MilestonePage />
+        </Route>
+        <Route path="/articles" exact>
+          <MilestonesPage />
+        </Route>
+        <Route path="/articles/post" exact>
+          <MilestoneEditor />
+        </Route>
+        <Route path="/groups/post" exact>
+          <BuildGroups />
+        </Route>
+        <Route path="/group/:groupID/notes" exact>
+          <NotesPage />
+        </Route>
+        <Route path="/group/:groupID/new/notes" exact>
+          <NotesEditorPage />
+        </Route>
+        <Route path="/group/:groupID/notes/:postID" exact>
+          <NotePage />
+        </Route>
+        <Route path="/profile/:userID" exact>
+          <ProfilePage />
+        </Route>
+        <Route path="/article/:milestoneID/edit" exact>
+          <MilestoneEditor />
+        </Route>
+        <Route path="/group/:groupID/notes/:postID/post" exact>
+          <NotesEditorPage />
+        </Route>
+        <Route path="/group/:groupID/notes/:postID/edit" exact>
+          <NotesEditorPage />
+        </Route>
+        <Route path="/profile/:userID/edit" exact>
+          <ProfileSetting />
+        </Route>
+        <Route path="/404">
+          <NotFound />
+        </Route>
+        <Route path="">
+          <NotFound />
+        </Route>
+        {/* </> */}
       </Switch>
     </Layouts>
   );

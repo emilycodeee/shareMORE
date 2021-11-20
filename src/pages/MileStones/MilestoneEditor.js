@@ -61,6 +61,8 @@ const InputCtn = styled.input`
 const UploadBtn = styled.label`
   background-color: transparent;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
 `;
 
 const SubmitBtn = styled.button`
@@ -198,7 +200,6 @@ const MilestoneEditor = () => {
             setValue(res.content);
             setCheck(res.public);
             setOriginContent(res);
-            console.log(res.coverImage);
             setPreviewUrl(res.coverImage);
             setIsLoading(false);
             editMode.current = true;

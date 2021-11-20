@@ -24,15 +24,20 @@ const NotesPage = () => {
 
   useEffect(() => {
     if (groupsList.length > 0) {
-      const groupDetail = groupsList.find((g) => g.groupID === groupID);
-      const checkMembership =
-        groupDetail?.membersList?.includes(userData?.uid) ||
-        groupDetail?.creatorID === userData?.uid;
+      const checkGroup = groupsList.findIndex((g) => g.groupID === groupID);
+      if (checkGroup < 0) {
+        history.push("/404");
+      } else {
+        const groupDetail = groupsList.find((g) => g.groupID === groupID);
+        const checkMembership =
+          groupDetail?.membersList?.includes(userData?.uid) ||
+          groupDetail?.creatorID === userData?.uid;
 
-      if (!checkMembership) {
-        history.push(`/group/${groupID}`);
+        if (!checkMembership) {
+          history.push(`/group/${groupID}`);
+        }
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
   }, [userData, groupsList]);
 

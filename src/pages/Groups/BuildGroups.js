@@ -144,7 +144,7 @@ const BuildGroups = () => {
   const [selectedSubClass, setSelectedSubClass] = useState(null);
   // const [isLoading, setIsLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  console.log(userData);
+
   //status
   const [name, setName] = useState("");
   const [goal, setGoal] = useState(initText);
@@ -253,7 +253,6 @@ const BuildGroups = () => {
           <Select
             defaultValue={selectedCategory}
             onChange={(e) => {
-              console.log(e);
               setSelectedCategory(e.value);
             }}
             options={CategoryOpt}
@@ -264,7 +263,6 @@ const BuildGroups = () => {
           <Select
             defaultValue={selectedSubClass}
             onChange={(e) => {
-              console.log(e);
               setSelectedSubClass(e.value);
             }}
             options={subClassesName}

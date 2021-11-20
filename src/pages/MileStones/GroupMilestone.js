@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Card from "../Home/components/Card";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import GroupHeader from "../Groups/components/GroupHeader";
 import { DisappearedLoading } from "react-loadingg";
 
@@ -16,19 +16,25 @@ const GroupMilestone = () => {
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
+  const history = useHistory();
 
   useEffect(() => {
     if (groupsList.length > 0) {
-      const groupDetail = groupsList.find((g) => g.groupID === groupID);
-      const checkMembership =
-        groupDetail?.membersList?.includes(userData?.uid) ||
-        groupDetail?.creatorID === userData?.uid;
-      const filterPublicArticles = articlesList.filter(
-        (a) => a.groupID === groupID && a.public === true
-      );
-      setRenderMilestone(filterPublicArticles);
-      setIsInsider(checkMembership);
-      setIsLoading(false);
+      const checkGroup = groupsList.findIndex((g) => g.groupID === groupID);
+      if (checkGroup < 0) {
+        history.push("/404");
+      } else {
+        const groupDetail = groupsList.find((g) => g.groupID === groupID);
+        const checkMembership =
+          groupDetail?.membersList?.includes(userData?.uid) ||
+          groupDetail?.creatorID === userData?.uid;
+        const filterPublicArticles = articlesList.filter(
+          (a) => a.groupID === groupID && a.public === true
+        );
+        setRenderMilestone(filterPublicArticles);
+        setIsInsider(checkMembership);
+        setIsLoading(false);
+      }
     }
   }, [userData, groupsList, articlesList]);
 

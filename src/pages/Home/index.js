@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import * as firebase from "../../utils/firebase";
 import { useState, useEffect } from "react";
 import Card from "./components/Card";
@@ -13,7 +13,7 @@ import MainText from "./components/MainText";
 import { DisappearedLoading } from "react-loadingg";
 
 const Container = styled.div`
-  width: 1000px;
+  width: 1560px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -140,9 +140,11 @@ const HomePage = ({ userList, groupList }) => {
                 <MainText />
               </Left>
               {/* options */}
-              <TiltWrapper options={{ max: 25 }}>
+              {/* <TiltWrapper options={{ max: 25 }}> */}
+              <Animation>
                 <Img src={main} />
-              </TiltWrapper>
+              </Animation>
+              {/* </TiltWrapper> */}
             </InnerWrapper>
           </SecondWrapper>
         </CoverContainer>
@@ -216,6 +218,7 @@ const Left = styled.div`
 const Img = styled.img`
   width: 80%;
   margin: 0 10%;
+  transform: rotate(2deg);
 `;
 
 const TiltWrapper = styled(Tilt)`
@@ -231,6 +234,15 @@ const SecondWrapper = styled.div`
     backdrop-filter: blur(35px);
     background-color: rgba(255, 255, 255, 0.5);
   }
+`;
+
+const caret = keyframes`
+0% { transform: translate(0px) }
+100% {transform: translateY(-10px) }
+`;
+
+const Animation = styled.div`
+  animation: 1.3s ease-in-out 2.7s infinite alternate none running ${caret};
 `;
 
 const CoverContainer = styled.div`

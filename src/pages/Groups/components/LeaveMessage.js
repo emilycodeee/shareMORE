@@ -36,6 +36,9 @@ const Wrapper = styled.div`
 
 const UserText = styled.div`
   font-size: 14px;
+  &:last-child {
+    font-size: 10px;
+  }
 `;
 
 const LeaveMessage = ({ itemData }) => {
@@ -65,4 +68,5 @@ export default LeaveMessage;
 
 const TextContent = styled.div`
   white-space: pre-wrap;
+  word-break: break-all;
 `;

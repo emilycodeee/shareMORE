@@ -96,7 +96,7 @@ const GroupsPage = () => {
     if (e.key === "Enter") {
       setSearchLoading(true);
       const keyWord = e.target.value.trim();
-      console.log(keyWord.trim());
+
       const search = groupsList.filter((g) => g.name.includes(keyWord));
       setSearchLoading(false);
       setRenderGroups(search);
@@ -106,7 +106,7 @@ const GroupsPage = () => {
   const handleSearchBtn = (e) => {
     setSearchLoading(true);
     const keyWord = inputValue.trim();
-    console.log(keyWord);
+
     const search = groupsList.filter((g) => g.name.includes(keyWord));
     setSearchLoading(false);
     setRenderGroups(search);
@@ -127,7 +127,6 @@ const GroupsPage = () => {
 
   const handleCategory = (e) => {
     const target = e.target.innerText;
-    console.log(target);
     if (target === "全部") {
       setRenderGroups(groupsList);
       setSubClassesName("");

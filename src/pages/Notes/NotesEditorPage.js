@@ -86,6 +86,8 @@ const SideLabel = styled.label`
 
 const UploadBtn = styled.label`
   background-color: transparent;
+  display: flex;
+  justify-content: center;
 `;
 
 const SubmitBtn = styled.button`
@@ -201,8 +203,6 @@ const NotesEditorPage = () => {
   }, [userData, groupsList]);
 
   const handleSubmit = () => {
-    console.log(groupID, postID);
-
     if (introduce.length === 0) {
       Swal.fire({
         icon: "error",
@@ -301,6 +301,8 @@ export default NotesEditorPage;
 const PreViewCtn = styled.img`
   width: 100%;
   margin: 10px 0;
+  /* margin: 0 auto; */
+  cursor: pointer;
   @media only screen and (max-width: 992px) {
     width: 60%;
   }

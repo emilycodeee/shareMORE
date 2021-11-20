@@ -16,7 +16,6 @@ export const dateCounter = (date1) => {
 
   const iDays = parseInt(Math.abs(today - goalDate) / 1000 / 60 / 60 / 24);
   return iDays;
-  // console.log(iDays);
 };
 
 export const initText = `<p>-目標建立tips-</p><p>SMART 原則</p><p>S- Specific (具體的)</p><p>M- Measurable (可衡量的)</p><p>A- Attainable (可實現的)</p><p>R- Relevant（息息相關的）</p><p>T- Timely (有時限的)</p>`;
@@ -27,7 +26,6 @@ export const convertTime = (creationTime) => {
 };
 
 export const arrCaculator = (arr) => {
-  console.log(arr);
   const planObj = arr.reduce((obj, k) => {
     if (k in obj) {
       obj[k]++;

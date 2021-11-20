@@ -13,6 +13,9 @@ const CardContainer = styled(Link)`
   border-bottom: 4px solid #f27e59;
   box-shadow: 0px 2px 6px 0px #ffd3c6;
   margin-bottom: 10px;
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const CoverContainer = styled.div`

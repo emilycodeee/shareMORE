@@ -14,6 +14,7 @@ import "../../../node_modules/react-quill/dist/quill.snow.css";
 import { FaRegThumbsUp, FaThumbsUp, FaRegCommentAlt } from "react-icons/fa";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { RiShareForwardFill } from "react-icons/ri";
+import { DisappearedLoading } from "react-loadingg";
 
 const Container = styled.div`
   max-width: 1560px;
@@ -387,6 +388,7 @@ const MilestonePage = () => {
   const groupsList = useSelector((state) => state.groupsList);
   const userData = useSelector((state) => state.userData);
   const currentUser = usersList.find((item) => item.uid === userData?.uid);
+  const [isLoading, setIsLoading] = useState(true);
   const root = window.location.host;
   const pathname = useLocation().pathname;
 
@@ -453,14 +455,12 @@ const MilestonePage = () => {
   };
 
   const handlePrivate = () => {
-    console.log(publicStatus);
-
     firebase
       .toggleMilestone("articles", milestoneID, !publicStatus)
       .then(() => {
         if (publicStatus) {
           Swal.fire({
-            title: "文章已設為隱藏，若要調整請至個人頁面",
+            text: "文章已設為隱藏，若要調整請至個人頁面",
             showClass: {
               popup: "animate__animated animate__fadeInDown",
             },
@@ -487,140 +487,165 @@ const MilestonePage = () => {
   };
 
   useEffect(() => {
-    firebase.milestoneListener("articles", milestoneID, setContent);
-    firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
+    window.scrollTo(0, 0);
+    let isMounted = true;
+    if (isMounted) {
+      firebase.milestoneListener("articles", milestoneID, setContent);
+      firebase.postMilestoneListener("articles", milestoneID, setRenderPost);
+    }
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
+  // console.log(content);
   useEffect(() => {
-    if (content?.creatorID) {
-      setPublicStatus(content.public);
+    let isMounted = true;
+    if (isMounted) {
+      if (content !== undefined) {
+        setIsLoading(false);
+        if (content?.creatorID) {
+          setPublicStatus(content.public);
 
-      if (!content.public && userData?.uid !== content?.creatorID) {
-        history.push("/");
+          if (!content.public && userData?.uid !== content?.creatorID) {
+            history.push("/");
+          }
+        }
+      } else {
+        history.push("/404");
       }
     }
+    return () => {
+      isMounted = false;
+    };
   }, [content]);
 
   const authorData = usersList.find((item) => item.uid === content?.creatorID);
   const groupData = groupsList.find(
     (item) => item.groupID === content?.groupID
   );
-  return (
-    <Container>
-      <Wrapper>
-        <h1>{content?.title}</h1>
-        <HeadDetail>
-          <AuthorDataCtn>
-            <Link to={`/profile/${authorData?.uid}`}>
-              <TinyAvatar src={authorData?.avatar} />
-            </Link>
-            <div>
-              <TopPTag>{authorData?.displayName}</TopPTag>
-              <TopPTag>
-                啟發自：
-                <LinkStyle to={`/group/${content?.groupID}`}>
-                  {groupData?.name}
-                </LinkStyle>
-              </TopPTag>
-              <TopPTag>
-                {content?.creationTime?.toDate().toLocaleString("zh-TW")}
-              </TopPTag>
-            </div>
-          </AuthorDataCtn>
-          {userData?.uid === authorData?.uid && (
-            <ButtonSet>
-              <EditLink to={`/article/${milestoneID}/edit`}>編輯</EditLink>
-              <EditBtn onClick={handleDelete}>刪除</EditBtn>
-              <EditBtn onClick={handlePrivate}>
-                設為{publicStatus ? "非公開" : "公開"}
-              </EditBtn>
-            </ButtonSet>
-          )}
-        </HeadDetail>
-        <div>
-          <TopCover
-            style={{ backgroundImage: `url(${content?.coverImage})` }}
-          />
-        </div>
-        <QlContent>
-          <div className="ql-editor">{HtmlParser(content?.content)}</div>
-        </QlContent>
-      </Wrapper>
-      <SideSetting>
-        <AuthorLink to={`/profile/${authorData?.uid}`}>
-          <Avatar src={authorData?.avatar} />
-        </AuthorLink>
-        <h3>{authorData?.displayName}</h3>
-        <P>{authorData?.introduce}</P>
-        <IconSet>
-          <IconWord
-            onClick={() => {
-              navigator.clipboard.writeText(root + pathname);
-              Swal.fire({
-                position: "center",
-                icon: "success",
-                title: "成功複製連結",
-                showConfirmButton: false,
-                timer: 1500,
-              });
+  if (isLoading) {
+    return <DisappearedLoading />;
+  } else
+    return (
+      <Container>
+        <Wrapper>
+          <h1>{content?.title}</h1>
+          <HeadDetail>
+            <AuthorDataCtn>
+              <Link to={`/profile/${authorData?.uid}`}>
+                <TinyAvatar src={authorData?.avatar} />
+              </Link>
+              <div>
+                <TopPTag>{authorData?.displayName}</TopPTag>
+                <TopPTag>
+                  啟發自：
+                  <LinkStyle to={`/group/${content?.groupID}`}>
+                    {groupData?.name}
+                  </LinkStyle>
+                </TopPTag>
+                <TopPTag>
+                  {content?.creationTime?.toDate().toLocaleString("zh-TW")}
+                </TopPTag>
+              </div>
+            </AuthorDataCtn>
+            {userData?.uid === authorData?.uid && (
+              <ButtonSet>
+                <EditLink to={`/article/${milestoneID}/edit`}>編輯</EditLink>
+                <EditBtn onClick={handleDelete}>刪除</EditBtn>
+                <EditBtn onClick={handlePrivate}>
+                  設為{publicStatus ? "非公開" : "公開"}
+                </EditBtn>
+              </ButtonSet>
+            )}
+          </HeadDetail>
+          <div>
+            <TopCover
+              style={{ backgroundImage: `url(${content?.coverImage})` }}
+            />
+          </div>
+          <QlContent>
+            <div className="ql-editor">{HtmlParser(content?.content)}</div>
+          </QlContent>
+        </Wrapper>
+        <SideSetting>
+          <AuthorLink to={`/profile/${authorData?.uid}`}>
+            <Avatar src={authorData?.avatar} />
+          </AuthorLink>
+          <h3>{authorData?.displayName}</h3>
+          <P>{authorData?.introduce}</P>
+          <IconSet>
+            <IconWord
+              onClick={() => {
+                navigator.clipboard.writeText(root + pathname);
+                Swal.fire({
+                  position: "center",
+                  icon: "success",
+                  title: "成功複製連結",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+              }}
+            >
+              <Share />
+
+              <span>分享</span>
+            </IconWord>
+            <IconWord onClick={handleSave}>
+              {content?.saveBy?.includes(userData?.uid) ? <Saved /> : <Save />}
+
+              <span>收藏</span>
+            </IconWord>
+            <CountWrapper onClick={handleClap}>
+              {content?.clapBy?.includes(userData?.uid) ? (
+                <ThumbsUpFilled />
+              ) : (
+                <ThumbsUp />
+              )}
+              <span>給讚</span>
+              <Count>
+                {content?.clapBy?.length > 0 && content?.clapBy.length}
+              </Count>
+            </CountWrapper>
+            <CountWrapper onClick={handleActiveComment}>
+              <Comment />
+
+              <span>留言</span>
+              <Count>{renderPost.length > 0 && renderPost.length}</Count>
+            </CountWrapper>
+          </IconSet>
+        </SideSetting>
+        {showCmt && (
+          <PageShield
+            data-target="shield"
+            onClick={(e) => {
+              e.target.dataset.target === "shield" && setShowCmt(!showCmt);
             }}
           >
-            <Share />
-
-            <span>分享</span>
-          </IconWord>
-          <IconWord onClick={handleSave}>
-            {content?.saveBy?.includes(userData?.uid) ? <Saved /> : <Save />}
-
-            <span>收藏</span>
-          </IconWord>
-          <CountWrapper onClick={handleClap}>
-            {content?.clapBy?.includes(userData?.uid) ? (
-              <ThumbsUpFilled />
-            ) : (
-              <ThumbsUp />
-            )}
-            <span>給讚</span>
-            <Count>
-              {content?.clapBy?.length > 0 && content?.clapBy.length}
-            </Count>
-          </CountWrapper>
-          <CountWrapper onClick={handleActiveComment}>
-            <Comment />
-
-            <span>留言</span>
-            <Count>{renderPost.length > 0 && renderPost.length}</Count>
-          </CountWrapper>
-        </IconSet>
-      </SideSetting>
-      {showCmt && (
-        <PageShield
-          data-target="shield"
-          onClick={(e) => {
-            e.target.dataset.target === "shield" && setShowCmt(!showCmt);
-          }}
-        >
-          <CommentCtn>
-            <TagCtn>發表回應</TagCtn>
-            <MainPost>
-              <PostAvatar src={currentUser?.avatar} />
-              <TextPost>
-                <TextAreaStyle
-                  placeholder="想說點什麼嗎？"
-                  value={cmtValue}
-                  onChange={(e) => setCmtValue(e.target.value)}
+            <CommentCtn>
+              <TagCtn>發表回應</TagCtn>
+              <MainPost>
+                <PostAvatar src={currentUser?.avatar} />
+                <TextPost>
+                  <TextAreaStyle
+                    placeholder="想說點什麼嗎？"
+                    value={cmtValue}
+                    onChange={(e) => setCmtValue(e.target.value)}
+                  />
+                  <PostBtn onClick={handleSendComment}>送出留言</PostBtn>
+                </TextPost>
+              </MainPost>
+              {renderPost.map((item) => (
+                <CommentReply
+                  key={item.postID}
+                  item={item}
+                  author={authorData}
                 />
-                <PostBtn onClick={handleSendComment}>送出留言</PostBtn>
-              </TextPost>
-            </MainPost>
-            {renderPost.map((item) => (
-              <CommentReply key={item.postID} item={item} author={authorData} />
-            ))}
-          </CommentCtn>
-        </PageShield>
-      )}
-    </Container>
-  );
+              ))}
+            </CommentCtn>
+          </PageShield>
+        )}
+      </Container>
+    );
 };
 
 export default MilestonePage;

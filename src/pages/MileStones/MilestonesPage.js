@@ -399,7 +399,6 @@ const MilestonesPage = () => {
               <LastLabel>Latest 5</LastLabel>
               <ArticleCtn>
                 {latestFiveMilestone.map((item, i) => {
-                  console.log(item);
                   return (
                     <LinkStyle
                       to={`/article/${item.milestoneID}`}

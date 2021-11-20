@@ -78,6 +78,9 @@ const Header = () => {
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const data = [];
         querySnapshot.forEach((doc) => {
+          if (doc.data().docId.includes("m-")) {
+            if (doc.data().sender === userData.uid) return;
+          }
           data.push(doc.data());
         });
         setNotificationCtn(data);
@@ -339,7 +342,7 @@ const NotificationsArea = styled.div`
   height: auto;
   right: 10px;
   z-index: 99;
-  background-color: rgb(255 244 228);
+  background-color: rgb(255 250 242);
   padding: 10px 0;
   overflow-y: auto;
   gap: 10px;
@@ -363,6 +366,7 @@ const NotifiDiv = styled.div`
 
 const NotifiLink = styled(Link)`
   text-decoration: none;
+  width: 100%;
   color: black;
   padding: 0 0.5rem;
   :hover {
@@ -378,9 +382,6 @@ const ListContainer = styled.ul`
     padding: 0;
   }
 `;
-
-// border-bottom:3px solid ${(props) =>
-//   props.active === props.children ? "white" : "none"}
 
 const ListStyled = styled(Link)`
   font-weight: 600;
@@ -454,8 +455,6 @@ const HeaderContainer = styled.div`
     justify-content: space-between;
   }
 `;
-
-const LogoContainer = styled(Link)``;
 
 const LogoCtn = styled.img`
   max-width: 300px;

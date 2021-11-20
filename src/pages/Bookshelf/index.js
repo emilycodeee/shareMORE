@@ -2,12 +2,14 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 
 import { useState, useEffect } from "react";
+import { useHistory } from "react-router";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import SearchBook from "./component/SearchBook";
 import * as firebase from "../../utils/firebase";
 import BookContent from "./component/BookContnet";
 import GroupHeader from "../Groups/components/GroupHeader";
+import BookItem from "./component/BookItem";
 import { BiX } from "react-icons/bi";
 import { JumpCircleLoading } from "react-loadingg";
 import { DisappearedLoading } from "react-loadingg";
@@ -26,27 +28,6 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const typing = keyframes`
-	from { width: 0 }
-`;
-
-const caret = keyframes`
-	50% { border-right-color: transparent; }
-`;
-
-const Run = styled.h1`
-  width: 34rem;
-  white-space: nowrap;
-  overflow: hidden;
-  border-right: 0.05em solid;
-  color: black;
-  animation: ${typing} 6s steps(15) infinite, ${caret} 1s steps(1) infinite;
-  @media only screen and (max-width: 500px) {
-    font-size: 1.2rem;
-    width: 20rem;
-  }
-`;
-
 const PageShield = styled.div`
   width: 100vw;
   height: 100vh;
@@ -55,34 +36,6 @@ const PageShield = styled.div`
   position: fixed;
   z-index: 99;
   background-color: rgba(0, 0, 0, 0.6);
-`;
-
-const TopCover = styled.div`
-  opacity: 0.8;
-  margin-bottom: 0.8rem;
-  width: 100%;
-  height: 300px;
-  background-size: cover;
-  background-position: center;
-  box-shadow: 0px 2px 5px grey;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const BookItem = styled.div`
-  position: relative;
-  margin: 10px;
-`;
-
-const DeleteIcon = styled(BiX)`
-  position: absolute;
-  top: -20px;
-  right: 0;
-  margin-bottom: 20px;
-  cursor: pointer;
-  font-size: 1.5rem;
 `;
 
 const SerchButton = styled.button`
@@ -126,6 +79,7 @@ const Bookshelf = () => {
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
   const usersList = useSelector((state) => state.usersList);
+  const history = useHistory();
 
   const handleDeleteBook = (e) => {
     const targetID = e.target.dataset.bookid;
@@ -149,18 +103,29 @@ const Bookshelf = () => {
   };
 
   useEffect(() => {
-    if (groupsList.length > 0) {
-      const groupDetail = groupsList.find((g) => g.groupID === groupID);
+    let isMounted = true;
+    if (isMounted) {
+      if (groupsList.length > 0) {
+        const checkGroup = groupsList.findIndex((g) => g.groupID === groupID);
+        if (checkGroup < 0) {
+          history.push("/404");
+        } else {
+          const groupDetail = groupsList.find((g) => g.groupID === groupID);
 
-      const checkMembership =
-        groupDetail?.membersList?.includes(userData?.uid) ||
-        groupDetail?.creatorID === userData?.uid;
-      setIsInsider(checkMembership);
+          const checkMembership =
+            groupDetail?.membersList?.includes(userData?.uid) ||
+            groupDetail?.creatorID === userData?.uid;
+          setIsInsider(checkMembership);
 
-      const groupOwner = groupDetail?.creatorID === userData?.uid;
-      setIsOwner(groupOwner);
-      setIsLoading(false);
+          const groupOwner = groupDetail?.creatorID === userData?.uid;
+          setIsOwner(groupOwner);
+          setIsLoading(false);
+        }
+      }
     }
+    return () => {
+      isMounted = false;
+    };
   }, [groupsList]);
 
   const getRecommender = (uid) => {
@@ -172,7 +137,6 @@ const Bookshelf = () => {
     let isMounted = true;
     if (isMounted) {
       firebase.getGroupBook(groupID, setRenderBookData);
-      // .then(() => setIsLoading(false));
     }
     return () => {
       isMounted = false;
@@ -235,47 +199,13 @@ const Bookshelf = () => {
             {renderBookData.map((b) => {
               return (
                 <BookItem
+                  book={b}
+                  groupID={groupID}
                   key={b.groupBookID}
-                  onMouseOver={() => setShowDelete(true)}
-                  onMouseLeave={() => setShowDelete(false)}
-                >
-                  {isOwner && showDelete && (
-                    <DeleteIcon
-                      onClick={handleDeleteBook}
-                      data-bookid={b.groupBookID}
-                    />
-                  )}
-                  <SelectedBook
-                    key={b.groupBookID}
-                    onClick={() => {
-                      setShowBookContent(true);
-                      setBookContent(b);
-                    }}
-                  >
-                    <div>
-                      <BookImage
-                        src={b.volumeInfo.imageLinks?.thumbnail || defaultBook}
-                      />
-                    </div>
-                    <div>
-                      <div>
-                        <BookTitle>{b.volumeInfo.title}</BookTitle>
-                        <BookAuthor>
-                          作者/譯者：{b.volumeInfo.authors?.join(",")}
-                        </BookAuthor>
-                      </div>
-                    </div>
-                  </SelectedBook>
-                  <div>
-                    <RecommenderDetail>
-                      <Avatar src={getRecommender(b.groupSharerUid)?.avatar} />
-                      <p>
-                        {getRecommender(b.groupSharerUid)?.displayName} 說：
-                      </p>
-                    </RecommenderDetail>
-                    <RecommendText>{b.recReason}</RecommendText>
-                  </div>
-                </BookItem>
+                  isOwner={isOwner}
+                  setShowBookContent={setShowBookContent}
+                  setBookContent={setBookContent}
+                />
               );
             })}
           </ShelfWrapper>

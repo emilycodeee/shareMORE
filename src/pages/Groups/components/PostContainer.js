@@ -163,7 +163,7 @@ const ContentArea = styled.div`
   width: 100%;
   line-height: 1.4rem;
   padding: 0.5rem 0.5rem;
-
+  word-break: break-all;
   white-space: pre-wrap;
 `;
 
@@ -188,7 +188,7 @@ const EditSubmitBtn = styled.button`
   cursor: pointer;
   width: 60px;
   height: 30px;
-  background-color: #fff4e4;
+  background-color: transparent;
   font-weight: 600;
 
   outline: none;

@@ -9,18 +9,6 @@ const defaultBook =
   "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
 
 const BookContent = ({ bookContent, setShowBookContent }) => {
-  console.log(bookContent.volumeInfo.description);
-
-  const test = bookContent.volumeInfo.description
-    .replace(/。|\.|\?/g, "。<br>")
-    .replace(/<br>/g, "\n\r");
-  // .replace(/。|\.|\?/g, "。<br>")
-  // .replace(/ /g, "\n\r");
-  // .replace(/推薦/g, "\n");
-
-  // .replace(/。|\.|\?/g, "。<br>")
-  // .replace(/<br>/g, "\n\r");
-
   return (
     <ContentWrapper>
       <BookDetail>
@@ -43,7 +31,9 @@ const BookContent = ({ bookContent, setShowBookContent }) => {
           </div>
         </div>
       </BookDetail>
-      <ContentText>{test}</ContentText>
+      <ContentText>
+        {HtmlParser(bookContent.volumeInfo?.description)}
+      </ContentText>
       <IconBtn
         onClick={() => {
           setShowBookContent(false);
@@ -145,7 +135,7 @@ const Titlestyle = styled.p`
 `;
 const Pstyle = styled.p`
   line-height: 1.3rem;
-  /* color: red; */
+  font-size: 0.8rem;
   font-weight: 550;
   color: gray;
   @media only screen and (max-width: 800px) {
@@ -156,7 +146,8 @@ const Pstyle = styled.p`
 const ContentText = styled.div`
   /* color: red; */
   /* margin: 0 auto; */
-  /* text-align: center; */
+  text-align: center;
+
   width: 80%;
   line-height: 1.4rem;
   white-space: pre-wrap;

@@ -284,20 +284,25 @@ const ProfileSetting = () => {
       Object.keys(userData).length > 0 &&
       usersList.length > 0
     ) {
-      const owner = usersList.find((item) => item.uid === userID);
-      if (owner.uid !== userData.uid) {
-        history.push("/");
+      const checkUser = usersList.findIndex((p) => p.uid === userID);
+      if (checkUser < 0) {
+        history.push("/404");
       } else {
-        setCurrentData(owner);
-        setDisplayName(owner.displayName);
-        setSecondEmail(owner.secondEmail);
-        setLinkedin(owner.linkedin);
-        setInstagram(owner.instagram);
-        setIntroduce(owner.introduce);
-        setFacebook(owner.facebook);
-        setWebUrl(owner.webUrl);
-        setGithubUrl(owner.github);
-        setIsLoading(false);
+        const owner = usersList.find((item) => item.uid === userID);
+        if (owner.uid !== userData.uid) {
+          history.push("/");
+        } else {
+          setCurrentData(owner);
+          setDisplayName(owner.displayName);
+          setSecondEmail(owner.secondEmail);
+          setLinkedin(owner.linkedin);
+          setInstagram(owner.instagram);
+          setIntroduce(owner.introduce);
+          setFacebook(owner.facebook);
+          setWebUrl(owner.webUrl);
+          setGithubUrl(owner.github);
+          setIsLoading(false);
+        }
       }
     }
   }, [usersList, userData]);

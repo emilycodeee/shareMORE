@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useParams } from "react-router";
+import { useParams, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useRef } from "react";
@@ -203,7 +203,7 @@ const SettingBtn = styled(Link)`
 
 const ProfilePage = () => {
   const { userID } = useParams();
-
+  const history = useHistory();
   const usersList = useSelector((state) => state.usersList);
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
@@ -223,25 +223,32 @@ const ProfilePage = () => {
   const [active, setActive] = useState("我參加的社團");
 
   useEffect(() => {
-    const participate = groupsList?.filter((g) =>
-      g.membersList?.includes(userID)
-    );
-    setSelected(participate);
-    setUserJoinGroups(participate);
+    if (groupsList.length > 0 && usersList.length > 0) {
+      const checkUser = usersList.findIndex((p) => p.uid === userID);
+      if (checkUser < 0) {
+        history.push("/404");
+      } else {
+        const participate = groupsList?.filter((g) =>
+          g.membersList?.includes(userID)
+        );
+        setSelected(participate);
+        setUserJoinGroups(participate);
 
-    const owner = groupsList?.filter((g) => g.creatorID === userID);
-    setUserCreateGroups(owner);
+        const owner = groupsList?.filter((g) => g.creatorID === userID);
+        setUserCreateGroups(owner);
 
-    const userMile = articlesList.filter((a) => a.creatorID === userID);
-    setUserMilestones(userMile);
+        const userMile = articlesList.filter((a) => a.creatorID === userID);
+        setUserMilestones(userMile);
 
-    const mySave = articlesList.filter(
-      (a) => a.saveBy?.includes(userData?.uid) && a.public === true
-    );
-    setMySaveArticles(mySave);
-
-    if (groupsList.length > 0) setIsLoading(false);
-  }, [articlesList, groupsList]);
+        const mySave = articlesList.filter(
+          (a) => a.saveBy?.includes(userData?.uid) && a.public === true
+        );
+        setMySaveArticles(mySave);
+        setIsLoading(false);
+      }
+    }
+    // if (groupsList.length > 0) setIsLoading(false);
+  }, [articlesList, groupsList, usersList]);
 
   const handleChoose = (e) => {
     switch (e.target.dataset.id) {

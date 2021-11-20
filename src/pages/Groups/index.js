@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import * as firebase from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
@@ -122,44 +122,63 @@ const GroupPage = () => {
   const [goal, setGoal] = useState("");
   const [imageCover, setImageCover] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const history = useHistory();
 
+  // if (groupsList.length > 0) {
+  //   const checkGroup = groupsList.findIndex((g) => g.groupID === groupID);
+  //   if (checkGroup < 0) {
+  //     history.push("/404");
+  //   }
+  // }
   useEffect(() => {
-    if (groupsList.length > 0) {
-      const currentGroupData = groupsList?.find((g) => g.groupID === groupID);
-      setContent(currentGroupData);
-      setAboutValue(currentGroupData.introduce);
-      setDateValue(currentGroupData.goalDate);
-      setGoal(currentGroupData.goal);
-      setImageCover(currentGroupData.coverImage);
+    let isMounted = true;
+    if (isMounted) {
+      if (groupsList.length > 0) {
+        const checkGroup = groupsList.findIndex((g) => g.groupID === groupID);
+        if (checkGroup < 0) {
+          history.push("/404");
+        } else {
+          const currentGroupData = groupsList?.find(
+            (g) => g.groupID === groupID
+          );
+          setContent(currentGroupData);
+          setAboutValue(currentGroupData.introduce);
+          setDateValue(currentGroupData.goalDate);
+          setGoal(currentGroupData.goal);
+          setImageCover(currentGroupData.coverImage);
+        }
+      }
+      const postQ = query(
+        collection(firebase.db, "groups", groupID, "posts"),
+        orderBy("creationTime", "desc")
+      );
+      const postUnsubscribe = onSnapshot(postQ, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+        setRenderPost(data);
+      });
+
+      const memberQ = query(
+        collection(firebase.db, "groups", groupID, "members"),
+        orderBy("joinTime", "desc")
+      );
+      const memberUnsubscribe = onSnapshot(memberQ, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push(doc.data());
+        });
+        setRenderMember(data);
+      });
       setIsLoading(false);
+      return () => {
+        postUnsubscribe();
+        memberUnsubscribe();
+      };
     }
-    const postQ = query(
-      collection(firebase.db, "groups", groupID, "posts"),
-      orderBy("creationTime", "desc")
-    );
-    const postUnsubscribe = onSnapshot(postQ, (querySnapshot) => {
-      const data = [];
-      querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-      });
-      setRenderPost(data);
-    });
-
-    const memberQ = query(
-      collection(firebase.db, "groups", groupID, "members"),
-      orderBy("joinTime", "desc")
-    );
-    const memberUnsubscribe = onSnapshot(memberQ, (querySnapshot) => {
-      const data = [];
-      querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-      });
-      setRenderMember(data);
-    });
-
     return () => {
-      postUnsubscribe();
-      memberUnsubscribe();
+      isMounted = false;
     };
   }, [groupsList]);
 

@@ -11,6 +11,9 @@ const CardContainer = styled(Link)`
   height: 320px;
   border-bottom: 4px solid #ffc05a;
   box-shadow: 0px 2px 6px 0px #ffe6b6;
+  &:hover {
+    transform: scale(1.05);
+  }
 `;
 
 const CoverContainer = styled.div`

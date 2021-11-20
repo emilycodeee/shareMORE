@@ -26,28 +26,34 @@ const BestBoard = ({ renderPost }) => {
   };
 
   useEffect(() => {
-    if (groupsList) {
-      const groupDetail = groupsList.find((g) => g.groupID === groupID);
-      const checkMembership =
-        groupDetail?.membersList?.includes(userData?.uid) ||
-        groupDetail?.creatorID === userData?.uid;
-      setIsInsider(checkMembership);
+    let isMounted = true;
+    if (isMounted) {
+      if (groupsList) {
+        const groupDetail = groupsList.find((g) => g.groupID === groupID);
+        const checkMembership =
+          groupDetail?.membersList?.includes(userData?.uid) ||
+          groupDetail?.creatorID === userData?.uid;
+        setIsInsider(checkMembership);
+      }
+
+      const userArr = renderPost.map((i) => i.creatorID);
+      setMaxPost(arrCaculator(userArr));
+
+      firebase.getGroupBookShelf().then((res) => {
+        const groupBook = res.filter((b) => b.groupID === groupID);
+        const userArr = groupBook.map((i) => i.groupSharerUid);
+        setMaxBooks(arrCaculator(userArr));
+        const filterPublicArticles = articlesList.filter(
+          (a) => a.groupID === groupID && a.public === true
+        );
+
+        const articlesArr = filterPublicArticles.map((a) => a.creatorID);
+        setMaxArticles(arrCaculator(articlesArr));
+      });
     }
-
-    const userArr = renderPost.map((i) => i.creatorID);
-    setMaxPost(arrCaculator(userArr));
-
-    firebase.getGroupBookShelf().then((res) => {
-      const groupBook = res.filter((b) => b.groupID === groupID);
-      const userArr = groupBook.map((i) => i.groupSharerUid);
-      setMaxBooks(arrCaculator(userArr));
-      const filterPublicArticles = articlesList.filter(
-        (a) => a.groupID === groupID && a.public === true
-      );
-
-      const articlesArr = filterPublicArticles.map((a) => a.creatorID);
-      setMaxArticles(arrCaculator(articlesArr));
-    });
+    return () => {
+      isMounted = false;
+    };
   }, [articlesList, renderPost, groupsList, userData]);
 
   return (

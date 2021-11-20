@@ -104,7 +104,6 @@ export const register = async (name, email, password, setFunction) => {
     };
     await setDoc(doc(db, "users", result.user.uid), data, { merge: true });
   } catch (error) {
-    console.log("🎆", error.code);
     switch (error.code) {
       case "auth/email-already-in-use":
         setFunction("信箱已存在，請重試");
@@ -254,38 +253,6 @@ export const getTotalDocSortList = async (optionName) => {
   return arr;
 };
 
-// export const getTotalDocList = async (optionName) => {
-//   const q = query(collection(db, optionName));
-//   const querySnapshot = await getDocs(q);
-//   const arr = [];
-//   querySnapshot.forEach((doc) => {
-//     arr.push(doc.data());
-//   });
-
-//   return arr;
-// };
-
-// const q = query(collection(db, "cities"), where("state", "==", "CA"));
-// const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//   const cities = [];
-//   querySnapshot.forEach((doc) => {
-//     cities.push(doc.data().name);
-//   });
-//   console.log("Current cities in CA: ", cities.join(", "));
-// });
-
-// export const obsTotalDocList = async (optionName) => {
-//   const q = query(collection(db, optionName));
-//   const querySnapshot = await getDocs(q);
-//   const arr = [];
-//   querySnapshot.forEach((doc) => {
-//     arr.push(doc.data());
-//   });
-
-//   return arr;
-// };
-
-// up3
 export const toggleMilestone = async (collectionName, docID, action) => {
   // await deleteDoc(doc(db, collectionName, docID));
 
@@ -605,7 +572,7 @@ export const getMembersList = async (groupID, setFunction) => {
     querySnapshot.forEach((doc) => {
       data.push(doc.data());
     });
-    console.log(data);
+
     setFunction(data);
   });
 };
@@ -632,7 +599,6 @@ export const sendMilestoneComment = async (milestoneID, data) => {
 };
 
 export const clapsForPost = async (groupID, docID, userID) => {
-  console.log(docID, userID);
   const docRef = doc(db, "groups", groupID, "posts", docID);
   const docSnap = await getDoc(docRef);
 
@@ -663,7 +629,6 @@ export const postsListener = async (groupID, setRenderPost) => {
 
 //milestone🎐🎏
 export const clapsForMilestone = async (milestoneID, userID, action) => {
-  console.log(milestoneID, userID);
   const docRef = doc(db, "articles", milestoneID);
   const docSnap = await getDoc(docRef);
 
@@ -691,7 +656,6 @@ export const clapsForMilestone = async (milestoneID, userID, action) => {
 };
 
 export const saveForMilestone = async (groupID, docID, userID) => {
-  console.log(docID, userID);
   const docRef = doc(db, "groups", groupID, "posts", docID);
   const docSnap = await getDoc(docRef);
 
@@ -783,7 +747,7 @@ export const SendApplication = async (groupID, data, docRefId) => {
 
 export const getTotalApplicationList = async (groupID, setApplicationData) => {
   const applicationRef = collection(db, "groups", groupID, "applications");
-  console.log(applicationRef);
+
   if (applicationRef) {
     const q = query(applicationRef, where("approve", "==", false));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -797,23 +761,6 @@ export const getTotalApplicationList = async (groupID, setApplicationData) => {
     });
   }
 };
-// good
-// export const getTotalApplicationList = async (groupID, setApplicationData) => {
-//   const applicationRef = collection(db, "groups", groupID, "applications");
-//   console.log(applicationRef);
-//   if (applicationRef) {
-//     const q = query(applicationRef, where("approve", "==", false));
-//     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//       const data = [];
-//       if (querySnapshot.docs) {
-//         querySnapshot.forEach((doc) => {
-//           data.push(doc.data());
-//         });
-//       }
-//       setApplicationData({ count: data.length, data: data });
-//     });
-//   }
-// };
 
 export const confirmApplication = async (memberID, groupID, data) => {
   const batch = writeBatch(db);
@@ -853,9 +800,6 @@ export const sendLeadNotification = async (groupID, userID) => {
     doc(collection(db, "users", userID, "notification"), docId),
     data
   );
-
-  console.log(a);
-  // return data;
 };
 
 //
@@ -874,9 +818,6 @@ export const sendGroupNotification = async (groupID, userID) => {
     doc(collection(db, "users", userID, "notification"), docId),
     data
   );
-
-  console.log(a);
-  // return data;
 };
 
 //
@@ -891,7 +832,7 @@ export const sendMilestoneNotification = async (mileID, toAuthor, fromUser) => {
     sender: fromUser,
     readed: false,
   };
-  console.log("ddddd");
+
   await setDoc(
     doc(collection(db, "users", toAuthor, "notification"), docId),
     data
@@ -900,51 +841,12 @@ export const sendMilestoneNotification = async (mileID, toAuthor, fromUser) => {
 };
 
 export const readNotification = async (docID, userID) => {
-  console.log(docID);
-  console.log(userID);
-
   const notificationRef = doc(db, "users", userID, "notification", docID);
-  console.log(notificationRef);
-  // Set the "capital" field of the city 'DC'
+
   await updateDoc(notificationRef, {
     readed: true,
   });
 };
-
-// export const saveForMilestone = async (groupID, docID, userID) => {
-//   console.log(docID, userID);
-//   const docRef = doc(db, "groups", groupID, "posts", docID);
-//   const docSnap = await getDoc(docRef);
-
-//   if (docSnap.data().clapBy?.includes(userID)) {
-//     await updateDoc(docRef, {
-//       clapBy: arrayRemove(userID),
-//     });
-//   } else {
-//     await updateDoc(docRef, {
-//       clapBy: arrayUnion(userID),
-//     });
-//   }
-// };
-
-//  const q = query(
-//    collection(firebase.db, "users", userData.uid, "notification")
-//  );
-
-// export const sendPostComment = async (groupID, postID, data) => {
-//   const docRefId = doc(
-//     collection(db, "groups", groupID, "posts", postID, "comments")
-//   ).id;
-//   const finalData = { ...data, commentID: docRefId };
-
-//   await setDoc(
-//     doc(
-//       collection(db, "groups", groupID, "posts", postID, "comments"),
-//       docRefId
-//     ),
-//     finalData
-//   );
-// };
 
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
@@ -1053,7 +955,7 @@ export const getBookApplication = async (groupID, setfunction) => {
     querySnapshot.forEach((doc) => {
       !doc.data().applyStatus && arr.push(doc.data());
     });
-    console.log("getBookApplication", arr);
+
     setfunction({ count: arr.length, data: arr });
   });
 };

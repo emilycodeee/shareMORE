@@ -89,7 +89,7 @@ const modules = {
         },
       ],
       // ["link"],
-      ["link", "video", "image"],
+      ["link", "image"],
       ["clean"],
     ],
     handlers: { image: () => imageCallBack() },

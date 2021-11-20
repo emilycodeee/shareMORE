@@ -121,7 +121,6 @@ const BookImage = styled.img`
 
 const SearchBook = () => {
   const { groupID } = useParams();
-  console.log(groupID);
   const userData = useSelector((state) => state.userData);
   const groupsList = useSelector((state) => state.groupsList);
 
@@ -132,6 +131,7 @@ const SearchBook = () => {
   const [content, setContent] = useState([]);
   const [bookContent, setBookContent] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingBook, setIsLoadingBook] = useState(false);
 
   const currentGroup = groupsList.find((g) => g.groupID === groupID);
   const checkGroupCreator = currentGroup.creatorID === userData.uid;
@@ -143,7 +143,7 @@ const SearchBook = () => {
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.items);
+        console.log(data);
         setContent(data.items);
         setIsLoading(false);
       })
@@ -159,7 +159,7 @@ const SearchBook = () => {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(data.items);
+          // console.log(data.items);
           setContent(data.items);
           setIsLoading(false);
         })
@@ -178,7 +178,6 @@ const SearchBook = () => {
       shareDate: new Date(),
     };
     setShowSubmitDialogue(false);
-    console.log(data);
     firebase.setGroupBook(data).then(() => {
       // setShowSubmitDialogue(false);
       setSubmitValue("");
@@ -195,11 +194,8 @@ const SearchBook = () => {
     });
   };
 
-  console.log(bookContent.volumeInfo?.description);
-
   const defaultBook =
     "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
-  // console.log(bookContent.volumeInfo.webReaderLink);
 
   return (
     <>
@@ -223,8 +219,16 @@ const SearchBook = () => {
                     <ResultBookCtn
                       key={i}
                       onClick={() => {
+                        setIsLoading(true);
                         setShowBookContent(true);
-                        setBookContent(b);
+                        fetch(
+                          `https://www.googleapis.com/books/v1/volumes/${b.id}`
+                        )
+                          .then((res) => res.json())
+                          .then((data) => {
+                            setBookContent(data);
+                            setIsLoading(false);
+                          });
                       }}
                     >
                       <ImgDe
@@ -242,49 +246,59 @@ const SearchBook = () => {
           </>
         )}
 
-        {showBookContent && (
-          <BookWrapper>
-            <BookDetail>
-              <div>
-                <BookImage
-                  src={
-                    bookContent.volumeInfo.imageLinks?.thumbnail || defaultBook
-                  }
-                />
-              </div>
-              <div>
+        {showBookContent &&
+          (isLoading ? (
+            <JumpCircleLoading />
+          ) : (
+            <BookWrapper>
+              <BookDetail>
                 <div>
-                  <Titlestyle>{bookContent.volumeInfo.title}</Titlestyle>
-                  <Pstyle>
-                    作者/譯者：{bookContent.volumeInfo.authors?.join(",")}
-                  </Pstyle>
-                  <Pstyle>出版社：{bookContent.volumeInfo.publisher}</Pstyle>
-                  <Pstyle>
-                    出版日期：{bookContent.volumeInfo.publishedDate}
-                  </Pstyle>
-                </div>
-                <ActionIcon>
-                  <a href={bookContent.volumeInfo.previewLink} target="_blank">
-                    <LinkIcon />
-                  </a>
-
-                  <BookIcon
-                    onClick={() => {
-                      setShowSubmitDialogue(true);
-                    }}
+                  <BookImage
+                    src={
+                      bookContent.volumeInfo?.imageLinks?.thumbnail ||
+                      defaultBook
+                    }
                   />
-                </ActionIcon>
-              </div>
-            </BookDetail>
-            <ContentText>{bookContent.volumeInfo.description}</ContentText>
-            <RevertIcon
-              onClick={() => {
-                setShowBookContent(false);
-                setSubmitValue("");
-              }}
-            />
-          </BookWrapper>
-        )}
+                </div>
+                <div>
+                  <div>
+                    <Titlestyle>{bookContent.volumeInfo?.title}</Titlestyle>
+                    <Pstyle>
+                      作者/譯者：{bookContent.volumeInfo?.authors?.join(",")}
+                    </Pstyle>
+                    <Pstyle>出版社：{bookContent.volumeInfo?.publisher}</Pstyle>
+                    <Pstyle>
+                      出版日期：{bookContent.volumeInfo?.publishedDate}
+                    </Pstyle>
+                  </div>
+                  <ActionIcon>
+                    <a
+                      href={bookContent.volumeInfo?.previewLink}
+                      target="_blank"
+                    >
+                      <LinkIcon />
+                    </a>
+
+                    <BookIcon
+                      onClick={() => {
+                        setShowSubmitDialogue(true);
+                      }}
+                    />
+                  </ActionIcon>
+                </div>
+              </BookDetail>
+              <ContentText>
+                {HtmlParser(bookContent.volumeInfo?.description)}
+              </ContentText>
+              <RevertIcon
+                onClick={() => {
+                  setShowBookContent(false);
+                  setSubmitValue("");
+                  setBookContent({});
+                }}
+              />
+            </BookWrapper>
+          ))}
       </Wrapper>
       {showSubmitDialogue && (
         <PageShield
@@ -357,7 +371,7 @@ const RecTextarea = styled.textarea`
 
 const Pstyle = styled.p`
   line-height: 1.3rem;
-  /* color: red; */
+  font-size: 0.8rem;
   font-weight: 550;
   color: gray;
   @media only screen and (max-width: 800px) {
@@ -380,18 +394,15 @@ const ActionIcon = styled.div`
 const Titlestyle = styled.p`
   font-weight: 550;
   line-height: 1.5rem;
-  /* color: red; */
+
   @media only screen and (max-width: 800px) {
     text-align: center;
   }
 `;
 
 const ContentText = styled.div`
-  /* color: red; */
-  /* white-space: pre-wrap; */
-  /* white-space:pre-wrap */
   white-space: pre-line;
-
+  text-align: center;
   width: 80%;
   line-height: 1.2rem;
 `;
