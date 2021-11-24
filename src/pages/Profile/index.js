@@ -3,8 +3,7 @@ import styled from "styled-components";
 import { useParams, useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useEffect, useRef } from "react";
-import * as firebase from "../../utils/firebase";
+import { useEffect } from "react";
 import ContentCards from "./components/ContentCards";
 import { IoSettingsOutline } from "react-icons/io5";
 import {
@@ -16,7 +15,6 @@ import {
 } from "react-icons/fa";
 import { DisappearedLoading } from "react-loadingg";
 import { BsGlobe } from "react-icons/bs";
-import { v4 as uuidv4 } from "uuid";
 
 const SideCard = styled.div`
   margin-top: 3rem;
@@ -247,8 +245,7 @@ const ProfilePage = () => {
         setIsLoading(false);
       }
     }
-    // if (groupsList.length > 0) setIsLoading(false);
-  }, [articlesList, groupsList, usersList]);
+  }, [articlesList, groupsList, usersList, userID]);
 
   const handleChoose = (e) => {
     switch (e.target.dataset.id) {

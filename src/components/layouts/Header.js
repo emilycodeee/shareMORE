@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import SigninPopup from "../SigninPopup";
 import logo from "../../sharemore.png";
+import { HiMenu, HiChevronDoubleRight } from "react-icons/hi";
+import { MdLogout, MdOutlineNotificationsActive } from "react-icons/md";
 import * as firebase from "../../utils/firebase";
 
 import {
@@ -16,9 +18,6 @@ import {
   limit,
 } from "firebase/firestore";
 
-import { HiMenu, HiChevronDoubleRight } from "react-icons/hi";
-import { MdLogout, MdOutlineNotificationsActive } from "react-icons/md";
-
 const Header = () => {
   const history = useHistory();
   const userData = useSelector((state) => state.userData);
@@ -28,7 +27,6 @@ const Header = () => {
   const [active, setActive] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-
   const [notificationCtn, setNotificationCtn] = useState([]);
   const [toggleMobile, setToggleMobile] = useState(false);
 
@@ -357,6 +355,7 @@ const NotificationsArea = styled.div`
 
 const NotifiDiv = styled.div`
   text-decoration: none;
+  width: 100%;
   color: black;
   padding: 0 0.5rem;
   :hover {

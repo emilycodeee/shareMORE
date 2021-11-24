@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+
+import * as firebase from "../../../utils/firebase";
+import { arrCaculator } from "../../../utils/common";
+import { Link } from "react-router-dom";
 import { useParams } from "react-router";
 import { useState, useEffect } from "react";
-import * as firebase from "../../../utils/firebase";
-import { arrCaculator } from "../../../utils/commonText";
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import target from "../../../sources/target.gif";
 import trophy from "../../../sources/trophy.png";
@@ -46,7 +47,6 @@ const BestBoard = ({ renderPost }) => {
         const filterPublicArticles = articlesList.filter(
           (a) => a.groupID === groupID && a.public === true
         );
-
         const articlesArr = filterPublicArticles.map((a) => a.creatorID);
         setMaxArticles(arrCaculator(articlesArr));
       });
@@ -65,7 +65,7 @@ const BestBoard = ({ renderPost }) => {
       <SloganLabel>分享，建立學習的正向迴圈</SloganLabel>
       <ItemWp>
         <div to={`/profile/${maxPost?.userID}`}>
-          <Avatat src={getUserData(maxPost?.userID)?.avatar || target} />
+          <Avatar src={getUserData(maxPost?.userID)?.avatar || target} />
         </div>
         <Detail>
           <PersonName> {getUserData(maxPost?.userID)?.displayName}</PersonName>
@@ -82,7 +82,7 @@ const BestBoard = ({ renderPost }) => {
 
       <ItemWp>
         <div to={`/profile/${maxArticles?.userID}`}>
-          <Avatat src={getUserData(maxArticles?.userID)?.avatar || target} />
+          <Avatar src={getUserData(maxArticles?.userID)?.avatar || target} />
         </div>
         <Detail>
           <PersonName>
@@ -106,7 +106,7 @@ const BestBoard = ({ renderPost }) => {
       </ItemWp>
       <ItemWp>
         <div to={`/profile/${maxBooks?.userID}`}>
-          <Avatat src={getUserData(maxBooks?.userID)?.avatar || target} />
+          <Avatar src={getUserData(maxBooks?.userID)?.avatar || target} />
         </div>
         <Detail>
           <PersonName>{getUserData(maxBooks?.userID)?.displayName}</PersonName>
@@ -134,10 +134,12 @@ const BestBoard = ({ renderPost }) => {
 
 export default BestBoard;
 
-const EmptyLink = styled(Link)`
-  text-decoration: none;
-  color: #f27e59;
-  font-weight: 600;
+const WinnerWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 `;
 
 const SloganLabel = styled.div`
@@ -151,19 +153,35 @@ const SloganLabel = styled.div`
   }
 `;
 
+const EmptyLink = styled(Link)`
+  text-decoration: none;
+  color: #f27e59;
+  font-weight: 600;
+`;
+
+const ItemWp = styled.div`
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+`;
+
+const Avatar = styled.img`
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  margin-right: 10px;
+`;
+
+const Detail = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
 const PersonName = styled.p`
   font-weight: 700;
   line-height: 20px;
   font-size: 1rem;
-`;
-
-const TextDivStyle = styled.div`
-  font-weight: ${(props) => (props.winner?.point > 0 ? "600" : "400")};
-  line-height: 20px;
-  font-size: 0.8rem;
-  text-decoration: none;
-  color: ${(props) =>
-    props.winner?.point > 0 ? "#f27e59" : "rgba(117,117,117,1)"};
 `;
 
 const TextStyle = styled.div`
@@ -178,30 +196,11 @@ const TextStyle = styled.div`
   text-overflow: ellipsis;
 `;
 
-const ItemWp = styled.div`
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-`;
-
-const Avatat = styled.img`
-  height: 48px;
-  width: 48px;
-  border-radius: 50%;
-  margin-right: 10px;
-`;
-
-const WinnerWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  /* text-align: center; */
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-`;
-
-const Detail = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+const TextDivStyle = styled.div`
+  font-weight: ${(props) => (props.winner?.point > 0 ? "600" : "400")};
+  line-height: 20px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  color: ${(props) =>
+    props.winner?.point > 0 ? "#f27e59" : "rgba(117,117,117,1)"};
 `;

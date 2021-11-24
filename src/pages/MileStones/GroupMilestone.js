@@ -3,9 +3,8 @@ import styled from "styled-components";
 import { useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import Card from "../Home/components/Card";
+import Card from "../Home/components/MilestonesCard";
 import { Link, useHistory } from "react-router-dom";
-import GroupHeader from "../Groups/components/GroupHeader";
 import { DisappearedLoading } from "react-loadingg";
 
 const GroupMilestone = () => {
@@ -43,7 +42,6 @@ const GroupMilestone = () => {
   } else if (!isLoading) {
     return (
       <>
-        <GroupHeader tag="milestone" />
         <Wrapper>
           {isInsider && (
             <CreateButton to="/articles/post">分享我的學習成果</CreateButton>

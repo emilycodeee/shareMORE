@@ -1,6 +1,32 @@
 import React from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
+
+const ReplyMessage = ({ itemData }) => {
+  const usersList = useSelector((state) => state.usersList);
+
+  const sender = usersList.find((each) => each.uid === itemData.creatorID);
+
+  return (
+    <Wrapper>
+      <AvatorStyled src={sender.avatar} />
+      <CommentWrapper>
+        <UserWrapper>
+          <UserDetail>
+            <UserText>{sender.displayName}</UserText>
+            <UserText>
+              {itemData.creationTime?.toDate().toLocaleString("zh-TW")}
+            </UserText>
+          </UserDetail>
+        </UserWrapper>
+        <TextContent>{itemData.content}</TextContent>
+      </CommentWrapper>
+    </Wrapper>
+  );
+};
+
+export default ReplyMessage;
+
 const CommentWrapper = styled.div`
   background-color: #fffdfd;
   padding: 10px 10px;
@@ -40,31 +66,6 @@ const UserText = styled.div`
     font-size: 10px;
   }
 `;
-
-const LeaveMessage = ({ itemData }) => {
-  const usersList = useSelector((state) => state.usersList);
-
-  const sender = usersList.find((each) => each.uid === itemData.creatorID);
-
-  return (
-    <Wrapper>
-      <AvatorStyled src={sender.avatar} />
-      <CommentWrapper>
-        <UserWrapper>
-          <UserDetail>
-            <UserText>{sender.displayName}</UserText>
-            <UserText>
-              {itemData.creationTime?.toDate().toLocaleString("zh-TW")}
-            </UserText>
-          </UserDetail>
-        </UserWrapper>
-        <TextContent>{itemData.content}</TextContent>
-      </CommentWrapper>
-    </Wrapper>
-  );
-};
-
-export default LeaveMessage;
 
 const TextContent = styled.div`
   white-space: pre-wrap;

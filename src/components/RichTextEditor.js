@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import ImageResize from "quill-image-resize-module-react";
 import Compressor from "compressorjs";
 import "react-quill/dist/quill.snow.css";
-
+import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as firebase from "../utils/firebase";
 
 const Quill = ReactQuill.Quill;
@@ -63,6 +63,16 @@ const imageCallBack = () => {
   input.click();
   input.onchange = async () => {
     const file = input.files[0];
+    if (file) {
+      if (!file.type.includes("image")) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "圖片格式怪怪的",
+        });
+        return;
+      }
+    }
     const compressState = await fileCompress(file);
     if (compressState.success) {
       firebase.uploadReactQuillImage(compressState.file, quillRef);
@@ -88,7 +98,6 @@ const modules = {
           align: ["", "center", "right", "justify"],
         },
       ],
-      // ["link"],
       ["link", "image"],
       ["clean"],
     ],
@@ -97,7 +106,6 @@ const modules = {
   clipboard: {
     matchVisual: false,
   },
-  // imageDrop: true,
   imageResize: {
     parchment: Quill.import("parchment"),
     modules: ["Resize", "DisplaySize"],

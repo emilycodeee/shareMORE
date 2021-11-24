@@ -1,12 +1,11 @@
 import React from "react";
 import styled from "styled-components";
+import { DisappearedLoading } from "react-loadingg";
 import { useParams, useHistory, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import * as firebase from "../../utils/firebase";
-import GroupHeader from "../Groups/components/GroupHeader";
-import { DisappearedLoading } from "react-loadingg";
 
 const NotesPage = () => {
   const { groupID } = useParams();
@@ -66,7 +65,6 @@ const NotesPage = () => {
   } else if (!isLoading)
     return (
       <>
-        <GroupHeader tag="note" />
         <Wrapper>
           {endpoint.includes("notes") && (
             <CreateButton to={`/group/${groupID}/new/notes`}>
@@ -181,7 +179,6 @@ const Notes = styled(Link)`
   box-shadow: 0 2px 4px #a2a2a2;
   text-decoration: none;
   color: black;
-  /* border: 1px solid rgb(204, 204, 204); */
   display: flex;
   border-radius: 4px;
   padding: 1rem;
@@ -195,9 +192,7 @@ const Notes = styled(Link)`
 const NotesArea = styled.div`
   width: 90%;
   padding: 0 1rem;
-  /* padding-bottom: 1rem; */
   margin: 0 auto;
-  /* border: 1px solid salmon; */
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -230,8 +225,11 @@ const Cover = styled.div`
 const TitleStyle = styled.h1`
   font-size: 1.5rem;
   margin: 0;
-  /* margin-top: 1rem; */
-  /* line-height: 28px; */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const TimeTag = styled.p`
@@ -250,4 +248,10 @@ const TimeTag = styled.p`
   }
 `;
 
-const TextTag = styled.p``;
+const TextTag = styled.p`
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;

@@ -1,68 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import * as firebase from "../../../utils/firebase";
-import ApplicationList from "./ApplicationList";
 import { useSelector } from "react-redux";
-import Swal from "sweetalert2/dist/sweetalert2.js";
-
-const SendApplication = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  /* justify-content: center; */
-`;
-
-const Label = styled.label`
-  font-size: 1.2rem;
-  font-weight: 550;
-  @media only screen and (max-width: 500px) {
-    font-size: 1rem;
-    /* border-radius: 0; */
-  }
-`;
-
-const TextCtn = styled.textarea`
-  border-radius: 4px;
-  margin: 10px 0;
-  padding: 10px;
-  height: 20vh;
-`;
-
-const Button = styled.button`
-  align-self: flex-end;
-  cursor: pointer;
-  width: 60px;
-  height: 30px;
-  background-color: transparent;
-  font-weight: 600;
-  outline: none;
-  border: 1px solid #f27e59;
-  border-radius: 3px;
-  color: #f27e59;
-  font-size: 10px;
-  &:hover {
-    background-color: #f27e59;
-    color: white;
-  }
-`;
-
-const ContentStyled = styled.div`
-  font-weight: 550;
-  margin-bottom: 0.5rem;
-`;
-
-const ApplicationStyled = styled.div`
-  background-color: rgba(255, 244, 228);
-  padding: 10px;
-  border-radius: 4px;
-  overflow: overflow-x;
-  box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
-`;
+import ApplicationList from "./ApplicationList";
+import { successAlert } from "../../../utils/alert";
 
 const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
   const [value, setValue] = useState("");
   const userData = useSelector((state) => state.userData);
-  const groupsList = useSelector((state) => state.groupsList);
   const handleSubmit = () => {
     const data = {
       content: value,
@@ -73,14 +18,7 @@ const ApplicationMsg = ({ groupData, applicationData, appliedData }) => {
     };
     firebase.SendApplication(groupData.groupID, data, userData.uid).then(() => {
       firebase.sendLeadNotification(groupData.groupID, groupData.creatorID);
-      // alert("送出成功，請等候社長審核");
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "送出成功，請等候社長審核",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      successAlert("送出成功，請等候社長審核");
     });
   };
 
@@ -139,4 +77,56 @@ export default ApplicationMsg;
 
 const Empty = styled.div`
   font-weight: 600;
+`;
+
+const SendApplication = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const Label = styled.label`
+  font-size: 1.2rem;
+  font-weight: 550;
+  @media only screen and (max-width: 500px) {
+    font-size: 1rem;
+  }
+`;
+
+const TextCtn = styled.textarea`
+  border-radius: 4px;
+  margin: 10px 0;
+  padding: 10px;
+  height: 20vh;
+`;
+
+const Button = styled.button`
+  align-self: flex-end;
+  cursor: pointer;
+  width: 60px;
+  height: 30px;
+  background-color: transparent;
+  font-weight: 600;
+  outline: none;
+  border: 1px solid #f27e59;
+  border-radius: 3px;
+  color: #f27e59;
+  font-size: 10px;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
+`;
+
+const ContentStyled = styled.div`
+  font-weight: 550;
+  margin-bottom: 0.5rem;
+`;
+
+const ApplicationStyled = styled.div`
+  background-color: rgba(255, 244, 228);
+  padding: 10px;
+  border-radius: 4px;
+  overflow: overflow-x;
+  box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
 `;

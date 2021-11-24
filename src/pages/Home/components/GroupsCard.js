@@ -1,11 +1,30 @@
 import React from "react";
 import styled from "styled-components";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+const GroupsCard = ({ item }) => {
+  return (
+    <CardContainer to={`/group/${item.groupID}`}>
+      <CoverContainer
+        style={{ backgroundImage: `url(${item.coverImage})` }}
+      ></CoverContainer>
+      <ContentContainer>
+        <TagContainer>
+          <CategoryContainer>{item.category}</CategoryContainer>
+          <CategoryContainer>{item.subClass}</CategoryContainer>
+        </TagContainer>
+        <TitleContainer>{item.name}</TitleContainer>
+        <TextContainer>{item.introduce}</TextContainer>
+      </ContentContainer>
+    </CardContainer>
+  );
+};
+
+export default GroupsCard;
 
 const CardContainer = styled(Link)`
   text-decoration: none;
   color: black;
-  /* box-shadow: 0 2px 10px #a2a2a2; */
   border-radius: 5px;
   margin-bottom: 10px;
   height: 320px;
@@ -19,11 +38,9 @@ const CardContainer = styled(Link)`
 const CoverContainer = styled.div`
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  /* height: 150px; */
   background-size: cover;
   background-position: center;
   height: 50%;
-  /* border: 10px solid red; */
 `;
 
 const ContentContainer = styled.div`
@@ -58,27 +75,12 @@ const TitleContainer = styled.div`
   margin-bottom: 10px;
   font-size: 1.2rem;
   color: rgb(242 126 89);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
   &:hover {
     color: rgb(255 217 121);
   }
 `;
-
-const GroupsCard = ({ item }) => {
-  return (
-    <CardContainer to={`/group/${item.groupID}`}>
-      <CoverContainer
-        style={{ backgroundImage: `url(${item.coverImage})` }}
-      ></CoverContainer>
-      <ContentContainer>
-        <TagContainer>
-          <CategoryContainer>{item.category}</CategoryContainer>
-          <CategoryContainer>{item.subClass}</CategoryContainer>
-        </TagContainer>
-        <TitleContainer>{item.name}</TitleContainer>
-        <TextContainer>{item.introduce}</TextContainer>
-      </ContentContainer>
-    </CardContainer>
-  );
-};
-
-export default GroupsCard;

@@ -12,36 +12,6 @@ const MainText = () => {
   );
 };
 
-const BtnContainer = styled.div`
-  margin-top: 2rem;
-  button {
-    background: #f27e59;
-    border: none;
-    padding: 0.9rem 1.1rem;
-    color: #fff;
-    border-radius: 1rem;
-    box-shadow: 0px 13px 24px -7px #ffae96;
-    transition: all 0.3s ease-in-out;
-    margin: 0.5rem;
-    font-size: 0.8rem;
-    cursor: pointer;
-    &:hover {
-      box-shadow: 0px 17px 16px -11px #ffae96;
-      transform: translateY(-5px);
-    }
-  }
-
-  .readmore {
-    color: #81d1ff;
-    background: transparent;
-    border: 3px solid #81d1ff;
-    &:hover {
-      box-shadow: 0px 17px 16px -11px #81d1ff;
-      transform: translateY(-5px);
-    }
-  }
-`;
-
 const Container = styled.div`
   padding: 1vw;
   h1 {

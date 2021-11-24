@@ -3,8 +3,52 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+const Card = ({ item }) => {
+  const usersList = useSelector((state) => state.usersList);
+  const groupsList = useSelector((state) => state.groupsList);
+  let currentCreator, currentGroup;
+  let url = `/group/${item.groupID}`;
+  if (item.milestoneID) {
+    currentCreator = usersList.find((data) => data.uid === item.creatorID);
+    currentGroup = groupsList.find((data) => data.groupID === item.groupID);
+    url = `/article/${item.milestoneID}`;
+  }
+
+  return (
+    <CardContainer to={url}>
+      <Avatar src={currentCreator?.avatar} />
+      <CoverContainer item={item}></CoverContainer>
+      <ContentContainer>
+        <TitleContainer>{item.title}</TitleContainer>
+        <Author>{`by ${currentCreator?.displayName} `}</Author>
+        <SubTitle>{`啟發自：${currentGroup?.name}`}</SubTitle>
+        <TextContainer>{item.introduce}</TextContainer>
+      </ContentContainer>
+    </CardContainer>
+  );
+};
+
+export default Card;
+
+const ContentContainer = styled.div`
+  height: 50%;
+  padding: 1rem;
+  background-color: #fff;
+`;
+
+const Avatar = styled.img`
+  width: 60px;
+  height: 60px;
+  background-color: rgb(65, 36, 3);
+  position: absolute;
+  top: -30px;
+  left: 20%;
+  border: 2px solid #fff;
+  transform: translateX(-50%);
+  border-radius: 50%;
+`;
+
 const CardContainer = styled(Link)`
-  /* width: 100%; */
   text-decoration: none;
   color: black;
   border-radius: 5px;
@@ -23,15 +67,8 @@ const CoverContainer = styled.div`
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   height: 50%;
-  /* width: 100%; */
   background-size: cover;
   background-position: center;
-`;
-
-const ContentContainer = styled.div`
-  height: 50%;
-  padding: 1rem;
-  background-color: #fff;
 `;
 
 const TitleContainer = styled.div`
@@ -73,43 +110,4 @@ const SubTitle = styled.div`
   &:hover {
     color: rgb(255 217 121);
   }
-`;
-
-const Card = ({ item }) => {
-  const usersList = useSelector((state) => state.usersList);
-  const groupsList = useSelector((state) => state.groupsList);
-  let currentCreator, currentGroup;
-  let url = `/group/${item.groupID}`;
-  if (item.milestoneID) {
-    currentCreator = usersList.find((data) => data.uid === item.creatorID);
-    currentGroup = groupsList.find((data) => data.groupID === item.groupID);
-    url = `/article/${item.milestoneID}`;
-  }
-
-  return (
-    <CardContainer to={url}>
-      <Avatar src={currentCreator?.avatar} />
-      <CoverContainer item={item}></CoverContainer>
-      <ContentContainer>
-        <TitleContainer>{item.title}</TitleContainer>
-        <Author>{`by ${currentCreator?.displayName} `}</Author>
-        <SubTitle>{`啟發自：${currentGroup?.name}`}</SubTitle>
-        <TextContainer>{item.introduce}</TextContainer>
-      </ContentContainer>
-    </CardContainer>
-  );
-};
-
-export default Card;
-
-const Avatar = styled.img`
-  width: 60px;
-  height: 60px;
-  background-color: rgb(65, 36, 3);
-  position: absolute;
-  top: -30px;
-  left: 20%;
-  border: 2px solid #fff;
-  transform: translateX(-50%);
-  border-radius: 50%;
 `;

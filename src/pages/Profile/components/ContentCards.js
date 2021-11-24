@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 
 const ItemWrapper = styled.div`
   border-bottom: 1px solid rgb(219, 216, 214);
-  /* border-radius: 10px; */
   gap: 10px;
   margin-bottom: 1rem;
   display: flex;
@@ -12,8 +11,6 @@ const ItemWrapper = styled.div`
   @media only screen and (max-width: 500px) {
     flex-direction: column;
   }
-
-  /* box-shadow: rgb(0 0 0 / 10%) 0px 2px 6px; */
 `;
 
 const CoverContainer = styled.div`
@@ -29,13 +26,10 @@ const CoverContainer = styled.div`
 `;
 
 const ItemInfo = styled.div`
-  /* margin-left: 1rem; */
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* justify-content: space-evenly; */
   gap: 10px;
-
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -55,12 +49,6 @@ const CategorySet = styled.div`
   div {
     font-weight: 600;
   }
-  /* margin-bottom: 10px; */
-`;
-
-const Category = styled.div`
-  font-weight: 600;
-  margin-left: 10px;
 `;
 
 const LinkStyle = styled(Link)`

@@ -1,7 +1,6 @@
 import React from "react";
 import ReactQuill from "react-quill";
-import styled from "styled-components";
-const Quill = ReactQuill.Quill;
+// const Quill = ReactQuill.Quill;
 let quillRef = null;
 
 const formats = [

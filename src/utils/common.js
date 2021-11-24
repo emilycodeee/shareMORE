@@ -13,8 +13,8 @@ export default generateText;
 export const dateCounter = (date1) => {
   const goalDate = new Date(date1);
   const today = new Date();
-
-  const iDays = parseInt(Math.abs(today - goalDate) / 1000 / 60 / 60 / 24);
+  let iDays = parseInt(Math.abs(today - goalDate) / 1000 / 60 / 60 / 24);
+  if (today > goalDate) iDays = 0;
   return iDays;
 };
 
@@ -45,6 +45,9 @@ export const arrCaculator = (arr) => {
   }
   return { userID: curUid, point: max };
 };
+
+export const defaultBook =
+  "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
 
 export const webRegex = new RegExp(
   "^" +

@@ -15,7 +15,7 @@ import {
 import { BsGlobe } from "react-icons/bs";
 import * as firebase from "../../utils/firebase";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-import { webRegex } from "../../utils/commonText";
+import { webRegex } from "../../utils/common";
 import { DisappearedLoading } from "react-loadingg";
 
 const Wrapper = styled.div`
@@ -68,6 +68,7 @@ const SideCard = styled.div`
 `;
 
 const AvatarCtn = styled.div`
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -424,9 +425,20 @@ const ProfileSetting = () => {
               </AvatarCtn>
               <input
                 type="file"
+                accept="image/*"
                 id="upload-img"
                 style={{ display: "none" }}
                 onChange={(e) => {
+                  if (e.target.files[0]) {
+                    if (!e.target.files[0].type.includes("image")) {
+                      Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "圖片格式怪怪的",
+                      });
+                      return;
+                    }
+                  }
                   setFile(e.target.files[0]);
                 }}
               />

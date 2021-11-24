@@ -1,130 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import RichTextEditor from "../../components/RichTextEditor";
+import generateText from "../../utils/common";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 import * as firebase from "../../utils/firebase";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useHistory, useLocation } from "react-router";
-import generateText from "../../utils/commonText";
-import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useSelector } from "react-redux";
 import { DisappearedLoading } from "react-loadingg";
-const ContainerStyled = styled.div`
-  max-width: 1560px;
-  width: 80%;
-  display: flex;
-  /* margin: 3rem 5rem; */
-  margin: 0 auto;
-  margin-top: 3rem;
-  /* border: 1px solid red; */
-  /* padding: 1rem 2rem; */
-  gap: 1rem;
-  @media only screen and (max-width: 992px) {
-    flex-direction: column;
-  }
-`;
-
-const MainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 70%;
-  @media only screen and (max-width: 992px) {
-    width: 100%;
-  }
-`;
-
-const InputCtn = styled.input`
-  /* width: 100%; */
-  padding: 10px;
-  font-size: 1.2rem;
-  margin: 1rem 0;
-  border: 1px solid #b5b2b0;
-  border-radius: 4px;
-`;
-
-const SideSetting = styled.div`
-  width: 30%;
-  /* padding: 10px; */
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  @media only screen and (max-width: 992px) {
-    margin: 0;
-    width: 100%;
-    align-items: flex-start;
-  }
-`;
-
-const SettingWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-bottom: 10px;
-  padding: 10px;
-  gap: 10px;
-  border: 1px solid #b5b2b0;
-  border-radius: 4px;
-`;
-
-const EditorArea = styled.div`
-  width: 100%;
-  margin: 0 auto;
-`;
-
-const LabelCtn = styled.label`
-  font-size: 1.1rem;
-  font-weight: 550;
-  margin-right: 10px;
-`;
-
-const SideLabel = styled.label`
-  font-size: 1.1rem;
-  font-weight: 550;
-  text-align: center;
-  margin-bottom: 10px;
-`;
-
-const UploadBtn = styled.label`
-  background-color: transparent;
-  display: flex;
-  justify-content: center;
-`;
-
-const SubmitBtn = styled.button`
-  border-radius: 4px;
-  list-style: none;
-  font-weight: 600;
-  font-size: 1rem;
-  height: auto;
-  text-decoration: none;
-  color: #f27e59;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  margin: 0 auto;
-  margin-bottom: 2rem;
-  border: none;
-  padding: 0.6rem;
-  cursor: pointer;
-  border: 1px solid #f27e59;
-  background-color: transparent;
-  &:hover {
-    background-color: #f27e59;
-    color: white;
-  }
-  @media only screen and (max-width: 992px) {
-    margin: 0;
-    width: 100%;
-    align-items: flex-end;
-  }
-`;
-
-const Introduce = styled.textarea`
-  border: none;
-  background-color: #fff;
-  padding: 10px;
-`;
 
 const NotesEditorPage = () => {
   const userData = useSelector((state) => state.userData);
@@ -282,7 +165,18 @@ const NotesEditorPage = () => {
               type="file"
               id="upload-img"
               style={{ display: "none" }}
+              accept="image/*"
               onChange={(e) => {
+                if (e.target.files[0]) {
+                  if (!e.target.files[0].type.includes("image")) {
+                    Swal.fire({
+                      icon: "error",
+                      title: "Oops...",
+                      text: "圖片格式怪怪的",
+                    });
+                    return;
+                  }
+                }
                 setFile(e.target.files[0]);
               }}
             />
@@ -298,10 +192,123 @@ const NotesEditorPage = () => {
 
 export default NotesEditorPage;
 
+const ContainerStyled = styled.div`
+  max-width: 1560px;
+  width: 80%;
+  display: flex;
+  padding-bottom: 2rem;
+  margin: 0 auto;
+  margin-top: 3rem;
+  gap: 1rem;
+  @media only screen and (max-width: 992px) {
+    flex-direction: column;
+  }
+`;
+
+const MainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  @media only screen and (max-width: 992px) {
+    width: 100%;
+  }
+`;
+
+const InputCtn = styled.input`
+  padding: 10px;
+  font-size: 1.2rem;
+  margin: 1rem 0;
+  border: 1px solid #b5b2b0;
+  border-radius: 4px;
+`;
+
+const SideSetting = styled.div`
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+    width: 100%;
+    align-items: flex-start;
+  }
+`;
+
+const SettingWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  gap: 10px;
+  border: 1px solid #b5b2b0;
+  border-radius: 4px;
+`;
+
+const EditorArea = styled.div`
+  width: 100%;
+  margin: 0 auto;
+`;
+
+const LabelCtn = styled.label`
+  font-size: 1.1rem;
+  font-weight: 550;
+  margin-right: 10px;
+`;
+
+const SideLabel = styled.label`
+  font-size: 1.1rem;
+  font-weight: 550;
+  text-align: center;
+  margin-bottom: 10px;
+`;
+
+const UploadBtn = styled.label`
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+`;
+
+const SubmitBtn = styled.button`
+  border-radius: 4px;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+  height: auto;
+  text-decoration: none;
+  color: #f27e59;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0 auto;
+  margin-bottom: 2rem;
+  border: none;
+  padding: 0.6rem;
+  cursor: pointer;
+  border: 1px solid #f27e59;
+  background-color: transparent;
+  &:hover {
+    background-color: #f27e59;
+    color: white;
+  }
+  @media only screen and (max-width: 992px) {
+    margin: 0;
+    width: 100%;
+    align-items: flex-end;
+  }
+`;
+
+const Introduce = styled.textarea`
+  border: none;
+  background-color: #fff;
+  padding: 10px;
+`;
+
 const PreViewCtn = styled.img`
   width: 100%;
   margin: 10px 0;
-  /* margin: 0 auto; */
   cursor: pointer;
   @media only screen and (max-width: 992px) {
     width: 60%;

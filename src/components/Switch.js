@@ -1,14 +1,30 @@
 import React from "react";
 import styled from "styled-components";
-import { useState } from "react";
+
+const Switch = ({ check, setCheck }) => {
+  const handleCheck = (e) => {
+    let checkToggle = e.target.checked;
+    setCheck(checkToggle);
+  };
+  return (
+    <SwitchContainer>
+      <HideInput
+        type="checkbox"
+        checked={check}
+        onChange={(e) => handleCheck(e)}
+      />
+      <Slider />
+    </SwitchContainer>
+  );
+};
+
+export default Switch;
 
 const SwitchContainer = styled.label`
   position: relative;
   display: inline-block;
   width: 60px;
   height: 28px;
-
-  /* background-color: ; */
 `;
 
 const Slider = styled.span`
@@ -46,25 +62,3 @@ const HideInput = styled.input`
     }
   }
 `;
-
-const Switch = ({ check, setCheck }) => {
-  // const [check, setCheck] = useState(true);
-
-  const handleCheck = (e) => {
-    let checkToggle = e.target.checked;
-    setCheck(checkToggle);
-  };
-  // console.log(test);
-  return (
-    <SwitchContainer>
-      <HideInput
-        type="checkbox"
-        checked={check}
-        onChange={(e) => handleCheck(e)}
-      />
-      <Slider />
-    </SwitchContainer>
-  );
-};
-
-export default Switch;

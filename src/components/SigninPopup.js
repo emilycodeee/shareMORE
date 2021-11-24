@@ -5,8 +5,128 @@ import facebookIcon from "../sources/facebook.png";
 import googleIcon from "../sources/google.png";
 import styled from "styled-components";
 import { TouchBallLoading } from "react-loadingg";
-import { PointSpreadLoading } from "react-loadingg";
 import growing from "../sources/growing.gif";
+
+const SigninPopup = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showMore, setShowMore] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleOnLogin = (provider) => {
+    setMessage("");
+    firebase.socialMediaAuth(provider, setMessage);
+  };
+
+  const handleRegister = () => {
+    setIsLoading(true);
+    setMessage("");
+    firebase.register(name, email, password, setMessage).then(() => {
+      setIsLoading(false);
+    });
+  };
+
+  const handleLogin = () => {
+    setIsLoading(true);
+    setMessage("");
+    firebase.logIn(email, password, setMessage).then(() => {
+      setIsLoading(false);
+    });
+  };
+
+  return (
+    <Container>
+      <Sider>
+        <Slogan>一起 走得更遠</Slogan>
+        <Slogan>
+          TOGETHER <br />
+          WE ARE STRONGER.
+        </Slogan>
+      </Sider>
+      <AuthCtn>
+        {!showMore && (
+          <>
+            <Tree src={growing} />
+            {isLoading && <TouchBallLoading />}
+            <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
+              <SocialIconCtn src={googleIcon} />
+              Continue with Google
+            </AuthButton>
+            <AuthButton
+              onClick={() => handleOnLogin(firebase.facebookProvider)}
+            >
+              <SocialIconCtn src={facebookIcon} />
+              Continue with Facebook
+            </AuthButton>
+            <InputStyled
+              placeholder="請輸入信箱"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+            <InputStyled
+              type="password"
+              placeholder="請輸入密碼"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <AuthButton onClick={handleLogin}>登入</AuthButton>
+            {message && <ErrorMsg>{message}</ErrorMsg>}
+
+            <ShowSignUp
+              onClick={() => {
+                setShowMore(!showMore);
+              }}
+            >
+              使用Email進行註冊
+            </ShowSignUp>
+          </>
+        )}
+        {showMore && (
+          <>
+            <Tree src={growing} />
+            {isLoading && <TouchBallLoading />}
+            <InputStyled
+              placeholder="請輸入使用者名稱"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+            />
+            <InputStyled
+              placeholder="請輸入信箱"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+            <InputStyled
+              type="password"
+              placeholder="請輸入密碼"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <AuthButton onClick={handleRegister}>註冊</AuthButton>
+            {message && <ErrorMsg>{message}</ErrorMsg>}
+
+            <ShowSignUp
+              onClick={() => {
+                setShowMore(!showMore);
+              }}
+            >
+              透過Google/Facebook快速登入
+            </ShowSignUp>
+          </>
+        )}
+      </AuthCtn>
+    </Container>
+  );
+};
+
+export default SigninPopup;
 
 const Container = styled.div`
   max-width: 800px;
@@ -123,127 +243,3 @@ const Tree = styled.img`
   width: 4rem;
   height: 4rem;
 `;
-
-const SigninPopup = () => {
-  //loading
-  const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showMore, setShowMore] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const handleOnLogin = (provider) => {
-    setMessage("");
-    firebase.socialMediaAuth(provider, setMessage);
-  };
-
-  const handleRegister = () => {
-    setIsLoading(true);
-    setMessage("");
-    firebase.register(name, email, password, setMessage).then(() => {
-      setIsLoading(false);
-    });
-  };
-
-  const handleLogin = () => {
-    setIsLoading(true);
-    setMessage("");
-    firebase.logIn(email, password, setMessage).then(() => {
-      setIsLoading(false);
-    });
-  };
-
-  return (
-    <Container>
-      <Sider>
-        <Slogan>一起 走得更遠</Slogan>
-        <Slogan>
-          TOGETHER <br />
-          WE ARE STRONGER.
-        </Slogan>
-      </Sider>
-      <AuthCtn>
-        {!showMore && (
-          <>
-            <Tree src={growing} />
-            {isLoading && <TouchBallLoading />}
-            {/* {isLoading && <PointSpreadLoading />} */}
-            <AuthButton onClick={() => handleOnLogin(firebase.googleProvider)}>
-              <SocialIconCtn src={googleIcon} />
-              Continue with Google
-            </AuthButton>
-            <AuthButton
-              onClick={() => handleOnLogin(firebase.facebookProvider)}
-            >
-              <SocialIconCtn src={facebookIcon} />
-              Continue with Facebook
-            </AuthButton>
-            <InputStyled
-              placeholder="請輸入信箱"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-            <InputStyled
-              type="password"
-              placeholder="請輸入密碼"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <AuthButton onClick={handleLogin}>登入</AuthButton>
-            {message && <ErrorMsg>{message}</ErrorMsg>}
-
-            <ShowSignUp
-              onClick={() => {
-                setShowMore(!showMore);
-              }}
-            >
-              使用Email進行註冊
-            </ShowSignUp>
-          </>
-        )}
-        {showMore && (
-          <>
-            <Tree src={growing} />
-            {/* {isLoading && <PointSpreadLoading />} */}
-            {isLoading && <TouchBallLoading />}
-            <InputStyled
-              placeholder="請輸入使用者名稱"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
-            <InputStyled
-              placeholder="請輸入信箱"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-            <InputStyled
-              type="password"
-              placeholder="請輸入密碼"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <AuthButton onClick={handleRegister}>註冊</AuthButton>
-            {message && <ErrorMsg>{message}</ErrorMsg>}
-
-            <ShowSignUp
-              onClick={() => {
-                setShowMore(!showMore);
-              }}
-            >
-              透過Google/Facebook快速登入
-            </ShowSignUp>
-          </>
-        )}
-      </AuthCtn>
-    </Container>
-  );
-};
-
-export default SigninPopup;
