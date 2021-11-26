@@ -1,4 +1,6 @@
-export const generateText = (contentObj, commentsArr) => {
+import { errorAlert } from "./alert";
+
+const generateText = (contentObj, commentsArr) => {
   let html = `<h3>留言串主文：${contentObj.content}</h3><h3>留言回覆列表</h3>`;
 
   commentsArr.forEach((item) => {
@@ -8,9 +10,7 @@ export const generateText = (contentObj, commentsArr) => {
   return html;
 };
 
-export default generateText;
-
-export const dateCounter = (date1) => {
+const dateCounter = (date1) => {
   const goalDate = new Date(date1);
   const today = new Date();
   let iDays = parseInt(Math.abs(today - goalDate) / 1000 / 60 / 60 / 24);
@@ -18,14 +18,14 @@ export const dateCounter = (date1) => {
   return iDays;
 };
 
-export const initText = `<p>-目標建立tips-</p><p>SMART 原則</p><p>S- Specific (具體的)</p><p>M- Measurable (可衡量的)</p><p>A- Attainable (可實現的)</p><p>R- Relevant（息息相關的）</p><p>T- Timely (有時限的)</p>`;
+const initText = `<p>-目標建立tips-</p><p>SMART 原則</p><p>S- Specific (具體的)</p><p>M- Measurable (可衡量的)</p><p>A- Attainable (可實現的)</p><p>R- Relevant（息息相關的）</p><p>T- Timely (有時限的)</p>`;
 
-export const convertTime = (creationTime) => {
+const convertTime = (creationTime) => {
   const time = new Date(creationTime?.toDate()).toLocaleString("zh-TW");
   return time;
 };
 
-export const arrCaculator = (arr) => {
+const arrCaculator = (arr) => {
   const planObj = arr.reduce((obj, k) => {
     if (k in obj) {
       obj[k]++;
@@ -46,10 +46,7 @@ export const arrCaculator = (arr) => {
   return { userID: curUid, point: max };
 };
 
-export const defaultBook =
-  "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbookDefault.jpg?alt=media&token=11e30ec0-04a8-4ce5-8a35-37fbb5c1a99b";
-
-export const webRegex = new RegExp(
+const webRegex = new RegExp(
   "^" +
     // protocol identifier (optional)
     // short syntax // still required
@@ -91,3 +88,23 @@ export const webRegex = new RegExp(
     "$",
   "i"
 );
+
+const uploadPicture = (e, setFunction) => {
+  if (e.target.files[0]) {
+    if (!e.target.files[0].type.includes("image")) {
+      errorAlert("圖片格式怪怪的");
+      return;
+    }
+  }
+  setFunction(e.target.files[0]);
+};
+
+export {
+  generateText,
+  dateCounter,
+  initText,
+  convertTime,
+  arrCaculator,
+  webRegex,
+  uploadPicture,
+};
