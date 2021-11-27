@@ -99,6 +99,21 @@ const uploadPicture = (e, setFunction) => {
   setFunction(e.target.files[0]);
 };
 
+const getUserName = (usersList, uid) => {
+  const user = usersList.find((p) => p.uid === uid);
+  return user?.displayName;
+};
+
+const getGroupName = (groupsList, gid) => {
+  const group = groupsList.find((g) => g.groupID === gid);
+  return group?.name;
+};
+
+const getArticles = (articlesList, mileID) => {
+  const articles = articlesList.find((a) => a.milestoneID === mileID);
+  return articles?.title;
+};
+
 export {
   generateText,
   dateCounter,
@@ -107,4 +122,7 @@ export {
   arrCaculator,
   webRegex,
   uploadPicture,
+  getUserName,
+  getGroupName,
+  getArticles,
 };

@@ -28,8 +28,8 @@ const Count = styled.div`
   right: -4px;
 `;
 
-const Dot = styled.span`
-  display: inline-block;
+const Dot = styled.div`
+  /* display: inline-block; */
   width: 10px;
   height: 10px;
   background-color: ${(props) => (props.status ? "#dbd3c6" : "#FCB643")};
@@ -37,14 +37,19 @@ const Dot = styled.span`
   margin-right: 5px;
 `;
 
-const BoldName = styled.span`
-  font-weight: 600;
+const NotiContent = styled.div`
+  width: 95%;
+`;
+
+const TimeAgo = styled.div`
+  color: gray;
+  text-align: end;
 `;
 
 const NotificationsArea = styled.div`
   font-size: 0.9rem;
   position: absolute;
-  max-height: 40vh;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -59,10 +64,10 @@ const NotificationsArea = styled.div`
   gap: 10px;
   box-shadow: 0px 2px 7px -3px rgb(132 131 126 / 20%);
   @media only screen and (max-width: 992px) {
-    width: 30%;
+    width: 40%;
   }
   @media only screen and (max-width: 400px) {
-    width: 40%;
+    width: 50%;
   }
 `;
 
@@ -84,8 +89,16 @@ const NotifiLink = styled(Link)`
   :hover {
     background-color: #ffae96;
   }
+  span {
+    font-weight: 600;
+  }
 `;
 
+const NotiWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
 const ListContainer = styled.ul`
   display: flex;
   align-items: center;
@@ -293,7 +306,6 @@ export {
   NotifiSet,
   Count,
   Dot,
-  BoldName,
   NotificationsArea,
   NotifiDiv,
   NotifiLink,
@@ -314,4 +326,7 @@ export {
   Notifications,
   LogoutBtn,
   MenuBurger,
+  NotiContent,
+  TimeAgo,
+  NotiWrap,
 };

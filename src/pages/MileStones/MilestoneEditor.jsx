@@ -4,7 +4,7 @@ import RichTextEditor from "../../components/RichTextEditor";
 import { getMilestone, editArticles, postArticles } from "../../utils/firebase";
 import Select from "react-select";
 import Switch from "../../components/Switch";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { DisappearedLoading } from "react-loadingg";
 import { uploadPicture } from "../../utils/common";
@@ -36,6 +36,7 @@ const MilestoneEditor = () => {
   const groupsList = useSelector((state) => state.groupsList);
   const userData = useSelector((state) => state.userData);
   const { milestoneID } = useParams();
+  const pathname = useLocation().pathname;
   const [originContent, setOriginContent] = useState(null);
   const [title, setTitle] = useState("");
   const [introduce, setIntroduce] = useState("");
@@ -51,14 +52,12 @@ const MilestoneEditor = () => {
   );
   const editMode = useRef(false);
 
-  if (userData === null) {
-    history.push("/");
-  }
-
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      if (milestoneID) {
+      if (pathname.includes("edit") && userData === null) history.push("/");
+      if (milestoneID && userData !== null) {
+        editMode.current = true;
         getMilestone("articles", milestoneID).then((res) => {
           if (
             userData !== undefined &&
@@ -69,7 +68,7 @@ const MilestoneEditor = () => {
             setTitle(res.title);
             setIntroduce(res.introduce);
             setOriginLabel(
-              groupsList.find((item) => item.groupID === res.groupID)?.name
+              groupsList.find((item) => item.groupID === res.groupID).name
             );
             setSelected(res.groupID);
             setValue(res.content);
@@ -78,64 +77,35 @@ const MilestoneEditor = () => {
             setPreviewUrl(res.coverImage);
             setIsLoading(false);
             editMode.current = true;
-
-            const myGroups = groupsList.filter((g) =>
-              g.membersList?.includes(userData.uid)
-            );
-            const myCreateGroups = groupsList.filter(
-              (g) => g.creatorID === userData.uid
-            );
-
-            const groupOpt = [...myGroups, ...myCreateGroups].map((g) => {
-              return { value: g.groupID, label: g.name };
-            });
-
-            if (groupOpt.length === 0) {
-              textAlert("目前沒有任何所屬社群，到廣場看看有興趣的主題吧！");
-              history.push("/");
-            }
-            setgroupsName(groupOpt);
             setIsLoading(false);
           }
         });
+      }
+
+      if (groupsList.length > 0 && userData) {
+        const myGroups = groupsList.filter((g) =>
+          g.membersList?.includes(userData.uid)
+        );
+        const myCreateGroups = groupsList.filter(
+          (g) => g.creatorID === userData.uid
+        );
+
+        const groupOpt = [...myGroups, ...myCreateGroups].map((g) => {
+          return { value: g.groupID, label: g.name };
+        });
+
+        if (groupOpt.length === 0) {
+          textAlert("目前沒有任何所屬社群，到廣場看看有興趣的主題吧！");
+          history.push("/");
+        }
+        setgroupsName(groupOpt);
+        setIsLoading(false);
       }
     }
     return () => {
       isMounted = false;
     };
   }, [userData, groupsList]);
-
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   if (isMounted) {
-  //     if (
-  //       userData !== undefined &&
-  //       groupsList.length > 0 &&
-  //       Object.keys(userData).length > 0
-  //     ) {
-  //       const myGroups = groupsList.filter((g) =>
-  //         g.membersList?.includes(userData.uid)
-  //       );
-  //       const myCreateGroups = groupsList.filter(
-  //         (g) => g.creatorID === userData.uid
-  //       );
-
-  //       const groupOpt = [...myGroups, ...myCreateGroups].map((g) => {
-  //         return { value: g.groupID, label: g.name };
-  //       });
-
-  //       if (groupOpt.length === 0) {
-  //         textAlert("目前沒有任何所屬社群，到廣場看看有興趣的主題吧！");
-  //         history.push("/");
-  //       }
-  //       setgroupsName(groupOpt);
-  //       setIsLoading(false);
-  //     }
-  //   }
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [userData, groupsList]);
 
   const editorHandler = (e) => {
     setValue(e);

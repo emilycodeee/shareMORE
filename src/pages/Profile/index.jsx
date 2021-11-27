@@ -37,15 +37,12 @@ const ProfilePage = () => {
   const groupsList = useSelector((state) => state.groupsList);
   const articlesList = useSelector((state) => state.articlesList);
   const [isLoading, setIsLoading] = useState(true);
-  //本頁id連動的user
   const currentUser = usersList?.find((item) => item.uid === userID);
   const me = userID === userData?.uid;
 
   const [userJoinGroups, setUserJoinGroups] = useState([]);
   const [userCreateGroups, setUserCreateGroups] = useState([]);
   const [userMilestones, setUserMilestones] = useState([]);
-
-  //我自己看到
   const [mySaveArticles, setMySaveArticles] = useState([]);
   const [selected, setSelected] = useState([]);
   const [active, setActive] = useState("我參加的社團");

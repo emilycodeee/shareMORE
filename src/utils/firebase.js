@@ -32,7 +32,7 @@ import {
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 
-require("dotenv").config();
+// require("dotenv").config();
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -452,14 +452,11 @@ export const actionForMilestone = async (milestoneID, userID, action) => {
   }
 };
 
-export const milestoneListener = async (
-  targetName,
-  milestoneID,
-  setFunction
-) => {
+export const milestoneListener = (targetName, milestoneID, setFunction) => {
   const unsub = onSnapshot(doc(db, targetName, milestoneID), (doc) => {
     setFunction(doc.data());
   });
+  return unsub;
 };
 
 export const getMilestone = async (targetName, milestoneID) => {
@@ -468,11 +465,7 @@ export const getMilestone = async (targetName, milestoneID) => {
   return docSnap.data();
 };
 
-export const postMilestoneListener = async (
-  targetName,
-  milestoneID,
-  setFunction
-) => {
+export const postMilestoneListener = (targetName, milestoneID, setFunction) => {
   const q = query(
     collection(db, targetName, milestoneID, "posts"),
     orderBy("creationTime", "asc")
@@ -485,9 +478,9 @@ export const postMilestoneListener = async (
     });
     setFunction(data);
   });
-};
 
-//📢MilestoneDelete
+  return unsubscribe;
+};
 
 export const sendPostComment = async (groupID, postID, data) => {
   const docRefId = doc(
@@ -638,10 +631,10 @@ export const sendMilestoneNotification = async (mileID, toAuthor, fromUser) => {
 
 export const readNotification = async (docID, userID) => {
   const notificationRef = doc(db, "users", userID, "notification", docID);
-
-  await updateDoc(notificationRef, {
-    readed: true,
-  });
+  if (notificationRef)
+    await updateDoc(notificationRef, {
+      readed: true,
+    });
 };
 
 export const rejectApplication = async (groupID, docRefId) => {
@@ -745,7 +738,6 @@ export const onUsersData = (dispatch, getUsersList) => {
     querySnapshot.forEach((doc) => {
       data.push(doc.data());
     });
-    console.log(data, dispatch, getUsersList);
     dispatch(getUsersList(data));
   });
   return userStatusUnsubscribe;
@@ -797,6 +789,7 @@ export const onNotification = (userId, setFunction) => {
       }
       data.push(doc.data());
     });
+    console.log(data);
     setFunction(data);
   });
 
@@ -808,7 +801,7 @@ export const listenOnGroupPost = (groupID, setRenderPost) => {
     collection(db, "groups", groupID, "posts"),
     orderBy("creationTime", "desc")
   );
-  const postUnsubscribe = onSnapshot(postQ, (querySnapshot) => {
+  const groupPostUnsubscribe = onSnapshot(postQ, (querySnapshot) => {
     const data = [];
     querySnapshot.forEach((doc) => {
       data.push(doc.data());
@@ -816,7 +809,7 @@ export const listenOnGroupPost = (groupID, setRenderPost) => {
     setRenderPost(data);
   });
 
-  return postUnsubscribe;
+  return groupPostUnsubscribe;
 };
 
 export const listenOnGroupMember = (groupID, setRenderMember) => {

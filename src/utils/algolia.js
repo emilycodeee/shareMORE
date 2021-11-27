@@ -1,6 +1,9 @@
 import algoliasearch from "algoliasearch";
-require("dotenv").config();
-const client = algoliasearch("2O238OVP6V", "98e5601e3df5a3134b62e6aa1a08915d");
+
+const client = algoliasearch(
+  process.env.REACT_APP_ALGOLIASEARCH_API_KEY,
+  process.env.REACT_APP_ALGOLIASEARCH_SEARCHONLY_API_KEY
+);
 
 const algolia = client.initIndex("sharemore");
 

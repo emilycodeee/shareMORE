@@ -47,7 +47,6 @@ const Bookshelf = () => {
 
           const groupOwner = groupDetail?.creatorID === userData?.uid;
           setIsOwner(groupOwner);
-          setIsLoading(false);
         }
       }
     }
@@ -58,6 +57,7 @@ const Bookshelf = () => {
 
   useEffect(() => {
     const unsubscribe = getGroupBook(groupID, setRenderBookData);
+    setIsLoading(false);
     return () => {
       unsubscribe();
     };

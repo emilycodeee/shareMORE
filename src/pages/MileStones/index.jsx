@@ -68,11 +68,11 @@ const MilestonePage = () => {
   const [cmtValue, setCmtValue] = useState("");
   const [publicStatus, setPublicStatus] = useState(null);
   const [renderPost, setRenderPost] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const usersList = useSelector((state) => state.usersList);
   const groupsList = useSelector((state) => state.groupsList);
   const userData = useSelector((state) => state.userData);
   const currentUser = usersList.find((item) => item.uid === userData?.uid);
-  const [isLoading, setIsLoading] = useState(true);
   const root = window.location.host;
   const pathname = useLocation().pathname;
 
@@ -135,13 +135,19 @@ const MilestonePage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    let isMounted = true;
-    if (isMounted) {
-      milestoneListener("articles", milestoneID, setContent);
-      postMilestoneListener("articles", milestoneID, setRenderPost);
-    }
+    const milestoneUnsubscribe = milestoneListener(
+      "articles",
+      milestoneID,
+      setContent
+    );
+    const postUnsubscribe = postMilestoneListener(
+      "articles",
+      milestoneID,
+      setRenderPost
+    );
     return () => {
-      isMounted = false;
+      milestoneUnsubscribe();
+      postUnsubscribe();
     };
   }, []);
 
@@ -152,7 +158,6 @@ const MilestonePage = () => {
         setIsLoading(false);
         if (content?.creatorID) {
           setPublicStatus(content.public);
-
           if (!content.public && userData?.uid !== content?.creatorID) {
             history.push("/");
           }

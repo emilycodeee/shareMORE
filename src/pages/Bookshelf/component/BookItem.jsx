@@ -25,10 +25,10 @@ const BookItem = ({ book, setShowBookContent, setBookContent, groupID }) => {
   const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
-    if (groupsList.length > 0) {
+    if (groupsList.length > 0 && userData !== null && userData !== undefined) {
       const groupDetail = groupsList.find((g) => g.groupID === groupID);
-      const groupOwner = groupDetail?.creatorID === userData?.uid;
-      const checkRecommender = book.groupSharerUid === userData?.uid;
+      const groupOwner = groupDetail?.creatorID === userData.uid;
+      const checkRecommender = book.groupSharerUid === userData.uid;
 
       setIsOwner(groupOwner);
       setIsRecommender(checkRecommender);

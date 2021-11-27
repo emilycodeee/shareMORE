@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router";
 import { useState } from "react";
@@ -6,12 +6,16 @@ import { useSelector } from "react-redux";
 import SigninPopup from "../SigninPopup";
 import logo from "../../sharemore.png";
 import { logOut, readNotification, onNotification } from "../../utils/firebase";
+import HtmlParser from "react-html-parser";
+import moment from "moment";
+
 import {
   NotifiSet,
   Count,
   Dot,
-  BoldName,
   NotificationsArea,
+  NotiContent,
+  NotiWrap,
   NotifiDiv,
   NotifiLink,
   ListContainer,
@@ -27,6 +31,7 @@ import {
   MobileCtn,
   IconSet,
   ImgCtn,
+  TimeAgo,
   Close,
   Notifications,
   LogoutBtn,
@@ -44,6 +49,7 @@ const Header = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationCtn, setNotificationCtn] = useState([]);
   const [toggleMobile, setToggleMobile] = useState(false);
+  const notiRef = useRef(null);
 
   const currentUser = usersList.find((item) => item.uid === userData?.uid);
 
@@ -53,21 +59,31 @@ const Header = () => {
 
   const getUserName = (uid) => {
     const user = usersList.find((p) => p.uid === uid);
-    return user?.displayName;
+    if (user === undefined) {
+      return "";
+    }
+    return user.displayName;
   };
 
   const getGroupName = (gid) => {
     const group = groupsList.find((g) => g.groupID === gid);
-    return group?.name;
+    if (group === undefined) {
+      return "";
+    }
+    return group.name;
   };
 
   const getArticles = (mileID) => {
     const articles = articlesList.find((a) => a.milestoneID === mileID);
-    return articles?.title;
+    if (articles === undefined) {
+      return "";
+    }
+    return articles.title;
   };
 
   const handleReadNoti = (e) => {
-    const target = e.target.dataset.id;
+    console.log(e.currentTarget.dataset.id);
+    const target = e.currentTarget.dataset.id;
     readNotification(target, userData.uid);
     setShowNotification(false);
   };
@@ -98,7 +114,7 @@ const Header = () => {
 
   const userAvatar =
     currentUser?.avatar ||
-    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2Fuser.png?alt=media&token=16cddd6e-a927-4863-b69e-f620fc7c465e";
+    "https://firebasestorage.googleapis.com/v0/b/sharemore-discovermore.appspot.com/o/web-default%2FbackgroundUser.png?alt=media&token=c03a9d59-7d7b-47b2-a2bb-aece5bb8537b";
 
   const showLoginPage = () => {
     setShowLogin(!showLogin);
@@ -205,61 +221,44 @@ const Header = () => {
             <NotifiDiv>目前沒有新通知</NotifiDiv>
           )}
           {notificationCtn.map((msg) => {
+            let url, html;
             if (msg.docId?.includes("m-")) {
-              return (
-                <NotifiLink
-                  key={msg.docId}
-                  to={`/article/${msg.milestoneID}`}
-                  onClick={handleReadNoti}
-                  data-id={msg.docId}
-                >
-                  <Dot status={msg.readed} data-id={msg.docId} />
-                  <BoldName data-id={msg.docId} data-id={msg.docId}>
-                    {getUserName(msg.sender)}
-                  </BoldName>
-                  在你的分享文章
-                  <BoldName data-id={msg.docId} data-id={msg.docId}>
-                    {" "}
-                    {getArticles(msg.milestoneID)}{" "}
-                  </BoldName>
-                  發表新回覆
-                </NotifiLink>
-              );
+              url = `/article/${msg.milestoneID}`;
+              html = `<span>${getUserName(msg.sender)}</span>
+                      在你的分享文章
+                      <span> ${getArticles(msg.milestoneID)} </span>
+                      發表新回覆`;
             } else if (msg.docId?.includes("g-")) {
+              url = `/group/${msg.groupID}`;
               if (msg.role === "owner") {
-                return (
-                  <NotifiLink
-                    key={msg.docId}
-                    to={`/group/${msg.groupID}`}
-                    onClick={handleReadNoti}
-                    data-id={msg.docId}
-                  >
-                    <Dot status={msg.readed} data-id={msg.docId} />
-                    你的社團
-                    <BoldName data-id={msg.docId}>
-                      {getGroupName(msg.groupID)}
-                    </BoldName>
-                    有新的入社申請
-                  </NotifiLink>
-                );
+                html = `你的社團
+                      <span>${getGroupName(msg.groupID)}</span>
+                      有新的入社申請`;
               } else {
-                return (
-                  <NotifiLink
-                    key={msg.docId}
-                    to={`/group/${msg.groupID}`}
-                    onClick={handleReadNoti}
-                    data-id={msg.docId}
-                  >
-                    <Dot status={msg.readed} data-id={msg.docId} />
-                    你在
-                    <BoldName data-id={msg.docId}>
-                      {getGroupName(msg.groupID)}
-                    </BoldName>
+                html = `<div>你在
+                    <span>${getGroupName(msg.groupID)}</span>
                     的社團申請已經通過囉
-                  </NotifiLink>
-                );
+                  </div>`;
               }
             }
+            return (
+              <NotifiLink
+                key={msg.docId}
+                to={url}
+                onClick={handleReadNoti}
+                data-id={msg.docId}
+              >
+                <NotiWrap>
+                  <Dot status={msg.readed} />
+                  <NotiContent>
+                    {HtmlParser(html)}
+                    <TimeAgo>
+                      {moment(msg.creationTime.toDate()).toNow()}
+                    </TimeAgo>
+                  </NotiContent>
+                </NotiWrap>
+              </NotifiLink>
+            );
           })}
         </NotificationsArea>
       )}

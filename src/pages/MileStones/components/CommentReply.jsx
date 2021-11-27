@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import deleteIcon from "../../../sources/delete.png";
-import * as firebase from "../../../utils/firebase";
+import { deleteMilestoneComment } from "../../../utils/firebase";
 
 const CommentReply = ({ item, author }) => {
   const usersList = useSelector((state) => state.usersList);
@@ -13,12 +13,7 @@ const CommentReply = ({ item, author }) => {
   const checkAuthor = author.uid === userData.uid;
   const handleDeleteComment = () => {
     const check = window.confirm("刪除留言將不可回復，確定要刪除嗎？");
-    check &&
-      firebase.deleteMilestoneComment(
-        "articles",
-        item.milestoneID,
-        item.postID
-      );
+    check && deleteMilestoneComment("articles", item.milestoneID, item.postID);
   };
 
   return (

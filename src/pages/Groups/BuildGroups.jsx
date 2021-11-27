@@ -2,7 +2,7 @@ import React from "react";
 import SimpleEditor from "../../components/SimpleEditor";
 import Select from "react-select";
 import { useState, useEffect } from "react";
-import * as firebase from "../../utils/firebase";
+import { createGroup } from "../../utils/firebase";
 import { useHistory } from "react-router-dom";
 import { initText, uploadPicture } from "../../utils/common";
 import { useSelector } from "react-redux";
@@ -89,7 +89,7 @@ const BuildGroups = () => {
       creatorID: userData.uid,
       public: true,
     };
-    firebase.createGroup(data, file).then((res) => {
+    createGroup(data, file).then((res) => {
       successAlert("新社團建立成功");
       history.push(`/group/${res}`);
     });
