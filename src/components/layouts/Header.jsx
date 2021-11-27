@@ -8,6 +8,7 @@ import logo from "../../sharemore.png";
 import { logOut, readNotification, onNotification } from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import moment from "moment";
+import "moment/locale/zh-tw";
 
 import {
   NotifiSet,
@@ -49,7 +50,6 @@ const Header = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationCtn, setNotificationCtn] = useState([]);
   const [toggleMobile, setToggleMobile] = useState(false);
-  const notiRef = useRef(null);
 
   const currentUser = usersList.find((item) => item.uid === userData?.uid);
 
@@ -82,7 +82,6 @@ const Header = () => {
   };
 
   const handleReadNoti = (e) => {
-    console.log(e.currentTarget.dataset.id);
     const target = e.currentTarget.dataset.id;
     readNotification(target, userData.uid);
     setShowNotification(false);
@@ -253,7 +252,9 @@ const Header = () => {
                   <NotiContent>
                     {HtmlParser(html)}
                     <TimeAgo>
-                      {moment(msg.creationTime.toDate()).toNow()}
+                      {moment(msg.creationTime.toDate())
+                        .locale("zh-tw")
+                        .fromNow()}
                     </TimeAgo>
                   </NotiContent>
                 </NotiWrap>

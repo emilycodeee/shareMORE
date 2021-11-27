@@ -44,6 +44,7 @@ const NotiContent = styled.div`
 const TimeAgo = styled.div`
   color: gray;
   text-align: end;
+  font-size: 0.8rem;
 `;
 
 const NotificationsArea = styled.div`
