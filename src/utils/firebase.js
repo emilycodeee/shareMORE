@@ -789,7 +789,6 @@ export const onNotification = (userId, setFunction) => {
       }
       data.push(doc.data());
     });
-    console.log(data);
     setFunction(data);
   });
 

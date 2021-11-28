@@ -169,7 +169,67 @@ const Slogan = styled.div`
   margin: 3rem 0;
 `;
 
+const SynopsisWrap = styled.div`
+  margin-top: 3rem;
+  display: grid;
+  align-items: baseline;
+  width: 90%;
+  justify-content: center;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-column-gap: 1.4rem;
+  grid-row-gap: 2rem;
+  /* @media only screen and (max-width: 992px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  } */
+
+  @media only screen and (max-width: 800px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media only screen and (max-width: 600px) {
+    width: 80%;
+    grid-template-columns: 1fr;
+  }
+`;
+const SynopsisImg = styled.img`
+  margin: 0 10%;
+  width: 80%;
+`;
+
+const SynopsisItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  span {
+    font-weight: 600;
+  }
+
+  p {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    text-align: center;
+    padding: 10px;
+    /* height: 20vh; */
+  }
+`;
+
+const SynopsisTitle = styled.div`
+  font-size: 1rem;
+  font-weight: 600;
+
+  text-decoration: underline;
+  text-decoration-color: #f27e59;
+  text-decoration-thickness: 3px;
+`;
+
 export {
+  SynopsisItem,
+  SynopsisTitle,
+  SynopsisWrap,
+  SynopsisImg,
   Container,
   CoverContainer,
   SecondWrapper,

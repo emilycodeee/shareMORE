@@ -26,7 +26,6 @@ const convertTime = (creationTime) => {
 };
 
 const arrCaculator = (arr) => {
-  console.log(arr);
   const planObj = arr.reduce((obj, k) => {
     if (k in obj) {
       obj[k]++;
@@ -35,7 +34,6 @@ const arrCaculator = (arr) => {
     }
     return obj;
   }, {});
-  console.log(planObj);
   let max = 0;
   let curUid = "";
   for (let k in planObj) {
