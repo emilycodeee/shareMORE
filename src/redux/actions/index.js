@@ -26,13 +26,6 @@ export const getCategoryList = (categoryList) => {
   };
 };
 
-export const getBooksList = (booksList) => {
-  return {
-    type: "GET_BOOKSLIST",
-    payload: booksList,
-  };
-};
-
 export const getArticlesList = (articlesList) => {
   return {
     type: "GET_ARTICLESLIST",

@@ -1,4 +1,3 @@
-//selected from Groups
 const categoryListReducer = (state = [], action) => {
   switch (action.type) {
     case "GET_CATEGORY":
