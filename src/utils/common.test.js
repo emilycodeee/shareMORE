@@ -22,6 +22,6 @@ describe("dateCounter", () => {
 
   test("dateCounter，if goal date is expired", () => {
     const date2 = "2021/11/27";
-    expect(dateCounter(date2)).toEqual(0);
+    expect(dateCounter(date2)).toEqual("今");
   });
 });
