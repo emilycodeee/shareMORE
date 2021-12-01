@@ -4,7 +4,7 @@ import { useHistory } from "react-router";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import SigninPopup from "../SigninPopup";
-import logo from "../../sharemore.png";
+import logo from "../../sources/sharemore.png";
 import { logOut, readNotification, onNotification } from "../../utils/firebase";
 import HtmlParser from "react-html-parser";
 import moment from "moment";
