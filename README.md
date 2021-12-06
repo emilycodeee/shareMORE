@@ -1,6 +1,6 @@
 # shareMore
 
-A social networking site that makes it easy for user to find mutual learning partners and share milestones with each other online.
+A social networking site that makes it easy for user to find mutual learning partners and share milestones with each other.
 
 - Applied `React` / `React Router` for `SPA` and `Redux` for global state management.
 - Applied `styled-components` to write CSS in JS efficiently.
@@ -68,7 +68,7 @@ A social networking site that makes it easy for user to find mutual learning par
 
   ![](./readMeImage/verifyMember.gif)
 
-- Join successfully, with permission to post message, co-edit book recommendations, create/read notes.
+- Join successfully, members have the authority to post messages, create book recommendations, and create/read notes.
 
   ![](./readMeImage/joinSucceed.gif)
 
@@ -78,9 +78,9 @@ A social networking site that makes it easy for user to find mutual learning par
 
   ![](./readMeImage/editingFeature.gif)
 
-- Quick collection and editing of notes.
+- Quick collection and edit of notes.
 
-  The group director and author of the comment have the authority to import the whole discussion into the editing area to keep it in the note.
+  The group director and author of the comment have the authority to import the whole discussion into the editor to keep valuable discussionit in the notes.
 
   ![](./readMeImage/noteKeep.gif)
 
@@ -94,7 +94,7 @@ A social networking site that makes it easy for user to find mutual learning par
 
   ![](./readMeImage/buildMilestone.gif)
 
-- Personal page shows joining/creating groups, publishing articles, and you can edit personal external links
+- Personal page shows joining/creating groups, publishing articles, and you can edit personal external links.
 
   ![](./readMeImage/personalPage.gif)
 
