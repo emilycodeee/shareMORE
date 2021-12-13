@@ -63,11 +63,11 @@ const GroupMilestone = () => {
             </Empty>
           )}
 
-          <ContenWrapper>
+          <ContentWrapper>
             {renderMilestone.map((m) => {
               return <Card item={m} key={m.milestoneID} />;
             })}
-          </ContenWrapper>
+          </ContentWrapper>
         </Wrapper>
       </>
     );
@@ -134,7 +134,7 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const ContenWrapper = styled.div`
+const ContentWrapper = styled.div`
   display: grid;
   padding: 1em;
   align-items: center;
