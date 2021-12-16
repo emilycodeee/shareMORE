@@ -32,8 +32,6 @@ import {
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 
-// require("dotenv").config();
-
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -344,7 +342,6 @@ export const removeTopLevelPost = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "posts", docRefId));
 };
 
-//for uploadReactQuillImage
 export const uploadReactQuillImage = async (file, quillRef) => {
   const idName = uuidv4();
   const storageRef = ref(storage);
@@ -398,7 +395,6 @@ export const sendGroupsPost = async (groupID, data) => {
   );
 };
 
-// milestonePost🎉🎈
 export const sendMilestoneComment = async (milestoneID, data) => {
   const docRefId = doc(collection(db, "articles", milestoneID, "posts")).id;
   const finalData = { ...data, postID: docRefId };
@@ -424,7 +420,6 @@ export const clapsForPost = async (groupID, docID, userID) => {
   }
 };
 
-//milestone🎐🎏
 export const actionForMilestone = async (milestoneID, userID, action) => {
   const docRef = doc(db, "articles", milestoneID);
   const docSnap = await getDoc(docRef);
@@ -593,7 +588,6 @@ export const sendLeadNotification = async (groupID, userID) => {
   );
 };
 
-//
 export const sendGroupNotification = async (groupID, userID) => {
   const docRefId = doc(collection(db, "users", userID, "notification")).id;
   const docId = `g-${docRefId}`;
@@ -640,7 +634,7 @@ export const readNotification = async (docID, userID) => {
 export const rejectApplication = async (groupID, docRefId) => {
   await deleteDoc(doc(db, "groups", groupID, "applications", docRefId));
 };
-//postContainer.js🎈
+
 export const editComment = async (groupID, docRefId, textData) => {
   const postDocRef = doc(collection(db, "groups", groupID, "posts"), docRefId);
   await updateDoc(postDocRef, {
